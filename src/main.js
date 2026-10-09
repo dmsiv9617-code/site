@@ -88,3 +88,77 @@ document.querySelector('#close-cart').onclick = () => document.querySelector('#c
 document.querySelector('#cart').onclick = e => { if (e.target === e.currentTarget && (e.clientX < e.currentTarget.getBoundingClientRect().left || e.clientX > e.currentTarget.getBoundingClientRect().right || e.clientY < e.currentTarget.getBoundingClientRect().top || e.clientY > e.currentTarget.getBoundingClientRect().bottom)) e.currentTarget.close(); };
 document.querySelector('#export-order').onclick = () => { const url = URL.createObjectURL(new Blob([JSON.stringify({ status: 'draft', items: cart, total: cart.reduce((s, i) => s + i.price, 0) }, null, 2)], { type: 'application/json' })); const a = document.createElement('a'); a.href = url; a.download = 'album-order-draft.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); };
 renderPreview();
+
+// Motion is progressive: content remains visible without JavaScript or animation support.
+const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
+const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
+const revealTargets = [...document.querySelectorAll('.section-heading, .memory-photos, .memory-copy, .product, .nature-copy, .builder, .workshop-art, .about > div:last-child, .portfolio-grid article, .closing > *')];
+let revealObserver;
+function setupReveals() {
+  revealObserver?.disconnect();
+  revealTargets.forEach(el => el.classList.remove('motion-pending'));
+  if (motionPreference.matches || !('IntersectionObserver' in window)) return;
+  revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    entry.target.classList.remove('motion-pending');
+    entry.target.classList.add('motion-visible');
+    revealObserver.unobserve(entry.target);
+  }), { threshold: 0.08 });
+  revealTargets.forEach((el, index) => {
+    el.classList.add('motion-reveal');
+    el.style.setProperty('--reveal-delay', `${el.matches('.product, .portfolio-grid article') ? (index % 3) * 70 : 0}ms`);
+    if (el.getBoundingClientRect().top > innerHeight) el.classList.add('motion-pending');
+    revealObserver.observe(el);
+  });
+}
+setupReveals();
+
+const progress = document.createElement('div');
+progress.className = 'reading-progress'; progress.setAttribute('aria-hidden', 'true');
+document.body.append(progress);
+const heroPhoto = document.querySelector('.hero-photo');
+let scrollFrame;
+function updateScrollMotion() {
+  scrollFrame = undefined;
+  const maxScroll = document.documentElement.scrollHeight - innerHeight;
+  progress.style.transform = `scaleX(${maxScroll > 0 ? Math.min(1, scrollY / maxScroll) : 0})`;
+  if (!motionPreference.matches && finePointer.matches && scrollY < innerHeight + 200) {
+    heroPhoto.style.transform = `translateY(${Math.min(scrollY * 0.13, 100)}px) scale(1.12)`;
+  } else heroPhoto.style.transform = '';
+}
+function scheduleScrollMotion() { if (!scrollFrame) scrollFrame = requestAnimationFrame(updateScrollMotion); }
+addEventListener('scroll', scheduleScrollMotion, { passive: true });
+addEventListener('resize', scheduleScrollMotion, { passive: true });
+motionPreference.addEventListener('change', () => { setupReveals(); updateScrollMotion(); });
+finePointer.addEventListener('change', updateScrollMotion);
+updateScrollMotion();
+
+for (const card of document.querySelectorAll('.product-image')) {
+  const cover = card.querySelector('.album');
+  let tiltFrame;
+  card.addEventListener('pointermove', e => {
+    if (motionPreference.matches || !finePointer.matches) return;
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    cancelAnimationFrame(tiltFrame);
+    tiltFrame = requestAnimationFrame(() => {
+      cover.style.transform = `perspective(600px) rotateX(${-y * 14}deg) rotateY(${x * 18}deg) rotate(-3deg) translateY(-8px)`;
+    });
+  });
+  card.addEventListener('pointerleave', () => { cancelAnimationFrame(tiltFrame); cover.style.transform = ''; });
+}
+
+const priceNode = document.querySelector('#price');
+new MutationObserver(() => {
+  if (motionPreference.matches) return;
+  priceNode.animate([{ opacity: 0.4, transform: 'translateY(5px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 240, easing: 'ease-out' });
+}).observe(priceNode, { childList: true });
+
+document.querySelector('#add-cart').addEventListener('click', () => {
+  if (motionPreference.matches) return;
+  const cartButton = document.querySelector('#open-cart');
+  cartButton.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.12)', background: '#e8cfaa' }, { transform: 'scale(1)' }], { duration: 500, easing: 'ease-out' });
+  const cover = document.querySelector('#live-album > div');
+  cover?.animate([{ opacity: 1 }, { opacity: 0.55 }, { opacity: 1 }], { duration: 450 });
+});
