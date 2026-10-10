@@ -20,3 +20,6 @@ body,header{background:var(--brand-paper);color:var(--brand-ink)}header{min-heig
 @media(max-width:900px){.workshop-intro{gap:25px}.workshop-mascot{width:270px;height:405px}.workshop-intro h1{font-size:55px}.workshop-beliefs{gap:25px}.workshop-team{gap:40px}.workshop-invitation{gap:40px}}
 @media(max-width:700px){.workshop-intro{grid-template-columns:1fr;gap:36px;padding-top:30px}.workshop-intro-copy>.eyebrow{margin-top:34px}.workshop-intro h1{font-size:49px}.workshop-intro-copy>p{font-size:15px}.workshop-mascot{width:260px;height:390px}.character-circle{width:330px;top:30px}.workshop-character figcaption p{font-size:27px}.workshop-beliefs{grid-template-columns:1fr;gap:20px;margin-top:35px}.workshop-beliefs h3{font-size:31px;margin-top:18px}.workshop-team{grid-template-columns:1fr;gap:30px}.workshop-invitation{flex-direction:column;gap:25px;align-items:flex-start}.workshop-invitation>img{width:150px;height:225px;align-self:center}.workshop-process h3{font-size:27px}.workshop-process article{gap:18px}.workshop-intro h1{overflow-wrap:break-word}}
 @media(max-width:360px){.workshop-intro h1{font-size:42px}}
+
+/* Keep the approved album fully visible in the details feature. */
+.craft-feature .craft-photo{height:auto;aspect-ratio:4/3}.craft-feature .craft-photo>img{object-position:70% center}
