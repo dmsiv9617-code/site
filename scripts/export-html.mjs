@@ -4,10 +4,10 @@ const html = await readFile(new URL('index.html', root), 'utf8');
 let css = ((await readFile(new URL('src/style.css', root), 'utf8')) + '\n' + (await readFile(new URL('src/brand.css', root), 'utf8')) + '\n' + (await readFile(new URL('src/concept.css', root), 'utf8'))).replace(/@import\s+url\([^)]*\);/g, '');
 let js = (await readFile(new URL('src/main.js', root), 'utf8')).replace("import './style.css';", '').replace("import './brand.css';", '').replace("import './concept.css';", '');
 const inlineImages = {};
-for (const name of ['concept/album-open.png', 'concept/album-turn.png', 'concept/hero-scene.png', 'concept/details-source.png', 'hero.png', 'family.png', 'wood-grain.svg', 'in-hands.png', 'brand/logo.png', 'brand/mascot-greeting.png', 'brand/mascot-helper.png', 'brand/mascot-joy.png']) {
+for (const name of ['catalog/family-history.png', 'concept/album-open.png', 'concept/album-turn.png', 'concept/hero-scene.png', 'concept/details-source.png', 'hero.png', 'family.png', 'wood-grain.svg', 'in-hands.png', 'brand/logo.png', 'brand/mascot-greeting.png', 'brand/mascot-helper.png', 'brand/mascot-joy.png']) {
   const mime = name.endsWith('.svg') ? 'image/svg+xml' : 'image/png';
   inlineImages[name] = `data:${mime};base64,${(await readFile(new URL(`public/images/${name}`, root))).toString('base64')}`;
-  js = js.replaceAll(`/images/${name}`, '${inlineImages[' + JSON.stringify(name) + ']}');
+  js = js.replaceAll(`/images/${name}`, inlineImages[name]);
   css = css.replaceAll(`url('/images/${name}')`, `var(--asset-${name.replaceAll('.', '-').replaceAll('/', '-')})`);
 }
 js = `const inlineImages = ${JSON.stringify(inlineImages)};\nfor (const [name, value] of Object.entries(inlineImages)) document.documentElement.style.setProperty('--asset-' + name.replaceAll('.', '-').replaceAll('/', '-'), 'url("' + value + '")');\n` + js;
