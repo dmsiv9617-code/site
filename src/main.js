@@ -50,7 +50,7 @@ const album = (i, cls = '') => `<div class="album ${cls} ${models[i].color === 2
 document.querySelector('#app').innerHTML = `
 <header><a class="logo" href="#" aria-label="WoodBase — главная"><img class="brand-logo" src="/hero-assets/woodbase-light.svg" alt="WoodBase — логотип с дятлом" width="180" height="88"></a><nav aria-label="Основная навигация"><a href="#catalog">Коллекция</a><a href="#constructor">Дизайн</a><a href="#workshop">Мастерская</a><a href="#about">О нас</a></nav><button class="cart-button" id="open-cart" aria-label="Открыть корзину"><svg class="branded-bag" viewBox="500 225 530 530" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"><defs><mask id="bag-rim-mask" maskUnits="userSpaceOnUse" x="500" y="225" width="530" height="530"><rect x="500" y="225" width="530" height="530" fill="white" stroke="none"/><path d="M632 405 C667 309 709 245 771 250 C838 248 859 310 897 417 L931 480 C876 491 861 463 850 418 C831 338 817 265 777 253 C724 269 722 326 733 394 C744 455 748 494 679 503 C696 461 698 422 697 379 C693 318 725 260 771 250" fill="black" stroke="black" stroke-width="24"/></mask></defs><g mask="url(#bag-rim-mask)"><path d="M536 423 917 385 1003 414 1003 666 596 729 525 687Z M536 423 596 455 1003 414 M596 455V729"/></g><path d="M632 405 C667 309 709 245 771 250 C838 248 859 310 897 417 L931 480 C876 491 861 463 850 418 C831 338 817 265 777 253 C724 269 722 326 733 394 C744 455 748 494 679 503 C696 461 698 422 697 379 C693 318 725 260 771 250"/></svg><span id="cart-count">${cart.length}</span></button></header>
 <main>
-<section class="hero concept-hero"><img class="hero-photo" src="/hero-assets/workshop-scene.webp" alt="Маскот WoodBase держит деревянный альбом «История нашей семьи» в тёплой мастерской" width="1536" height="1024" fetchpriority="high"><div class="hero-copy"><div class="eyebrow">WOODBASE / ДЕРЕВЯННЫЕ ФОТОАЛЬБОМЫ</div><h1><span>Воспоминания —</span><br>не для галереи<br>телефона.</h1><div class="hero-actions"><a class="button" href="#constructor">Собрать свой альбом <span>→</span></a><a class="text-link" href="#catalog">Посмотреть коллекцию ↓</a></div></div></section>
+<section class="hero concept-hero"><img class="hero-photo" src="/hero-assets/workshop-soft-background.webp" alt="" aria-hidden="true" width="1536" height="1024" fetchpriority="high"><div class="hero-woody"><img src="/hero-assets/woody-album-sharp.webp" alt="Вуди держит деревянный альбом «История нашей семьи»" width="1024" height="1536" fetchpriority="high"></div><div class="hero-copy"><div class="eyebrow">WOODBASE / ДЕРЕВЯННЫЕ ФОТОАЛЬБОМЫ</div><h1><span>Воспоминания —</span><br>не для галереи<br>телефона.</h1><div class="hero-actions"><a class="button" href="#constructor">Собрать свой альбом <span>→</span></a><a class="text-link" href="#catalog">Посмотреть коллекцию ↓</a></div></div></section>
 <section id="details" class="concept-details section"><div class="section-heading"><div><div class="eyebrow">01 / РАССМОТРИТЕ БЛИЖЕ</div><h2>Красота в деталях</h2></div><span class="detail-tag">Дерево · точность · забота</span></div><div class="concept-detail-grid"><figure class="assembly-photo"><div class="concept-crop assembly-crop"><img src="/scroll-assets/3f8fee0316aa7fd2cb44.png" alt="Визуализация мастера с альбомом «История нашей семьи» на чистом столе" loading="lazy" width="1024" height="1536"></div><figcaption>Собрано<br>вручную.</figcaption></figure><div class="detail-closeups"><figure><div class="concept-crop engraving-crop"><img src="/scroll-assets/3f8fee0316aa7fd2cb44.png" alt="Деталь рисунка дерева на обложке — визуализация" loading="lazy" width="1024" height="1536"></div><figcaption>Гравировка</figcaption></figure><figure><div class="concept-crop spine-crop"><img src="/scroll-assets/3f8fee0316aa7fd2cb44.png" alt="Тёмный корешок с декоративным креплением в ракурсе три четверти — визуализация" loading="lazy" width="1024" height="1536"></div><figcaption>Корешок</figcaption></figure><figure class="ring-detail"><div class="concept-crop rings-crop"><img src="/scroll-assets/3f8fee0316aa7fd2cb44.png" alt="Серебристые кольца и чёрные страницы — визуализация" loading="lazy" width="1024" height="1536"></div><figcaption>Кольцевой механизм</figcaption></figure></div></div><div class="detail-footnote"><p>Обложка 33 × 22 см · корешок 3 см.<br>Ваш рисунок, цвет и переплёт — в одном альбоме.</p><a href="#constructor" class="text-link">Собрать свой вариант →</a></div><p class="demo-note">Изображения созданы по вашим фотографиям для визуальной концепции. Это не точные производственные макеты.</p></section>
 <section id="catalog" class="section"><div class="section-heading"><div><div class="eyebrow">02 / НАША КОЛЛЕКЦИЯ ОБЛОЖЕК</div><h2>Альбомы,<br><em>которые остаются.</em></h2></div><p>Начните с обложки, которая вам близка.<br>Цвет, переплёт и надпись можно изменить.</p></div><div class="catalog">${models.map((m, i) => `<button class="product" data-model="${i}" aria-label="Подробнее об альбоме ${escape(m.name)}"><span class="product-number" aria-hidden="true">0${i+1}</span><div class="product-image tone-${i}">${m.photos.length ? `<img class="real-product-photo" src="${m.photos[0]}" alt="Альбом «${escape(m.name)}» — изображение предоставлено мастерской" loading="lazy" width="1536" height="1024">` : album(i)}</div><div class="product-paper"><div class="product-maker" aria-hidden="true"><span>WOODBASE</span>${leaf}</div><div class="product-info"><h3>${m.name}</h3></div><div class="product-ornament" aria-hidden="true">${leaf}</div><p>${m.subtitle}</p><small>${m.size} · Ручная сборка</small><span class="product-price">${money(m.price)}</span><span class="product-arrow">Сделать своим <span aria-hidden="true">→</span></span></div></button>`).join('')}</div><p class="demo-note">Все альбомы: 33 × 22 см, корешок 3 см. Дизайн, цвет и переплёт можно сочетать свободно. Цены и комплектацию уточняем в мастерской.</p></section>
 <section id="constructor" class="constructor section"><div class="section-heading"><div><div class="eyebrow">03 / СОБЕРИТЕ СВОЙ ВАРИАНТ</div><h2>Ваш альбом.<br><em>Собранный по-вашему.</em></h2></div><p>Любимый рисунок, семейная фамилия, особая дата.<br>Добавьте то, что делает этот альбом вашим.</p></div><div class="builder"><div class="preview"><div class="preview-top"><span>СОЗДАЁТСЯ ВАША ИСТОРИЯ</span><span id="preview-size"></span></div><div id="live-album"></div><button id="toggle-album" class="button album-toggle" aria-expanded="false" aria-controls="live-album">Открыть альбом →</button><div class="page-controls"><button id="prev-page" aria-label="Предыдущая страница">←</button><span id="page-label"></span><button id="next-page" aria-label="Следующая страница">→</button></div><p>Загляните внутрь — там место для счастья</p><small>Эскиз по конструкции ваших альбомов. Точная гравировка и оттенок согласуются; изображения обложек пока иллюстративные.</small></div><div class="options"><label for="model">01 <strong>Дизайн обложки</strong></label><select id="model">${models.map((m, i) => `<option value="${i}">${m.name} · ${m.size}</option>`).join('')}</select><label for="binding" class="small-label">Переплёт — независимо от дизайна</label><select id="binding">${bindings.map(b => `<option value="${b.id}">${b.name}</option>`).join('')}</select><p class="control-hint">Внутри обоих вариантов — кольцевой механизм. Различается оформление корешка.</p><div class="option-label">02 <strong>Оттенок дерева</strong> <span id="color-name"></span></div><div class="swatches">${colors.map((c, i) => `<button data-color="${i}" aria-label="${c.name}" style="background:${c.value}"></button>`).join('')}</div><div class="option-label">03 <strong>Символ вашей семьи</strong></div><div class="motifs">${motifs.map((m, i) => `<button data-motif="${i}" aria-label="Рисунок ${models[i].name}">${coverDrawing(i)}</button>`).join('')}</div><label class="upload" for="upload">↑ Загрузить свой рисунок <span>PNG, JPG, WebP · до 5 МБ</span></label><input type="file" id="upload" accept="image/png,image/jpeg,image/webp" hidden><div id="upload-status" role="status"></div><details class="art-tools"><summary>Настроить рисунок и гравировку</summary><label>Размер рисунка <input id="image-scale" type="range" min="0.5" max="1.5" step="0.05" value="1"></label><label>По горизонтали <input id="image-x" type="range" min="-20" max="20" value="0"></label><label>По вертикали <input id="image-y" type="range" min="-20" max="20" value="0"></label><label>Поворот <input id="image-rotation" type="range" min="-45" max="45" value="0"></label><label for="image-mode">Обработка загруженного рисунка</label><select id="image-mode"><option value="engrave">Чёрно-белый эскиз гравировки</option><option value="original">Исходное изображение</option></select><label>Порог чёрного <input id="image-threshold" type="range" min="40" max="220" value="140"></label><p class="control-hint">Мелкие детали и полутона могут потеряться. Изображение на экране — эскиз, окончательный макет согласуем.</p><button class="text-link" id="reset-art">Сбросить положение рисунка</button></details><button id="remove-image" class="text-link" hidden>Убрать загруженный рисунок</button><label for="inscription" class="small-label">Слова, которые останутся</label><input id="inscription" maxlength="45" value="Наша история" placeholder="Семья Ивановых · Счастье быть вместе"><div class="option-label">04 <strong>Забота в деталях</strong></div>${extras.map(e => `<label class="extra"><input type="checkbox" value="${e.id}"><span>${e.name}</span><span>Уточним стоимость</span></label>`).join('')}<div id="price-breakdown" class="price-breakdown"></div><div class="price-row"><span>Стоимость после согласования</span><strong id="price"></strong></div><button id="add-cart" class="button">Сохранить нашу историю <span>→</span></button><div id="cart-status" role="status"></div><div id="mascot-success" class="mascot-success" hidden><img class="mascot" src="/scroll-assets/11c6ebaeca016a6260ca.png" alt="" loading="lazy"><p>Отличное начало вашей истории!<small>Альбом добавлен. Откройте корзину, чтобы подготовить запрос.</small></p></div><div class="project-actions"><button id="save-project" class="text-link">Сохранить проект</button><button id="load-project" class="text-link">Восстановить</button><button id="download-project" class="text-link">Скачать проект</button><label for="import-project" class="text-link">Открыть файл проекта</label><input id="import-project" type="file" accept="application/json,.json" hidden></div><div id="project-status" role="status"></div></div></div></section>
@@ -339,73 +339,6 @@ document.querySelector('#add-cart').addEventListener('click', () => {
 });
 ;
 (() => {
-  const frameSources = ["/scroll-assets/a328982b08e6bc9c453b.webp", "/scroll-assets/81db27fef4aa3e5e20f2.webp", "/scroll-assets/5478cc6588620f9835ca.webp", "/scroll-assets/59d1f0163d472950aa04.webp", "/scroll-assets/3b1f3bd2f31cebefeaf9.webp", "/scroll-assets/056fa0bba3a785b5e8b6.webp", "/scroll-assets/6fd620c0e1080d30db04.webp", "/scroll-assets/9892b0a9cba7e4ee37c9.webp", "/scroll-assets/2f007c256b478a0a3e5f.webp", "/scroll-assets/bbce2fb82afd91786534.webp", "/scroll-assets/dc1984b266c8e11f0334.webp", "/scroll-assets/fb82c1a6764c72f104b5.webp", "/scroll-assets/4e11df2c471c62fcc6e8.webp", "/scroll-assets/67af581a211cbdf54214.webp", "/scroll-assets/8999185076172bff718c.webp", "/scroll-assets/5a4504b3ea995cd4fc92.webp", "/scroll-assets/3eb889358d0ad9a59c52.webp", "/scroll-assets/fe3ccb0e278fc2bf7a37.webp", "/scroll-assets/dc1b3c09889a3c7f0a1f.webp", "/scroll-assets/949b87d5dcd430c877f3.webp", "/scroll-assets/f70af34b36cd75137288.webp", "/scroll-assets/2033657d8d0bc35c8c08.webp", "/scroll-assets/899785535c53f7c81009.webp", "/scroll-assets/d2d549c9868cae1d49bc.webp", "/scroll-assets/2dae0102ec80bfb07b2d.webp", "/scroll-assets/9bb48641b472c746c260.webp", "/scroll-assets/8a60f871b2079a9862de.webp", "/scroll-assets/06eca96c07fc072fc5bd.webp", "/scroll-assets/319951cc306fa49ca819.webp", "/scroll-assets/e4692ba17e1c74c7f668.webp", "/scroll-assets/30e842fa824dc0387e74.webp", "/scroll-assets/f39bac5a41fa25e5efc6.webp", "/scroll-assets/5df7c7894ee7e4159be7.webp", "/scroll-assets/539d0133a8ec99f48195.webp", "/scroll-assets/4a5274a31104437beb1f.webp", "/scroll-assets/e235573ecc94f7f8725d.webp", "/scroll-assets/6b0e41292f62b1f93625.webp", "/scroll-assets/636dbfadf5be6fae8714.webp", "/scroll-assets/064677c93d254e5402da.webp", "/scroll-assets/db6cf69abb4d14424b11.webp", "/scroll-assets/d4e1fbc29237bf87f6d5.webp", "/scroll-assets/2dfe7b6dce69586d5efa.webp", "/scroll-assets/996a00ca7c4004bc68a6.webp", "/scroll-assets/d3124209a3a9f8ad64f3.webp", "/scroll-assets/b2f1df0677035b1e08fc.webp", "/scroll-assets/2fcb79d9eb35afbd2e83.webp", "/scroll-assets/3a6883ac86326cd8012d.webp", "/scroll-assets/279da4ba2d2c3b6b1627.webp", "/scroll-assets/305edc4e05824bd93212.webp", "/scroll-assets/a6aded4efc94bc17dae4.webp", "/scroll-assets/3458819e753b4e338678.webp", "/scroll-assets/0fd1e26e1b7207c0b8fe.webp", "/scroll-assets/675383234a6e6f3a89eb.webp", "/scroll-assets/4e4b8db6210029abe955.webp", "/scroll-assets/ca23dc9d602856c9cea9.webp", "/scroll-assets/fe2825992b8f879f68c1.webp", "/scroll-assets/a1021ea340b155299c26.webp", "/scroll-assets/4e12e1e5702756b6115d.webp", "/scroll-assets/578e07a3a5144c88852e.webp", "/scroll-assets/46cdbffbae1af2c8aa1e.webp", "/scroll-assets/306f90bd8f2dca08c02d.webp", "/scroll-assets/2ceb4089156eec7083b8.webp", "/scroll-assets/751934dd9e68dbf0fd4f.webp", "/scroll-assets/421c8bb34dab43009204.webp", "/scroll-assets/06736a87d66319ae4900.webp", "/scroll-assets/5c9708dae7c1b4c45a10.webp", "/scroll-assets/c7d475a25dab18ffd7a9.webp", "/scroll-assets/1025a2b33ab0ae932d89.webp", "/scroll-assets/6f8af9fc4941f6f0759f.webp", "/scroll-assets/327c49b08454bc021c46.webp", "/scroll-assets/d3af1c867532e584ea9e.webp", "/scroll-assets/384c636c05709e472308.webp", "/scroll-assets/ab36b0c9f4d253ac61f6.webp", "/scroll-assets/f04d5871a77a1e4135f9.webp", "/scroll-assets/439ca2f59cf9c34a391e.webp", "/scroll-assets/25663d257ffe0b07e57c.webp", "/scroll-assets/9c8e0efec78211fcb7ed.webp", "/scroll-assets/2a8e59591324922a0b8e.webp", "/scroll-assets/60c84d89eeb4cae37b6c.webp", "/scroll-assets/f97838b3fc4b46befcf8.webp", "/scroll-assets/c082dc022f0a34f32428.webp", "/scroll-assets/05f08141ea599a2aef81.webp", "/scroll-assets/5c303db05bb0b0053e2a.webp"];
-  const catalog = document.querySelector('#catalog');
-  const scene = document.createElement('section');
-  scene.id = 'album-opening'; scene.className = 'album-scroll-scene loading';
-  scene.setAttribute('aria-label', 'Открытие альбома при прокрутке');
-  scene.innerHTML = `<div class="album-scroll-stage"><canvas aria-label="Альбом открывается, показывая страницу с маскотом" role="img"></canvas><div class="album-scroll-shade"></div><div class="album-scroll-caption"><span>WoodBase · Ваша история внутри</span><h2>Откройте место<br>для воспоминаний.</h2><p>Прокрутите вниз — альбом откроется,<br>а его страница приведёт к коллекции.</p></div><div class="album-scroll-hint">Прокрутите, чтобы открыть ↓</div><a class="album-scroll-skip" href="#catalog">Перейти к коллекции ↓</a></div>`;
-  catalog.before(scene);
-  catalog.classList.add('scroll-collection');
-  const canvas = scene.querySelector('canvas');
-  const ctx = canvas.getContext('2d');
-  const shade = scene.querySelector('.album-scroll-shade');
-  const caption = scene.querySelector('.album-scroll-caption');
-  const hint = scene.querySelector('.album-scroll-hint');
-  const skip = scene.querySelector('.album-scroll-skip');
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const frames = frameSources.map(src => { const im = new Image(); im.src = src; return im; });
-  const clamp = n => Math.max(0, Math.min(1, n));
-  const ease = n => n*n*(3-2*n);
-  let scheduled = false;
-  function draw() {
-    scheduled = false;
-    const rect = scene.getBoundingClientRect();
-    const w = canvas.clientWidth, h = canvas.clientHeight;
-    if (!w || !h) return;
-    const dpr = Math.min(devicePixelRatio || 1, 2);
-    if (canvas.width !== Math.round(w*dpr) || canvas.height !== Math.round(h*dpr)) {
-      canvas.width = Math.round(w*dpr); canvas.height = Math.round(h*dpr);
-    }
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    const p = reduced.matches ? 0 : clamp(-rect.top / Math.max(1,rect.height-h));
-    const opening = clamp(p/.58);
-    const wanted = reduced.matches ? frames.length-1 : Math.round(opening*(frames.length-1));
-    let index = wanted;
-    while(index > 0 && !(frames[index].complete && frames[index].naturalWidth)) index--;
-    const im = frames[index];
-    ctx.fillStyle='#ded1bf'; ctx.fillRect(0,0,w,h);
-    if(im.complete && im.naturalWidth) {
-      const zoomProgress = ease(clamp((p-.59)/.30));
-      const zoom = 1 + zoomProgress*13;
-      const base = Math.min(w/im.naturalWidth,h/im.naturalHeight);
-      // Keep the full video composition during opening; then approach lower-right black paper.
-      const scale = base*zoom;
-      const iw = im.naturalWidth*scale, ih=im.naturalHeight*scale;
-      const anchorX = .5 + (.945-.5)*zoomProgress;
-      const anchorY = .5 + (.76-.5)*zoomProgress;
-      ctx.drawImage(im,w/2-iw*anchorX,h/2-ih*anchorY,iw,ih);
-    }
-    const fade = reduced.matches ? 0 : ease(clamp((p-.77)/.15));
-    shade.style.opacity=String(fade);
-    const textOpacity=1-ease(clamp(p/.18));
-    caption.style.opacity=String(textOpacity);hint.style.opacity=String(textOpacity);
-    skip.style.color=p>.72?'#f8f3e9':'#302117';
-  }
-  function schedule() {if(!scheduled){scheduled=true;requestAnimationFrame(draw);}}
-  frames.forEach(im => im.addEventListener('load',schedule,{once:true}));
-  Promise.all(frames.map(im=>im.decode())).then(()=>{scene.classList.remove('loading');schedule();}).catch(()=>{
-    scene.classList.remove('loading');
-    if(!frames.some(im=>im.naturalWidth)){scene.classList.add('failed');hint.textContent='Перейдите к коллекции по ссылке справа';}
-    schedule();
-  });
-  addEventListener('scroll',schedule,{passive:true});
-  addEventListener('resize',schedule,{passive:true});
-  reduced.addEventListener('change',schedule);
-  schedule();
-})();
-;
-(() => {
   const actions = document.querySelector('.concept-hero .hero-actions');
   if (!actions) return;
   actions.innerHTML = `<a class="hero-invitation" href="#constructor" aria-label="Давай сохраним их в альбоме? Создать свой альбом — перейти в конструктор"><span class="hero-invitation-copy"><span class="hero-invitation-title">Давай сохраним их в альбоме?</span><span class="hero-invitation-label">Создать свой альбом</span></span><span class="hero-invitation-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 18 18 6M6 6h12v12" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>`;
@@ -501,4 +434,48 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;floaters.classList.toggle('is-paused',!visible);if(visible)schedule();}).observe(section);
   addEventListener('scroll',schedule,{passive:true});addEventListener('resize',schedule,{passive:true});reduce.addEventListener('change',schedule);
   update();
+})();
+;
+(() => {
+  const sources=["/woody-green-assets/opening-000.webp", "/woody-green-assets/opening-001.webp", "/woody-green-assets/opening-002.webp", "/woody-green-assets/opening-003.webp", "/woody-green-assets/opening-004.webp", "/woody-green-assets/opening-005.webp", "/woody-green-assets/opening-006.webp", "/woody-green-assets/opening-007.webp", "/woody-green-assets/opening-008.webp", "/woody-green-assets/opening-009.webp", "/woody-green-assets/opening-010.webp", "/woody-green-assets/opening-011.webp", "/woody-green-assets/opening-012.webp", "/woody-green-assets/opening-013.webp", "/woody-green-assets/opening-014.webp", "/woody-green-assets/opening-015.webp", "/woody-green-assets/opening-016.webp", "/woody-green-assets/opening-017.webp", "/woody-green-assets/opening-018.webp", "/woody-green-assets/opening-019.webp", "/woody-green-assets/opening-020.webp", "/woody-green-assets/opening-021.webp", "/woody-green-assets/opening-022.webp", "/woody-green-assets/opening-023.webp", "/woody-green-assets/opening-024.webp", "/woody-green-assets/opening-025.webp", "/woody-green-assets/opening-026.webp", "/woody-green-assets/opening-027.webp", "/woody-green-assets/opening-028.webp", "/woody-green-assets/opening-029.webp", "/woody-green-assets/opening-030.webp", "/woody-green-assets/opening-031.webp", "/woody-green-assets/opening-032.webp", "/woody-green-assets/opening-033.webp", "/woody-green-assets/opening-034.webp", "/woody-green-assets/opening-035.webp", "/woody-green-assets/opening-036.webp", "/woody-green-assets/opening-037.webp", "/woody-green-assets/opening-038.webp", "/woody-green-assets/opening-039.webp", "/woody-green-assets/opening-040.webp", "/woody-green-assets/opening-041.webp", "/woody-green-assets/opening-042.webp", "/woody-green-assets/opening-043.webp", "/woody-green-assets/opening-044.webp", "/woody-green-assets/opening-045.webp", "/woody-green-assets/opening-046.webp", "/woody-green-assets/opening-047.webp", "/woody-green-assets/opening-048.webp", "/woody-green-assets/opening-049.webp", "/woody-green-assets/opening-050.webp", "/woody-green-assets/opening-051.webp", "/woody-green-assets/opening-052.webp", "/woody-green-assets/opening-053.webp", "/woody-green-assets/opening-054.webp", "/woody-green-assets/opening-055.webp", "/woody-green-assets/opening-056.webp", "/woody-green-assets/opening-057.webp", "/woody-green-assets/opening-058.webp", "/woody-green-assets/opening-059.webp", "/woody-green-assets/opening-060.webp", "/woody-green-assets/opening-061.webp", "/woody-green-assets/opening-062.webp", "/woody-green-assets/opening-063.webp"];
+  const hero=document.querySelector('.concept-hero'),catalog=document.querySelector('#catalog');
+  const sequence=document.createElement('section');sequence.className='green-scroll-sequence loading';
+  sequence.setAttribute('aria-label','Вуди открывает альбом при прокрутке');
+  hero.before(sequence);sequence.append(hero);
+  const details=document.querySelector('#details');if(details)catalog.after(details);
+  hero.insertAdjacentHTML('beforeend','<canvas class="green-scroll-canvas" role="img" aria-label="Открытие альбома и приближение к чёрной странице"></canvas><div class="green-scroll-black"></div><p class="green-scroll-hint">Прокрутите — Вуди откроет альбом ↓</p><a class="green-scroll-skip" href="#catalog">Перейти к коллекции →</a>');
+  const canvas=hero.querySelector('canvas'),ctx=canvas.getContext('2d');
+  const copy=hero.querySelector('.hero-copy'),photo=hero.querySelector('.hero-photo'),black=hero.querySelector('.green-scroll-black');
+  const header=document.querySelector('header'),hint=hero.querySelector('.green-scroll-hint');
+  const stage=catalog.querySelector('.cosmic-stage');
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  const clamp=n=>Math.max(0,Math.min(1,n));const ease=n=>{n=clamp(n);return n*n*n*(n*(n*6-15)+10);};
+  const frames=sources.map(()=>null);let queued=false,cursor=0;
+  function draw(){
+    queued=false;
+    const w=hero.clientWidth,h=hero.clientHeight;if(!w||!h)return;
+    const dpr=Math.min(devicePixelRatio||1,1.5);if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}
+    const rect=sequence.getBoundingClientRect();
+    const p=reduced.matches?0:clamp(-rect.top/Math.max(1,rect.height-h));
+    let index=Math.round(clamp((p-.02)/.46)*(sources.length-1));while(index>0&&!frames[index])index--;
+    const mobile=w<=700;
+    const safeTop=mobile?Math.min(copy.offsetTop+copy.offsetHeight+20,h*.53):header.offsetHeight+18;
+    const base=Math.min(w*(mobile?.93:.56)/714,(h-safeTop)/480);
+    const dx0=(mobile?w*.5:w*.74)-357*base,dy0=mobile?safeTop:h-480*base;
+    const zoom=ease((p-.55)/.28);
+    const target=Math.max(w/(170*.90),h/(116*.90));
+    const scale=base+(target-base)*zoom;
+    const x=dx0*(1-zoom)+(w/2-403*target)*zoom;
+    const y=dy0*(1-zoom)+(h/2-352*target)*zoom;
+    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);if(frames[index])ctx.drawImage(frames[index],x,y,714*scale,480*scale);
+    const text=1-ease((p-.05)/.25);copy.style.opacity=String(text);copy.style.pointerEvents=text>.1?'':'none';copy.style.translate=`0 ${-ease(p/.3)*20}px`;
+    hint.style.opacity=String(1-ease(p/.13));
+    photo.style.opacity=String(1-ease((p-.54)/.22));black.style.opacity=String(ease((p-.60)/.21));
+    if(stage){const top=catalog.getBoundingClientRect().top;const reveal=reduced.matches||top<=0?1:ease((p-.87)/.13);stage.style.opacity=String(reveal);stage.style.transform=reduced.matches?'':`translateY(${-Math.max(0,Math.min(h,top))}px)`;stage.style.pointerEvents=reveal>.1?'':'none';}
+    sequence.dataset.progress=p.toFixed(3);sequence.dataset.frame=String(index);
+  }
+  function schedule(){if(!queued){queued=true;requestAnimationFrame(draw);}}
+  async function load(){while(cursor<sources.length){const i=cursor++;const im=new Image();im.src=sources[i];try{await im.decode();frames[i]=im;if(i===0)sequence.classList.remove('loading');schedule();}catch{if(i===0)hint.textContent='Перейдите к коллекции по ссылке';}}}
+  Promise.all(Array.from({length:4},load)).then(schedule);
+  addEventListener('scroll',schedule,{passive:true});addEventListener('resize',schedule,{passive:true});reduced.addEventListener('change',schedule);schedule();
 })();

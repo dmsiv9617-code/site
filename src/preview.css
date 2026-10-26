@@ -327,6 +327,14 @@ footer .brand-logo{width:155px;height:79px;object-fit:contain;mix-blend-mode:mul
 #app>header #cart-count{top:69%;left:57%;right:auto;transform:translate(-50%,-50%);background:transparent;color:#fff;border:0;border-radius:0;width:auto;min-width:0;height:auto;padding:0;display:block;font:500 14px/1 Arial,sans-serif;letter-spacing:0;pointer-events:none}
 @media(max-width:700px){#app>header #cart-count{font-size:11px}}
 
+.hero.concept-hero>.hero-photo{object-fit:cover;object-position:center;filter:blur(3px) brightness(.8);scale:1.02}
+.hero.concept-hero::after{background:linear-gradient(90deg,#050403e8 0%,#060403d9 30%,#0604039e 48%,#09060425 70%,#09060410);z-index:-1}
+.hero-woody{position:absolute;right:5%;bottom:0;width:43%;aspect-ratio:1024/1100;overflow:hidden;z-index:0;pointer-events:none}
+.hero-woody>img{display:block;width:100%;max-width:none;height:auto;filter:drop-shadow(0 8px 25px #0004)}
+.hero.concept-hero .hero-copy{z-index:2}
+@media(max-width:1100px) and (min-width:701px){.hero-woody{right:1%;width:47%}}
+@media(max-width:700px){.hero.concept-hero{height:940px}.hero.concept-hero>.hero-photo{position:absolute;inset:0;width:100%;height:100%;margin:0;mask-image:none;object-fit:cover;object-position:65% center;filter:blur(4px) brightness(.65)}.hero.concept-hero::after{background:linear-gradient(#060403e8 0%,#060403d9 38%,#06040399 58%,#06040330 83%)}.hero-woody{right:0;bottom:0;width:104%;aspect-ratio:1024/1100}.hero-woody>img{width:100%;height:auto}}
+
 #catalog.cosmic-collection{position:relative;max-width:none;width:100%;height:600svh;padding:0;margin:0;background:#0b0907;color:#f5eddf;isolation:isolate}
 .cosmic-stage{position:sticky;top:0;height:100svh;min-height:600px;overflow:hidden;background:radial-gradient(ellipse at 66% 62%,#a3662838,transparent 45%),linear-gradient(135deg,#080908,#1b1009 65%,#080706);isolation:isolate}
 .cosmic-stage::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,#090907f2,transparent 45%),linear-gradient(0deg,#090806 1%,transparent 28%,transparent 80%,#08070566)}
@@ -429,3 +437,20 @@ footer .brand-logo{width:155px;height:79px;object-fit:contain;mix-blend-mode:mul
 @media(min-width:701px) and (max-width:1000px){.cosmic-details{left:13%;width:39%;bottom:12%}.cosmic-peek-list{left:56%;right:6%;bottom:13%}.cosmic-peek{padding:2px 8px;min-height:78px}.cosmic-peek-name{font-size:12px}.cosmic-peek-price{font-size:12px}#catalog .cosmic-title{font-size:29px}}
 @media(max-width:700px){.cosmic-details{width:82%;bottom:24%}.cosmic-peek-list{left:10%;right:8%;bottom:12%;grid-template-columns:repeat(2,minmax(0,1fr));gap:0}.cosmic-peek:nth-child(n+3){display:none}.cosmic-peek{min-height:62px;padding:0 10px;gap:8px}.cosmic-peek-name{font-size:13px}.cosmic-peek-price{font-size:12px}.cosmic-dots{bottom:7%}.cosmic-hint{bottom:2%;font-size:7px}.cosmic-light-trails{opacity:.4}.cosmic-glow{opacity:.65}.cosmic-photo{opacity:.2}}
 @media(max-width:700px) and (max-height:740px){.cosmic-details{bottom:27%}#catalog .cosmic-title{font-size:25px}.cosmic-peek-list{bottom:12%}.cosmic-price{font-size:21px}}
+
+.green-scroll-sequence{height:520svh;position:relative;background:#000;isolation:isolate;overflow-anchor:none}
+.green-scroll-sequence>.hero.concept-hero{height:100svh;min-height:0;aspect-ratio:auto;position:sticky;top:0;max-height:none}
+.green-scroll-sequence .hero-woody{display:none}.green-scroll-sequence.loading .hero-woody{display:block}
+.green-scroll-sequence .hero-copy{z-index:2;top:28%}.green-scroll-sequence .hero-photo{transition:none}
+.green-scroll-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.green-scroll-black{position:absolute;inset:0;z-index:3;background:#000;opacity:0;pointer-events:none}
+.green-scroll-hint{position:absolute;left:7%;bottom:4%;z-index:4;color:#dec5a3;font:10px/1.7 Arial,sans-serif;letter-spacing:.5px;pointer-events:none}
+.green-scroll-skip{position:absolute;right:5%;bottom:4%;z-index:4;color:#f8e2c0;font:10px/1.7 Arial,sans-serif;text-decoration:none;border-bottom:1px solid #c8a06a66;padding:5px}
+body:has(.green-scroll-sequence) #catalog{margin-top:-100svh;background:#000;z-index:5;border:0}
+body:has(.green-scroll-sequence) #app>header{position:fixed!important;inset:0 0 auto;z-index:100;opacity:1!important;pointer-events:auto!important;background:transparent!important;backdrop-filter:none!important;isolation:isolate;color:#fff4e1}
+body:has(.green-scroll-sequence) #app>header::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#050403e8,#050403b8 48%,#05040380),url('/hero-assets/workshop-soft-background.webp') center top/100vw auto;mask-image:linear-gradient(#000 0%,#000 55%,transparent 100%);pointer-events:none}
+body:has(.green-scroll-sequence) #app>header nav a,body:has(.green-scroll-sequence) #app>header .cart-button{color:#fff4e1}
+@media(min-width:701px){body:has(.green-scroll-sequence) .cosmic-album{top:18%}body:has(.green-scroll-sequence) .cosmic-details{bottom:9%}body:has(.green-scroll-sequence) .cosmic-peek-list{bottom:10%}}
+@media(max-width:700px){.green-scroll-sequence{height:480svh}.green-scroll-sequence>.hero.concept-hero{height:100svh;min-height:620px}.green-scroll-sequence .hero-copy{top:145px}.green-scroll-sequence .hero-invitation-title{font-size:23px}.green-scroll-hint{font-size:8px;left:6%;bottom:2.5%;max-width:52%}.green-scroll-skip{font-size:8px;right:6%;bottom:2.5%}body:has(.green-scroll-sequence) #app>header::before{background-size:auto,auto 100svh}}
+@media(max-width:700px) and (max-height:740px){.green-scroll-sequence .hero-copy{top:125px}.green-scroll-sequence .hero.concept-hero h1{font-size:8.8vw}.green-scroll-sequence .hero-actions{margin-top:20px}}
+@media(prefers-reduced-motion:reduce){.green-scroll-sequence{height:100svh}.green-scroll-hint{display:none}body:has(.green-scroll-sequence) #catalog{margin-top:0}}

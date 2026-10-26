@@ -3,7 +3,7 @@ const root = new URL('../', import.meta.url);
 const html = await readFile(new URL('index.html', root), 'utf8');
 let css = await readFile(new URL('src/preview.css', root), 'utf8');
 let js = (await readFile(new URL('src/main.js', root), 'utf8')).replace(/^import\s+['"][^'"]+\.css['"];?\s*$/gm, '');
-const paths = new Set((js + '\n' + css).match(/\/(?:scroll-assets|hero-assets|collection-assets)\/[\w.-]+\.(?:png|webp|svg|jpg)/g) || []);
+const paths = new Set((js + '\n' + css).match(/\/(?:scroll-assets|hero-assets|collection-assets|woody-green-assets)\/[\w.-]+\.(?:png|webp|svg|jpg)/g) || []);
 const types = { png: 'image/png', webp: 'image/webp', svg: 'image/svg+xml', jpg: 'image/jpeg' };
 for (const path of paths) {
   const mime = types[path.split('.').pop()];
