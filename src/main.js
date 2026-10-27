@@ -460,9 +460,9 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     let index=Math.round(clamp((p-.02)/.46)*(sources.length-1));while(index>0&&!frames[index])index--;
     const mobile=w<=700;
     const safeTop=mobile?Math.min(copy.offsetTop+copy.offsetHeight+20,h*.53):header.offsetHeight+18;
-    const base=Math.min(w*(mobile?.93:.56)/714,(h-safeTop)/480);
-    const dx0=(mobile?w*.5:w*.74)-357*base,dy0=mobile?safeTop:h-480*base;
-    const zoom=ease((p-.55)/.28);
+    const base=Math.min(w*(mobile?.98:.66)/714,(h-safeTop)/480);
+    const dx0=(mobile?w*.5:w*.66)-357*base,dy0=mobile?safeTop:h-480*base;
+    const zoom=ease((p-.51)/.28);
     const target=Math.max(w/(170*.90),h/(116*.90));
     const scale=base+(target-base)*zoom;
     const x=dx0*(1-zoom)+(w/2-403*target)*zoom;
@@ -470,8 +470,8 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);if(frames[index])ctx.drawImage(frames[index],x,y,714*scale,480*scale);
     const text=1-ease((p-.05)/.25);copy.style.opacity=String(text);copy.style.pointerEvents=text>.1?'':'none';copy.style.translate=`0 ${-ease(p/.3)*20}px`;
     hint.style.opacity=String(1-ease(p/.13));
-    photo.style.opacity=String(1-ease((p-.54)/.22));black.style.opacity=String(ease((p-.60)/.21));
-    if(stage){const top=catalog.getBoundingClientRect().top;const reveal=reduced.matches||top<=0?1:ease((p-.87)/.13);stage.style.opacity=String(reveal);stage.style.transform=reduced.matches?'':`translateY(${-Math.max(0,Math.min(h,top))}px)`;stage.style.pointerEvents=reveal>.1?'':'none';}
+    photo.style.opacity=String(1-ease((p-.52)/.20));black.style.opacity=String(ease((p-.58)/.18));
+    if(stage){const top=catalog.getBoundingClientRect().top;const reveal=reduced.matches||top<=0?1:ease((p-.72)/.14);stage.style.opacity=String(reveal);stage.style.transform=reduced.matches?'':`translateY(${-Math.max(0,Math.min(h,top))}px)`;stage.style.pointerEvents=reveal>.1?'':'none';}
     sequence.dataset.progress=p.toFixed(3);sequence.dataset.frame=String(index);
   }
   function schedule(){if(!queued){queued=true;requestAnimationFrame(draw);}}

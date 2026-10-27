@@ -438,7 +438,7 @@ footer .brand-logo{width:155px;height:79px;object-fit:contain;mix-blend-mode:mul
 @media(max-width:700px){.cosmic-details{width:82%;bottom:24%}.cosmic-peek-list{left:10%;right:8%;bottom:12%;grid-template-columns:repeat(2,minmax(0,1fr));gap:0}.cosmic-peek:nth-child(n+3){display:none}.cosmic-peek{min-height:62px;padding:0 10px;gap:8px}.cosmic-peek-name{font-size:13px}.cosmic-peek-price{font-size:12px}.cosmic-dots{bottom:7%}.cosmic-hint{bottom:2%;font-size:7px}.cosmic-light-trails{opacity:.4}.cosmic-glow{opacity:.65}.cosmic-photo{opacity:.2}}
 @media(max-width:700px) and (max-height:740px){.cosmic-details{bottom:27%}#catalog .cosmic-title{font-size:25px}.cosmic-peek-list{bottom:12%}.cosmic-price{font-size:21px}}
 
-.green-scroll-sequence{height:520svh;position:relative;background:#000;isolation:isolate;overflow-anchor:none}
+.green-scroll-sequence{height:440svh;position:relative;background:#000;isolation:isolate;overflow-anchor:none}
 .green-scroll-sequence>.hero.concept-hero{height:100svh;min-height:0;aspect-ratio:auto;position:sticky;top:0;max-height:none}
 .green-scroll-sequence .hero-woody{display:none}.green-scroll-sequence.loading .hero-woody{display:block}
 .green-scroll-sequence .hero-copy{z-index:2;top:28%}.green-scroll-sequence .hero-photo{transition:none}
