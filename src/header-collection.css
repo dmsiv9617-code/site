@@ -1,0 +1,42 @@
+body:has(.green-scroll-sequence) #app>header{height:108px;padding:12px 4%;gap:24px}
+body:has(.green-scroll-sequence) #app>header::before{opacity:var(--hero-header-opacity,1)}
+body:has(.green-scroll-sequence) #app>header::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(#100d09c9,#100d0970 65%,transparent);backdrop-filter:blur(7px);mask-image:linear-gradient(#000 65%,transparent);opacity:calc(1 - var(--hero-header-opacity,1));pointer-events:none}
+body:has(#home-page[hidden]) #app>header{--hero-header-opacity:0!important}
+body:has(.green-scroll-sequence) #app>header nav{flex:1;justify-content:center;gap:clamp(14px,1.8vw,30px)}
+body:has(.green-scroll-sequence) #app>header nav a{font-size:17px!important;white-space:nowrap}
+#app>header .header-actions{display:flex;align-items:center;gap:20px;flex-shrink:0}
+#app>header .cart-button{width:35px;height:40px;margin:0}
+#app>header .branded-bag{width:31px;height:35px}
+#app>header #cart-count{font-size:10px;top:70%;left:57%}
+.header-favorites{position:relative;display:grid;place-items:center;width:34px;height:40px;border:0;background:none;padding:3px;color:inherit}
+.header-favorites svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.4}
+.favorites-count{position:absolute;top:-1px;right:-5px;font:10px/1 Arial;color:#f6cf96}
+.album-favorite{border:1px solid #d7b58a66;background:#1c130cc9;color:#ffedcf;border-radius:50%;width:37px;height:37px;display:grid;place-items:center;padding:9px;transition:background .2s,transform .2s}
+.album-favorite svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.5}
+.album-favorite:hover{background:#78502a;transform:scale(1.08)}
+.album-favorite[aria-pressed=true] svg{fill:#e8ba7a;stroke:#e8ba7a}
+.collection-favorites{position:absolute;inset:0;pointer-events:none;z-index:30}
+.cover-favorite{position:absolute;pointer-events:auto}
+.cover-favorite[hidden]{display:none}
+.detail-favorite{margin-left:auto;margin-right:16px;flex-shrink:0}
+.favorite-item{display:flex;align-items:center;gap:18px;border-bottom:1px solid #d7c7b4;padding:18px 0}
+.favorite-preview{display:flex;align-items:center;gap:20px;background:none;border:0;color:inherit;text-align:left;flex:1;padding:0}
+.favorite-preview img{width:135px;height:100px;object-fit:contain}
+.favorite-preview strong{font:25px/1.1 Georgia,serif;display:block}
+.favorite-preview small{display:block;margin-top:12px;font:12px/1.5 Arial}
+.empty-favorites{padding:24px 0;font-size:15px;line-height:1.7}
+.green-scroll-hint,.green-scroll-skip,.hero-invitation-label,.hero-invitation-arrow{display:none!important}
+.hero.concept-hero .hero-invitation{display:inline-block;position:relative;padding:12px 32px 12px 0;isolation:isolate;transition:color .3s}
+.hero-invitation-copy{display:block}
+.hero-invitation::before{content:'';position:absolute;inset:0 -5px 0 -16px;background:linear-gradient(90deg,#dca5540a,#e4b77233 75%,#edc58466);clip-path:polygon(0 0,92% 0,100% 50%,92% 100%,0 100%);transform:scaleX(0);transform-origin:left;opacity:0;transition:transform .55s cubic-bezier(.2,.7,.2,1),opacity .3s;z-index:-1}
+.hero-invitation::after{content:'→';display:inline-block;position:absolute;right:0;top:50%;font:30px/1 Georgia;transform:translate(-12px,-50%);opacity:0;transition:transform .55s,opacity .3s;color:#f6d5a4}
+.hero-invitation:hover::before,.hero-invitation:focus-visible::before{transform:scaleX(1);opacity:1}
+.hero-invitation:hover::after,.hero-invitation:focus-visible::after{transform:translate(8px,-50%);opacity:1}
+.hero-invitation:hover,.hero-invitation:focus-visible{color:#ffe4b8}
+.new-story-section{scroll-margin-top:130px;max-width:1280px;margin:auto}
+.new-story-section p{max-width:650px;font-size:16px;line-height:1.8}
+@media(max-width:1150px) and (min-width:701px){body:has(.green-scroll-sequence) #app>header{gap:15px;padding-inline:3%}#app>header .brand-logo{width:110px;height:65px}body:has(.green-scroll-sequence) #app>header nav{gap:14px}body:has(.green-scroll-sequence) #app>header nav a{font-size:14px!important}#app>header .header-actions{gap:12px}}
+@media(max-width:700px){body:has(.green-scroll-sequence) #app>header{height:auto;min-height:126px;padding:10px 5% 12px;gap:7px 15px}#app>header .header-actions{margin-left:auto;gap:17px}body:has(.green-scroll-sequence) #app>header nav{width:100%;justify-content:initial;flex:0 0 100%;overflow-x:auto;gap:21px;padding:6px 0 5px;scrollbar-width:none}body:has(.green-scroll-sequence) #app>header nav a{font-size:14px!important}#app>header .brand-logo{width:110px;height:53px}.hero.concept-hero .hero-invitation{padding-right:27px}.cover-favorite{width:32px;height:32px;padding:8px}.favorite-preview{gap:12px}.favorite-preview img{width:95px;height:85px}.favorite-preview strong{font-size:21px}}
+@media(prefers-reduced-motion:reduce){.hero-invitation::before,.hero-invitation::after,.album-favorite{transition:none}}
+@media(max-width:700px){body:has(.green-scroll-sequence) #app>header nav{flex-wrap:wrap;justify-content:center;gap:9px 18px;overflow:visible}body:has(.green-scroll-sequence) #app>header{padding-bottom:12px}.green-scroll-sequence .hero-copy{top:155px}}
+

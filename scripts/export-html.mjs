@@ -3,6 +3,10 @@ const root = new URL('../', import.meta.url);
 const html = await readFile(new URL('index.html', root), 'utf8');
 let css = await readFile(new URL('src/preview.css', root), 'utf8');
 let js = (await readFile(new URL('src/main.js', root), 'utf8')).replace(/^import\s+['"][^'"]+\.css['"];?\s*$/gm, '');
+css += '\n' + await readFile(new URL('src/header-collection.css', root), 'utf8');
+const favorites = (await readFile(new URL('src/favorites.js', root), 'utf8')).replace('export function ', 'function ');
+const headerCollection = (await readFile(new URL('src/header-collection.js', root), 'utf8')).replace(/^import[^\n]+\n/, '').replace('export function ', 'function ');
+js = js.replace(/^import \{setupHeaderCollection\}[^\n]+\n/m, favorites + '\n' + headerCollection + '\n');
 const paths = new Set((js + '\n' + css).match(/\/(?:scroll-assets|hero-assets|collection-assets|woody-green-assets)\/[\w.-]+\.(?:png|webp|svg|jpg)/g) || []);
 const types = { png: 'image/png', webp: 'image/webp', svg: 'image/svg+xml', jpg: 'image/jpeg' };
 for (const path of paths) {

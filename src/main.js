@@ -1,4 +1,6 @@
 import './preview.css';
+import './header-collection.css';
+import {setupHeaderCollection} from './header-collection.js';
 const inlineImages = {"catalog/family-history.png":"/scroll-assets/ebc213ef22f495b9091d.png","concept/album-open.png":"/scroll-assets/1cb52a5d921355f655d6.png","concept/album-turn.png":"/scroll-assets/7d390838829d03dbd7aa.png","concept/hero-scene.png":"/scroll-assets/144c86df5f17442a511d.png","concept/details-source.png":"/scroll-assets/3f8fee0316aa7fd2cb44.png","hero.png":"/scroll-assets/653cf8fe0931c6345787.png","family.png":"/scroll-assets/27c5ffc5b5ecba4c06b9.png","wood-grain.svg":"/scroll-assets/c5e6c8488a06179ed746.svg","in-hands.png":"/scroll-assets/b7a3500becccb277ee85.png","brand/logo.png":"/scroll-assets/b02e7f90d14ea4f664b9.png","brand/mascot-greeting.png":"/scroll-assets/d315c6f4af2807c4bc44.png","brand/mascot-helper.png":"/scroll-assets/4f9f849127af2e4c3ec0.png","brand/mascot-joy.png":"/scroll-assets/11c6ebaeca016a6260ca.png"};
 for (const [name, value] of Object.entries(inlineImages)) document.documentElement.style.setProperty('--asset-' + name.replaceAll('.', '-').replaceAll('/', '-'), 'url("' + value + '")');
 
@@ -457,6 +459,7 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     const dpr=Math.min(devicePixelRatio||1,1.5);if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}
     const rect=sequence.getBoundingClientRect();
     const p=reduced.matches?0:clamp(-rect.top/Math.max(1,rect.height-h));
+    header.style.setProperty('--hero-header-opacity',String(1-ease((p-.52)/.22)));
     let index=Math.round(clamp((p-.02)/.46)*(sources.length-1));while(index>0&&!frames[index])index--;
     const mobile=w<=700;
     const safeTop=mobile?Math.min(copy.offsetTop+copy.offsetHeight+20,h*.53):header.offsetHeight+18;
@@ -467,7 +470,7 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     const scale=base+(target-base)*zoom;
     const x=dx0*(1-zoom)+(w/2-403*target)*zoom;
     const y=dy0*(1-zoom)+(h/2-352*target)*zoom;
-    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);if(frames[index])ctx.drawImage(frames[index],x,y,714*scale,480*scale);
+    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.clearRect(0,0,w,h);if(frames[index])ctx.drawImage(frames[index],x,y,714*scale,480*scale);
     const text=1-ease((p-.05)/.25);copy.style.opacity=String(text);copy.style.pointerEvents=text>.1?'':'none';copy.style.translate=`0 ${-ease(p/.3)*20}px`;
     hint.style.opacity=String(1-ease(p/.13));
     photo.style.opacity=String(1-ease((p-.52)/.20));black.style.opacity=String(ease((p-.58)/.18));
@@ -479,3 +482,5 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   Promise.all(Array.from({length:4},load)).then(schedule);
   addEventListener('scroll',schedule,{passive:true});addEventListener('resize',schedule,{passive:true});reduced.addEventListener('change',schedule);schedule();
 })();
+
+setupHeaderCollection({models,openProduct,escape,money});
