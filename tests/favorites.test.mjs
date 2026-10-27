@@ -20,3 +20,7 @@ test('blocked browser storage still allows favorites for the current visit',()=>
  store.toggle(3); assert.equal(store.has(3),true);
  store.toggle(3); assert.equal(store.has(3),false);
 });
+test('the family album with id zero can be saved and restored',()=>{
+ const storage=memory(), store=createFavorites(storage,[3,1,2,4,5,0]);
+ store.toggle(0); assert.equal(createFavorites(storage,[3,1,2,4,5,0]).has(0),true);
+});

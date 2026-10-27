@@ -1,7 +1,7 @@
 import {createFavorites} from './favorites.js';
 
 export function setupHeaderCollection({models,openProduct,escape,money}) {
- const ids=[3,1,2,4,5];
+ const ids=[3,1,2,4,5,0];
  let storage; try {storage=localStorage;} catch {}
  const favorites=createFavorites(storage,ids);
  const heart='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 4.6a5.4 5.4 0 0 0-7.6 0L12 5.4l-.8-.8a5.4 5.4 0 0 0-7.6 7.6L12 21l8.4-8.8a5.4 5.4 0 0 0 0-7.6Z"/></svg>';

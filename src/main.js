@@ -349,8 +349,8 @@ document.querySelector('#add-cart').addEventListener('click', () => {
 (() => {
   const section = document.querySelector('#catalog');
   if (!section) return;
-  const order = [3, 1, 2, 4, 5];
-  const names = ['family-history-three-quarter', 'once-three-quarter', 'beginning-three-quarter', 'happiness-three-quarter', 'moments-three-quarter'];
+  const order = [3, 1, 2, 4, 5, 0];
+  const names = ['family-history-three-quarter', 'once-three-quarter', 'beginning-three-quarter', 'happiness-three-quarter', 'moments-three-quarter', 'family-black-three-quarter'];
   order.forEach((id, index) => { models[id].photos = [`/collection-assets/${names[index]}.webp`]; });
   const items = order.map(id => ({ id, ...models[id] }));
   items.push({id:null,name:'Создать свой альбом',custom:true});
