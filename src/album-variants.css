@@ -1,5 +1,8 @@
-#live-album .configured-album{width:100%;height:100%;margin:0;display:grid;place-items:center}
-#live-album .configured-album img{width:100%;height:100%;object-fit:contain;max-height:440px;filter:drop-shadow(0 14px 15px #27180e22)}
+#live-album .configured-album{width:100%;height:100%;margin:0;display:grid;place-items:center;position:relative}
+#live-album .configured-album img{width:100%;height:100%;object-fit:contain;max-height:440px;filter:drop-shadow(0 14px 15px #27180e22);opacity:0}
+#live-album .configured-album.is-ready img{opacity:1}
+.configured-album-status{position:absolute;inset:0;display:grid;place-items:center;font-size:13px;color:var(--brand-muted);text-align:center;padding:24px}
+.configured-album.is-ready .configured-album-status{display:none}
 .custom-album[data-leather="black"] .outer-spine,.custom-album[data-leather="black"] .closure{background:#202020}
 .custom-album[data-leather="black"] .outer-spine.bolts i,.custom-album[data-leather="black"] .closure:after{background:linear-gradient(130deg,#fafafa,#8e9296)}
 .custom-album[data-leather="brown"] .outer-spine,.custom-album[data-leather="brown"] .closure{background:#482b20}

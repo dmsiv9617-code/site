@@ -137,6 +137,19 @@ function renderPreview() {
   const variant = variantFor(state, models);
   const transformedArt = `<div class="cover-art" style="transform:translate(${state.imageX}%,${state.imageY}%) rotate(${state.imageRotation}deg) scale(${state.imageScale})">${state.image ? `<img src="${state.image}" alt="Ваш рисунок на обложке" id="uploaded-art">` : coverDrawing(state.motif).replace('>Семья<','>'+escape(state.inscription)+'<')}</div>`;
   document.querySelector('#live-album').innerHTML = state.page === 0 ? (variant ? `<figure class="configured-album"><img src="${variant}" alt="${escape(model.name)} — ${colors[state.color].name}, ${leatherName(state.leather)} кожа, ${bindings.find(b=>b.id===state.binding).name}" width="1536" height="1024"></figure>` : `<div class="album custom-album ${state.color === 2 ? 'dark-cover' : ''}" style="--wood:${colors[state.color].value}">${spine(state.binding)}${transformedArt}<span>${escape(state.inscription)}</span><div class="closure"></div></div>`) : `<figure class="natural-spread" data-page="${state.page}"><img src="${state.page === 2 ? `/scroll-assets/7d390838829d03dbd7aa.png` : `/scroll-assets/1cb52a5d921355f655d6.png`}" alt="${state.page === 2 ? 'Начало перелистывания: правый нижний угол чёрного листа приподнят' : 'Разворот альбома с четырьмя кольцами на задней обложке'}"><figcaption>Пример внутренней конструкции. Обложка и оформление выбираются отдельно.</figcaption></figure>`;
+  const photo = document.querySelector('#live-album .configured-album');
+  if (photo) {
+    photo.setAttribute('aria-busy', 'true');
+    photo.insertAdjacentHTML('beforeend', '<span class="configured-album-status" role="status">Загружаем ваш альбом…</span>');
+    photo.querySelector('img').decode().then(() => {
+      if (!photo.isConnected) return;
+      photo.classList.add('is-ready'); photo.setAttribute('aria-busy', 'false');
+    }).catch(() => {
+      if (!photo.isConnected) return;
+      photo.setAttribute('aria-busy', 'false');
+      photo.querySelector('.configured-album-status').textContent = 'Изображение не загрузилось. Выберите вариант ещё раз.';
+    });
+  }
   document.querySelector('#preview-note').textContent = variant ? 'Выбранное сочетание обложки, кожи и корешка. Оттенок дерева может немного отличаться на вашем экране.' : 'Эскиз индивидуального оформления. Окончательный вид и гравировку согласуем с вами.';
   const sketch = document.querySelector('#live-album .custom-album');
   if (sketch) sketch.dataset.leather = state.leather;
