@@ -213,6 +213,12 @@ function syncStudio(){
   }
  });
 }
+// Custom artwork is optional; keep the ready-made covers visible without scrolling.
+const customArtwork=document.createElement('details');customArtwork.className='studio-custom-art';customArtwork.innerHTML='<summary>Загрузить свой рисунок</summary>';
+for(const selector of ['.upload','#upload','#upload-status','.art-tools','#remove-image']){
+ const node=stepPanels.cover.querySelector(selector);if(node)customArtwork.append(node);
+}
+stepPanels.cover.append(customArtwork);
 setStep('binding');
 
 const albumPreview = createAlbumPreview(document.querySelector('#live-album'));
