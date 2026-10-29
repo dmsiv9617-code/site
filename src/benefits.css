@@ -1,0 +1,95 @@
+/* Approved artwork preserves the agreed display lettering on desktop.
+   The same content is semantic HTML, presented as cards on smaller screens. */
+.benefits {
+  --benefit-paper: #fff;
+  --benefit-ink: #181613;
+  --benefit-line: #c9c2b8;
+  --benefit-pill: #fcf4e7;
+  position: relative;
+  padding: clamp(32px, 4vw, 72px) clamp(16px, 2.4vw, 46px) 28px;
+  margin: 0 auto;
+  max-width: 1900px;
+  background: var(--benefit-paper);
+  color: var(--benefit-ink);
+}
+.benefits-banner { display: block; width: 100%; height: auto; }
+.benefits-content, .benefit-pages-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.benefits-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: fit-content;
+  margin: 26px auto 0;
+  padding: 12px 22px;
+  border: 1px solid var(--benefit-ink);
+  border-radius: 999px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.benefits-cta:hover { background: var(--benefit-pill); }
+.benefits-cta:focus-visible { outline: 3px solid var(--benefit-ink); outline-offset: 5px; }
+@media (max-width: 899px) {
+  .benefits { padding: 32px 5% 38px; }
+  .benefits-banner { display: none; }
+  .benefits-content {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
+  .benefits-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+  .benefits-heading > span:first-child { font-size: 18px; letter-spacing: -.6px; }
+  .benefits-heading > span:nth-child(2) { flex: 1; max-width: 100px; height: 1px; background: var(--benefit-line); }
+  .benefits-heading h2 { margin: 0; font: inherit; font-size: 16px; letter-spacing: -.4px; }
+  .benefits-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 20px; }
+  .benefit-card { min-width: 0; }
+  .benefit-photo { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 24px; }
+  /* Crop only the approved photo regions; never stretch the artwork. */
+  .benefit-material, .benefit-hands, .benefit-pages-banner { background-image: url('/scroll-assets/benefits-approved.webp'); background-repeat: no-repeat; }
+  .benefit-material { aspect-ratio: 603 / 329; background-size: 294.2% auto; background-position: 1.7% 10.2%; }
+  .benefit-hands { aspect-ratio: 539 / 347; background-size: 329.1% auto; background-position: 72.5% 7.6%; }
+  .benefit-copy { padding: 18px 4px 0; }
+  .benefit-pill { display: inline-block; padding: 7px 13px; border: 1px solid var(--benefit-ink); border-radius: 999px; background: var(--benefit-pill); font-size: 12px; line-height: 1.3; }
+  .benefit-copy h3 { margin: 15px 0 12px; font-family: Manrope, 'Century Gothic', Arial, sans-serif; font-size: clamp(25px, 4vw, 37px); font-weight: 400; letter-spacing: -1.3px; line-height: 1.08; text-transform: uppercase; }
+  .benefit-copy p { margin: 0; font-size: 16px; line-height: 1.5; }
+  .benefit-pages { align-self: start; }
+  .benefit-pages-banner { aspect-ratio: 736 / 311; border-radius: 24px; background-size: 241.03% auto; background-position: 98.1% 69.8%; }
+  .benefit-personal { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 20px; }
+  .benefit-personal .benefit-photo { aspect-ratio: 3 / 2; }
+}
+@media (max-width: 540px) {
+  .benefits-cards { grid-template-columns: 1fr; gap: 34px; }
+  .benefit-personal { display: block; }
+  .benefit-copy h3 { font-size: 32px; max-width: 360px; }
+  .benefit-copy p { max-width: 390px; }
+  .benefit-pages-banner { border-radius: 20px; }
+  .benefits-heading { gap: 10px; }
+  .benefits-heading > span:nth-child(2) { max-width: 55px; }
+  .benefits-cta { width: 100%; margin-top: 30px; }
+}
+@media print {
+  .benefits-banner { display: block; }
+  .benefits-content { display: none; }
+  .benefits-cta { display: none; }
+}
+@media (max-width: 899px) {
+  .benefit-pages-banner { aspect-ratio: 374 / 311; background-size: 474.33% auto; background-position: 98.57% 69.8%; }
+  .benefit-pages-text { position: static; width: auto; height: auto; padding: 18px 4px 0; margin: 0; overflow: visible; clip-path: none; white-space: normal; }
+  .benefit-pages-text > span { display: inline-block; padding: 7px 13px; border: 1px solid var(--benefit-ink); border-radius: 999px; background: var(--benefit-pill); font-size: 12px; line-height: 1.3; }
+  .benefit-pages-text h3 { margin: 15px 0 12px; font: 400 clamp(25px, 4vw, 37px)/1.08 Manrope, 'Century Gothic', Arial, sans-serif; letter-spacing: -1.3px; text-transform: uppercase; }
+  .benefit-pages-text p { margin: 0; font-size: 16px; line-height: 1.5; }
+}
+@media (max-width: 540px) { .benefit-pages-text h3 { font-size: 32px; } }
