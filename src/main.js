@@ -117,14 +117,15 @@ const studio = document.querySelector('#constructor');
 studio.classList.add('studio');
 studio.querySelector('.section-heading').innerHTML = '<div><div class="eyebrow">WOODBASE / ДИЗАЙН-СТУДИЯ</div><h2>Создай альбом своей истории.</h2><p>Выбирай детали. Мы соберём их вручную.</p></div>';
 const stepDefinitions = [
- {id:'binding',label:'Материалы',title:'Выберите материалы',hint:'Начните с цвета дерева, кожи и корешка.'},
+ {id:'binding',label:'Материалы',title:'Выберите цвет и материалы',hint:''},
  {id:'cover',label:'Рисунок',title:'Выберите рисунок',hint:'Найдите оформление, которое близко вашей семье, или загрузите своё.'},
- {id:'inscription',label:'Надпись',title:'Добавьте свои слова',hint:'Фамилия, особая дата или пожелание — до 45 символов.'},
  {id:'extras',label:'Дополнения',title:'Завершите свой альбом',hint:'Добавьте нужные аксессуары. Комплектацию и стоимость согласуем.'},
 ];
 let activeStep = 'binding';
 const optionsNode = document.querySelector('.options');
 const stepPanels = Object.fromEntries(stepDefinitions.map(step => { const panel=document.createElement('div'); panel.id='panel-'+step.id;panel.className='config-panel';panel.setAttribute('role','tabpanel');panel.setAttribute('aria-labelledby','tab-'+step.id);return [step.id,panel]; }));
+// Retain legacy saved-project fields without showing a separate inscription step.
+stepPanels.inscription=document.createElement('div');stepPanels.inscription.id='panel-inscription';stepPanels.inscription.hidden=true;
 for(const heading of optionsNode.querySelectorAll('.option-label,label[for=model]')) if(heading.firstChild?.nodeType===Node.TEXT_NODE) heading.firstChild.textContent=heading.firstChild.textContent.replace(/^\d+\s*/, '');
 let group='cover';
 for(const node of [...optionsNode.children]) {
@@ -136,6 +137,7 @@ for(const node of [...optionsNode.children]) {
  if(node.matches('.option-label')&&node.textContent.includes('Забота'))group='extras';
  stepPanels[group].append(node);
 }
+optionsNode.append(stepPanels.inscription);
 // Keep native controls as the source of truth for existing projects and cart logic.
 const materialPanel=stepPanels.binding;
 const colorLabel=materialPanel.querySelector('.option-label');
@@ -152,6 +154,7 @@ bindingChoices.innerHTML=bindings.map(binding=>`<button type="button" data-studi
 bindingSelect.after(bindingChoices);
 materialPanel.append(materialPanel.querySelector('label[for="binding"]'),bindingSelect,bindingChoices,materialPanel.querySelector('.control-hint'));
 materialPanel.querySelector('label[for="binding"]').textContent='Оформление корешка';
+materialPanel.querySelector('.control-hint').remove();
 const modelSelect=stepPanels.cover.querySelector('#model');modelSelect.classList.add('studio-native');
 stepPanels.cover.querySelector('label[for="model"]').classList.add('studio-native');
 const motifLabel=[...stepPanels.cover.querySelectorAll('.option-label')].find(el=>el.textContent.includes('Символ'));motifLabel.textContent='Рисунок обложки';
@@ -164,7 +167,7 @@ for(const step of stepDefinitions)wizardNode.append(stepPanels[step.id]);
 optionsNode.prepend(wizardNode);
 const drawingSummary=document.createElement('div');drawingSummary.className='studio-drawing-summary';drawingSummary.innerHTML='<span id="studio-drawing"></span><button class="text-link" type="button" id="studio-edit-drawing">Выбрать рисунок →</button>';optionsNode.insertBefore(drawingSummary,document.querySelector('#price-breakdown'));
 const breakdown=document.querySelector('#price-breakdown');const composition=document.createElement('details');composition.className='studio-composition';composition.innerHTML='<summary>Состав альбома</summary>';breakdown.before(composition);composition.append(breakdown);
-const stepActions=document.createElement('div');stepActions.className='step-actions';stepActions.innerHTML='<button id="step-back" class="text-link" type="button">← Назад</button><button id="step-next" class="button" type="button">Далее: рисунок →</button>';optionsNode.insertBefore(stepActions,document.querySelector('#add-cart'));
+const stepActions=document.createElement('div');stepActions.className='step-actions';stepActions.innerHTML='<button id="step-back" class="text-link" type="button">← Назад</button><button id="step-next" class="button" type="button">Далее</button>';optionsNode.insertBefore(stepActions,document.querySelector('#add-cart'));
 document.querySelector('#add-cart').textContent='Добавить в заказ →';
 document.querySelector('.price-row > span').textContent='Стоимость после согласования';
 function setStep(id, focus=false) {
@@ -174,27 +177,31 @@ function setStep(id, focus=false) {
  document.querySelector('#step-hint').textContent=stepDefinitions[index].hint;
  document.querySelector('.studio-step-title').textContent=stepDefinitions[index].title;
  document.querySelector('#step-back').hidden=index===0;
- document.querySelector('#step-next').hidden=index===3;
- document.querySelector('#step-next').textContent=index<3?'Далее: '+stepDefinitions[index+1].label.toLowerCase()+' →':'';
- document.querySelector('#add-cart').hidden=index!==3;
- document.querySelector('#step-position').textContent=`ШАГ ${index+1} ИЗ 4`;
+ document.querySelector('#step-next').hidden=index===stepDefinitions.length-1;
+ document.querySelector('#step-next').textContent='Далее';
+ document.querySelector('#add-cart').hidden=index!==stepDefinitions.length-1;
+ document.querySelector('#step-position').textContent=`ШАГ ${index+1} ИЗ ${stepDefinitions.length}`;
  if(focus) document.querySelector('[data-step="'+id+'"]').focus();
 }
 for(const tab of document.querySelectorAll('[data-step]')){
  tab.onclick=()=>setStep(tab.dataset.step);
- tab.onkeydown=e=>{let index=stepDefinitions.findIndex(step=>step.id===activeStep);if(e.key==='ArrowRight')index=(index+1)%4;else if(e.key==='ArrowLeft')index=(index+3)%4;else if(e.key==='Home')index=0;else if(e.key==='End')index=3;else return;e.preventDefault();setStep(stepDefinitions[index].id,true);};
+ tab.onkeydown=e=>{let index=stepDefinitions.findIndex(step=>step.id===activeStep);if(e.key==='ArrowRight')index=(index+1)%stepDefinitions.length;else if(e.key==='ArrowLeft')index=(index+stepDefinitions.length-1)%stepDefinitions.length;else if(e.key==='Home')index=0;else if(e.key==='End')index=stepDefinitions.length-1;else return;e.preventDefault();setStep(stepDefinitions[index].id,true);};
 }
-document.querySelector('#step-next').onclick=()=>setStep(stepDefinitions[Math.min(3,stepDefinitions.findIndex(step=>step.id===activeStep)+1)].id,true);
+document.querySelector('#step-next').onclick=()=>setStep(stepDefinitions[Math.min(stepDefinitions.length-1,stepDefinitions.findIndex(step=>step.id===activeStep)+1)].id,true);
 document.querySelector('#step-back').onclick=()=>setStep(stepDefinitions[Math.max(0,stepDefinitions.findIndex(step=>step.id===activeStep)-1)].id,true);
 document.querySelector('#studio-edit-drawing').onclick=()=>setStep('cover',true);
 for(const button of document.querySelectorAll('[data-studio-leather], [data-studio-binding]'))button.onclick=()=>{
  const select=document.querySelector(button.dataset.studioLeather?'#leather':'#binding');
  select.value=button.dataset.studioLeather||button.dataset.studioBinding;select.dispatchEvent(new Event('change',{bubbles:true}));
 };
+document.querySelector('.project-actions').hidden=true;
+document.querySelector('#project-status').hidden=true;
 const previewNode=studio.querySelector('.preview');
+previewNode.querySelector('.preview-top').hidden=true;
 previewNode.querySelector('.preview-top').innerHTML='<span>ВАШ АЛЬБОМ</span><span id="preview-size"></span>';
 previewNode.querySelector('.preview-top').insertAdjacentHTML('afterend','<p class="studio-preset"><span id="studio-preset-label">Преднастроенный вариант</span><strong id="studio-model-name">История нашей семьи</strong></p>');
-previewNode.querySelector(':scope > p:not(.studio-preset)').textContent='Настройте этот вариант под себя.';
+previewNode.querySelector('#studio-preset-label').hidden=true;
+previewNode.querySelector(':scope > p:not(.studio-preset)').hidden=true;
 previewNode.insertAdjacentHTML('beforeend','<button type="button" id="studio-device" class="text-link">▤ Устройство альбома</button>');
 document.body.insertAdjacentHTML('beforeend','<dialog id="studio-device-dialog" class="studio-device-dialog" aria-labelledby="studio-device-title"><form method="dialog"><button class="studio-dialog-close" aria-label="Закрыть описание устройства">×</button></form><h2 id="studio-device-title">Как устроен альбом</h2><img src="/scroll-assets/1cb52a5d921355f655d6.png" alt="Пример открытого альбома: деревянная обложка, кольцевой механизм и страницы" width="1536" height="1024" loading="lazy"><p>Обложка 33 × 22 см, корешок 3 см. Внутри — кольцевой механизм. Этот общий разворот показывает устройство; выбранный цвет, рисунок и корешок отображаются в основном превью.</p></dialog>');
 document.querySelector('#studio-device').onclick=()=>document.querySelector('#studio-device-dialog').showModal();
