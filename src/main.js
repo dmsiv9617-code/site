@@ -4,6 +4,7 @@ import './album-variants.css';
 import './preview.css';
 import './header-collection.css';
 import './benefits.css';
+import './studio.css';
 import {setupHeaderCollection} from './header-collection.js';
 const inlineImages = {"catalog/family-history.png":"/scroll-assets/ebc213ef22f495b9091d.png","concept/album-open.png":"/scroll-assets/1cb52a5d921355f655d6.png","concept/album-turn.png":"/scroll-assets/7d390838829d03dbd7aa.png","concept/hero-scene.png":"/scroll-assets/144c86df5f17442a511d.png","concept/details-source.png":"/scroll-assets/3f8fee0316aa7fd2cb44.png","hero.png":"/scroll-assets/653cf8fe0931c6345787.png","family.png":"/scroll-assets/27c5ffc5b5ecba4c06b9.png","wood-grain.svg":"/scroll-assets/c5e6c8488a06179ed746.svg","in-hands.png":"/scroll-assets/b7a3500becccb277ee85.png","brand/logo.png":"/scroll-assets/b02e7f90d14ea4f664b9.png","brand/mascot-greeting.png":"/scroll-assets/d315c6f4af2807c4bc44.png","brand/mascot-helper.png":"/scroll-assets/4f9f849127af2e4c3ec0.png","brand/mascot-joy.png":"/scroll-assets/11c6ebaeca016a6260ca.png"};
 for (const [name, value] of Object.entries(inlineImages)) document.documentElement.style.setProperty('--asset-' + name.replaceAll('.', '-').replaceAll('/', '-'), 'url("' + value + '")');
@@ -24,7 +25,7 @@ const colors = [{ id: 'natural', name: 'Натуральный', value: '#dec08b
 const bindings = [{ id: 'bolts', name: 'Дизайнерские болты', price: null }, { id: 'woven', name: 'Ручное плетение', price: null }];
 const motifs = models.map(m => m.name);
 const extras = [{ id: 'box', name: 'Подарочная упаковка', price: null }, { id: 'metric', name: 'Держатель для метрики', price: null }, { id: 'corners', name: 'Уголки для фотографий', price: null }, { id: 'markers', name: 'Золотой и серебряный маркеры', price: null }, { id: 'stickers', name: 'Декоративные наклейки', price: null }];
-let state = { model: 0, color: 2, motif: 0, binding: 'woven', leather: 'black', inscription: 'Семья', image: null, extras: [], page: 0, imageScale: 1, imageX: 0, imageY: 0, imageRotation: 0, threshold: 140, imageMode: 'engrave' };
+let state = { model: 3, color: 1, motif: 3, binding: 'bolts', leather: 'black', inscription: 'История нашей семьи', image: null, extras: [], page: 0, imageScale: 1, imageX: 0, imageY: 0, imageRotation: 0, threshold: 140, imageMode: 'engrave' };
 let cart;
 try { cart = JSON.parse(localStorage.getItem('sloy-cart') || '[]'); if (!Array.isArray(cart)) cart = []; } catch { cart = []; }
 const money = n => Number.isFinite(n) ? new Intl.NumberFormat('ru-RU').format(n) + ' ₽' : 'По запросу';
@@ -112,13 +113,16 @@ function showRoute() {
 window.addEventListener('hashchange',showRoute);
 showRoute();
 
+const studio = document.querySelector('#constructor');
+studio.classList.add('studio');
+studio.querySelector('.section-heading').innerHTML = '<div><div class="eyebrow">WOODBASE / ДИЗАЙН-СТУДИЯ</div><h2>Создай альбом своей истории.</h2><p>Выбирай детали. Мы соберём их вручную.</p></div>';
 const stepDefinitions = [
- {id:'cover',label:'Обложка',hint:'Выберите готовый рисунок или загрузите свой. Добавьте фамилию, дату или слова, которые важны вашей семье.'},
- {id:'binding',label:'Переплёт',hint:'Ручное плетение или дизайнерские болты? Внутри каждого варианта — один и тот же кольцевой механизм.'},
- {id:'color',label:'Цвет',hint:'Выберите оттенок для вашей обложки. Рисунок и переплёт остаются такими, как вы выбрали.'},
- {id:'extras',label:'Дополнения',hint:'Добавьте упаковку, держатель метрики или аксессуары. Комплектацию и цену подтвердит мастерская.'},
+ {id:'binding',label:'Материалы',title:'Выберите материалы',hint:'Начните с цвета дерева, кожи и корешка.'},
+ {id:'cover',label:'Рисунок',title:'Выберите рисунок',hint:'Найдите оформление, которое близко вашей семье, или загрузите своё.'},
+ {id:'inscription',label:'Надпись',title:'Добавьте свои слова',hint:'Фамилия, особая дата или пожелание — до 45 символов.'},
+ {id:'extras',label:'Дополнения',title:'Завершите свой альбом',hint:'Добавьте нужные аксессуары. Комплектацию и стоимость согласуем.'},
 ];
-let activeStep = 'cover';
+let activeStep = 'binding';
 const optionsNode = document.querySelector('.options');
 const stepPanels = Object.fromEntries(stepDefinitions.map(step => { const panel=document.createElement('div'); panel.id='panel-'+step.id;panel.className='config-panel';panel.setAttribute('role','tabpanel');panel.setAttribute('aria-labelledby','tab-'+step.id);return [step.id,panel]; }));
 for(const heading of optionsNode.querySelectorAll('.option-label,label[for=model]')) if(heading.firstChild?.nodeType===Node.TEXT_NODE) heading.firstChild.textContent=heading.firstChild.textContent.replace(/^\d+\s*/, '');
@@ -126,22 +130,54 @@ let group='cover';
 for(const node of [...optionsNode.children]) {
  if(node.id==='price-breakdown')break;
  if(node.matches('label[for="binding"]'))group='binding';
- if(node.matches('.option-label')&&node.textContent.includes('Оттенок'))group='color';
+ if(node.matches('.option-label')&&node.textContent.includes('Оттенок'))group='binding';
  if(node.matches('.option-label')&&node.textContent.includes('Символ'))group='cover';
+ if(node.matches('label[for="inscription"]'))group='inscription';
  if(node.matches('.option-label')&&node.textContent.includes('Забота'))group='extras';
  stepPanels[group].append(node);
 }
+// Keep native controls as the source of truth for existing projects and cart logic.
+const materialPanel=stepPanels.binding;
+const colorLabel=materialPanel.querySelector('.option-label');
+colorLabel.innerHTML='<strong>Цвет дерева</strong><span id="color-name"></span>';
+materialPanel.prepend(materialPanel.querySelector('.swatches'));
+materialPanel.prepend(colorLabel);
+const leatherSelect=materialPanel.querySelector('#leather');
+const leatherChoices=document.createElement('div');leatherChoices.className='studio-leathers';
+leatherChoices.innerHTML=['black','brown'].map(value=>`<button type="button" data-studio-leather="${value}" aria-pressed="false"><span class="studio-leather-sample ${value}" aria-hidden="true"></span>${value==='black'?'Чёрная кожа':'Коричневая кожа'}</button>`).join('');
+leatherSelect.after(leatherChoices);
+const bindingSelect=materialPanel.querySelector('#binding');
+const bindingChoices=document.createElement('div');bindingChoices.className='studio-bindings';
+bindingChoices.innerHTML=bindings.map(binding=>`<button type="button" data-studio-binding="${binding.id}" aria-pressed="false">${binding.id==='bolts'?'На болтах':'Ручное плетение'}</button>`).join('');
+bindingSelect.after(bindingChoices);
+materialPanel.append(materialPanel.querySelector('label[for="binding"]'),bindingSelect,bindingChoices,materialPanel.querySelector('.control-hint'));
+materialPanel.querySelector('label[for="binding"]').textContent='Оформление корешка';
+const modelSelect=stepPanels.cover.querySelector('#model');modelSelect.classList.add('studio-native');
+stepPanels.cover.querySelector('label[for="model"]').classList.add('studio-native');
+const motifLabel=[...stepPanels.cover.querySelectorAll('.option-label')].find(el=>el.textContent.includes('Символ'));motifLabel.textContent='Рисунок обложки';
 const wizardNode=document.createElement('div');wizardNode.className='config-wizard';
-wizardNode.innerHTML=`<div class="step-tabs" role="tablist" aria-label="Настройка альбома">${stepDefinitions.map((step,i)=>`<button role="tab" id="tab-${step.id}" data-step="${step.id}" aria-controls="panel-${step.id}"><span>0${i+1}</span>${step.label}</button>`).join('')}</div><div class="mascot-guide"><img class="mascot" src="/scroll-assets/4f9f849127af2e4c3ec0.png" alt="" loading="lazy"><div><span>ПОДСКАЗКА МАСТЕРСКОЙ</span><p id="step-hint"></p></div></div>`;
+const tabs=document.createElement('div');tabs.className='step-tabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','Настройка альбома');
+tabs.innerHTML=stepDefinitions.map((step,i)=>`<button role="tab" id="tab-${step.id}" data-step="${step.id}" aria-controls="panel-${step.id}"><span>0${i+1}</span>${step.label}</button>`).join('');
+studio.querySelector('.section-heading').after(tabs);
+wizardNode.innerHTML='<p class="studio-progress" id="step-position"></p><h3 class="studio-step-title"></h3><p id="step-hint"></p>';
 for(const step of stepDefinitions)wizardNode.append(stepPanels[step.id]);
-const stepActions=document.createElement('div');stepActions.className='step-actions';stepActions.innerHTML='<button id="step-back" class="text-link">← Назад</button><span id="step-position"></span><button id="step-next" class="button">Продолжить →</button>';wizardNode.append(stepActions);optionsNode.prepend(wizardNode);
+optionsNode.prepend(wizardNode);
+const drawingSummary=document.createElement('div');drawingSummary.className='studio-drawing-summary';drawingSummary.innerHTML='<span id="studio-drawing"></span><button class="text-link" type="button" id="studio-edit-drawing">Выбрать рисунок →</button>';optionsNode.insertBefore(drawingSummary,document.querySelector('#price-breakdown'));
+const breakdown=document.querySelector('#price-breakdown');const composition=document.createElement('details');composition.className='studio-composition';composition.innerHTML='<summary>Состав альбома</summary>';breakdown.before(composition);composition.append(breakdown);
+const stepActions=document.createElement('div');stepActions.className='step-actions';stepActions.innerHTML='<button id="step-back" class="text-link" type="button">← Назад</button><button id="step-next" class="button" type="button">Далее: рисунок →</button>';optionsNode.insertBefore(stepActions,document.querySelector('#add-cart'));
+document.querySelector('#add-cart').textContent='Добавить в заказ →';
+document.querySelector('.price-row > span').textContent='Стоимость после согласования';
 function setStep(id, focus=false) {
+ if(!stepPanels[id])id='binding';
  activeStep=id;const index=stepDefinitions.findIndex(step=>step.id===id);
  for(const step of stepDefinitions){const tab=document.querySelector('[data-step="'+step.id+'"]');tab.setAttribute('aria-selected',step.id===id);tab.tabIndex=step.id===id?0:-1;stepPanels[step.id].hidden=step.id!==id;}
  document.querySelector('#step-hint').textContent=stepDefinitions[index].hint;
- document.querySelector('#step-back').disabled=index===0;
+ document.querySelector('.studio-step-title').textContent=stepDefinitions[index].title;
+ document.querySelector('#step-back').hidden=index===0;
  document.querySelector('#step-next').hidden=index===3;
- document.querySelector('#step-position').textContent=`${index+1} / 4`;
+ document.querySelector('#step-next').textContent=index<3?'Далее: '+stepDefinitions[index+1].label.toLowerCase()+' →':'';
+ document.querySelector('#add-cart').hidden=index!==3;
+ document.querySelector('#step-position').textContent=`ШАГ ${index+1} ИЗ 4`;
  if(focus) document.querySelector('[data-step="'+id+'"]').focus();
 }
 for(const tab of document.querySelectorAll('[data-step]')){
@@ -150,7 +186,34 @@ for(const tab of document.querySelectorAll('[data-step]')){
 }
 document.querySelector('#step-next').onclick=()=>setStep(stepDefinitions[Math.min(3,stepDefinitions.findIndex(step=>step.id===activeStep)+1)].id,true);
 document.querySelector('#step-back').onclick=()=>setStep(stepDefinitions[Math.max(0,stepDefinitions.findIndex(step=>step.id===activeStep)-1)].id,true);
-setStep('cover');
+document.querySelector('#studio-edit-drawing').onclick=()=>setStep('cover',true);
+for(const button of document.querySelectorAll('[data-studio-leather], [data-studio-binding]'))button.onclick=()=>{
+ const select=document.querySelector(button.dataset.studioLeather?'#leather':'#binding');
+ select.value=button.dataset.studioLeather||button.dataset.studioBinding;select.dispatchEvent(new Event('change',{bubbles:true}));
+};
+const previewNode=studio.querySelector('.preview');
+previewNode.querySelector('.preview-top').innerHTML='<span>ВАШ АЛЬБОМ</span><span id="preview-size"></span>';
+previewNode.querySelector('.preview-top').insertAdjacentHTML('afterend','<p class="studio-preset"><span id="studio-preset-label">Преднастроенный вариант</span><strong id="studio-model-name">История нашей семьи</strong></p>');
+previewNode.querySelector(':scope > p:not(.studio-preset)').textContent='Настройте этот вариант под себя.';
+previewNode.insertAdjacentHTML('beforeend','<button type="button" id="studio-device" class="text-link">▤ Устройство альбома</button>');
+document.body.insertAdjacentHTML('beforeend','<dialog id="studio-device-dialog" class="studio-device-dialog" aria-labelledby="studio-device-title"><form method="dialog"><button class="studio-dialog-close" aria-label="Закрыть описание устройства">×</button></form><h2 id="studio-device-title">Как устроен альбом</h2><img src="/scroll-assets/1cb52a5d921355f655d6.png" alt="Пример открытого альбома: деревянная обложка, кольцевой механизм и страницы" width="1536" height="1024" loading="lazy"><p>Обложка 33 × 22 см, корешок 3 см. Внутри — кольцевой механизм. Этот общий разворот показывает устройство; выбранный цвет, рисунок и корешок отображаются в основном превью.</p></dialog>');
+document.querySelector('#studio-device').onclick=()=>document.querySelector('#studio-device-dialog').showModal();
+function syncStudio(){
+ document.querySelectorAll('[data-studio-leather]').forEach(el=>el.setAttribute('aria-pressed',el.dataset.studioLeather===state.leather));
+ document.querySelectorAll('[data-studio-binding]').forEach(el=>el.setAttribute('aria-pressed',el.dataset.studioBinding===state.binding));
+ document.querySelector('#studio-drawing').textContent='Рисунок: '+(state.image?'ваш файл':models[state.motif].name);
+ document.querySelector('#studio-model-name').textContent=models[state.model].name;
+ document.querySelector('#studio-preset-label').textContent=state.model===3&&state.motif===3&&state.color===1&&state.leather==='black'&&state.binding==='bolts'&&!state.image&&state.inscription===models[3].inscription?'Преднастроенный вариант':'Ваш вариант';
+ document.querySelectorAll('[data-motif]').forEach(el=>{
+  const i=+el.dataset.motif;
+  const source=variantFor({...state,model:i,motif:i,inscription:models[i].inscription,image:null},models);
+  if(el.dataset.studioSource!==String(source)){
+   el.dataset.studioSource=String(source);
+   el.innerHTML=(source?`<img src="${source}" alt="" loading="lazy" width="300" height="200">`:coverDrawing(i))+`<span>${escape(models[i].name)}</span>`;
+  }
+ });
+}
+setStep('binding');
 
 const albumPreview = createAlbumPreview(document.querySelector('#live-album'));
 
@@ -182,11 +245,12 @@ function renderPreview() {
   document.querySelectorAll('[data-motif]').forEach(el => { el.classList.toggle('selected', +el.dataset.motif === state.motif && !state.image); el.setAttribute('aria-pressed', +el.dataset.motif === state.motif && !state.image); });
   document.querySelector('#remove-image').hidden = !state.image;
   renderUploadedArt();
+  syncStudio();
 }
 function chooseDesign(i, preset = false) {
  state.model = i; state.motif = i; state.inscription = models[i].inscription; state.image = null; state.page = 0;
  if (preset) { state.color = models[i].color; state.binding = models[i].binding; }
- syncControls(); renderPreview(); if(preset) setStep('cover');
+ syncControls(); renderPreview(); if(preset) setStep('binding');
 }
 function syncControls() {
  document.querySelector('#leather').value = state.leather;
@@ -262,7 +326,7 @@ function saveCart() { document.querySelector('#cart-count').textContent = cart.l
 document.querySelector('#add-cart').onclick = () => { cart.push({ model: models[state.model].name, size: models[state.model].size, color: colors[state.color].name, leather: leatherName(state.leather), preview: variantFor(state, models), inscription: state.inscription, motif: motifs[state.motif], image: state.image, extras: extras.filter(e => state.extras.includes(e.id)).map(e => e.name), price: total(), binding: bindings.find(b => b.id === state.binding).name, artwork: { scale: state.imageScale, x: state.imageX, y: state.imageY, rotation: state.imageRotation, mode: state.imageMode, threshold: state.threshold }, configuration: structuredClone(state) }); document.querySelector('#cart-status').textContent = 'Альбом добавлен в корзину'; document.querySelector('#mascot-success').hidden = false; saveCart(); };
 function renderCart() {
   document.querySelector('#cart-items').innerHTML = cart.length ? cart.map((item, i) => `<div class="cart-item"><div><h3>${escape(item.model)}</h3><p>${escape(item.color)} · ${escape(item.size)}${item.leather ? '<br>' + escape(item.leather) + ' кожа' : ''}<br>${escape(item.binding || 'Переплёт нужно уточнить')}<br>${escape(item.inscription)}<br>${item.image ? 'Свой рисунок' : escape(item.motif)}${item.extras.length ? '<br>' + item.extras.map(escape).join(', ') : ''}</p></div><div><strong>${money(null)}</strong><button data-remove="${i}">Удалить</button></div></div>`).join('') + `<div class="price-row"><span>Итого</span><strong>${money(cartTotal())}</strong></div>` : `<div class="empty-cart"><img class="mascot" src="/scroll-assets/d315c6f4af2807c4bc44.png" alt=""><h3>Давайте начнём вашу историю?</h3><p>Выберите обложку и добавьте что-то своё.</p><button id="empty-configure" class="button">Создать альбом →</button></div>`;
-  const emptyButton = document.querySelector('#empty-configure'); if(emptyButton) emptyButton.onclick = () => { document.querySelector('#cart').close(); setStep('cover'); location.hash = 'constructor'; showRoute(); };
+  const emptyButton = document.querySelector('#empty-configure'); if(emptyButton) emptyButton.onclick = () => { document.querySelector('#cart').close(); setStep('binding'); location.hash = 'constructor'; showRoute(); };
   document.querySelector('#export-order').disabled = !cart.length; document.querySelector('#telegram-request').disabled = !cart.length; document.querySelector('#copy-request').disabled = !cart.length;
   document.querySelectorAll('[data-remove]').forEach(el => el.onclick = () => { cart.splice(+el.dataset.remove, 1); saveCart(); renderCart(); });
 }
