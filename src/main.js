@@ -58,15 +58,21 @@ document.querySelector('#app').innerHTML = `
 <main>
 <section class="hero concept-hero"><img class="hero-photo" src="/hero-assets/workshop-soft-background.webp" alt="" aria-hidden="true" width="1536" height="1024" fetchpriority="high"><div class="hero-woody"><img src="/hero-assets/woody-album-sharp.webp" alt="Вуди держит деревянный альбом «История нашей семьи»" width="1024" height="1536" fetchpriority="high"></div><div class="hero-copy"><div class="eyebrow">WOODBASE / ДЕРЕВЯННЫЕ ФОТОАЛЬБОМЫ</div><h1><span>Воспоминания —</span><br>не для галереи<br>телефона.</h1><div class="hero-actions"><a class="button" href="#constructor">Собрать свой альбом <span>→</span></a><a class="text-link" href="#catalog">Посмотреть коллекцию ↓</a></div></div></section>
 <section id="details" class="benefits" aria-labelledby="benefits-title">
-  <img class="benefits-banner" src="/scroll-assets/benefits-approved.webp" alt="" aria-hidden="true" width="1774" height="887" loading="lazy" decoding="async">
+  <div class="benefits-banner" aria-hidden="true"><div class="benefits-banner-heading"></div>
+<div class="benefits-tile" data-benefit-reveal style="left:0.000000%;top:4.622322%;width:49.887260%;height:39.909808%;--benefit-delay:0ms"><img src="/scroll-assets/benefits-approved.webp" alt="" width="1774" height="887" loading="lazy" decoding="async" style="width:200.451977%;height:250.564972%;left:0.000000%;top:-11.581921%"></div>
+<div class="benefits-tile" data-benefit-reveal style="left:49.887260%;top:4.622322%;width:50.112740%;height:39.909808%;--benefit-delay:100ms"><img src="/scroll-assets/benefits-approved.webp" alt="" width="1774" height="887" loading="lazy" decoding="async" style="width:199.550056%;height:250.564972%;left:-99.550056%;top:-11.581921%"></div>
+<div class="benefits-tile" data-benefit-reveal style="left:0.000000%;top:44.532131%;width:57.046223%;height:36.640361%;--benefit-delay:0ms"><img src="/scroll-assets/benefits-approved.webp" alt="" width="1774" height="887" loading="lazy" decoding="async" style="width:175.296443%;height:272.923077%;left:0.000000%;top:-121.538462%"></div>
+<div class="benefits-tile" data-benefit-reveal style="left:57.046223%;top:44.532131%;width:42.953777%;height:36.640361%;--benefit-delay:100ms"><img src="/scroll-assets/benefits-approved.webp" alt="" width="1774" height="887" loading="lazy" decoding="async" style="width:232.808399%;height:272.923077%;left:-132.808399%;top:-121.538462%"></div>
+<div class="benefits-tile" data-benefit-reveal style="left:0.000000%;top:81.172492%;width:100.000000%;height:18.827508%;--benefit-delay:0ms"><img src="/scroll-assets/benefits-approved.webp" alt="" width="1774" height="887" loading="lazy" decoding="async" style="width:100.000000%;height:531.137725%;left:0.000000%;top:-431.137725%"></div>
+</div>
   <div class="benefits-content">
     <div class="benefits-heading"><span>WoodBase</span><span aria-hidden="true"></span><h2 id="benefits-title">Преимущества</h2></div>
     <div class="benefits-cards">
-      <article class="benefit-card"><div class="benefit-photo benefit-material" role="img" aria-label="Крупный план дерева, фактурного кожаного корешка без прошивки и латунных креплений"></div><div class="benefit-copy"><span class="benefit-pill">Натуральные материалы</span><h3>Дерево и кожа</h3><p>Приятно даже просто держать.</p></div></article>
-      <article class="benefit-card"><div class="benefit-photo benefit-hands" role="img" aria-label="Мастер держит большой деревянный альбом «История нашей семьи»"></div><div class="benefit-copy"><span class="benefit-pill">Ручная сборка</span><h3>Сделано с душой.</h3><p>Каждый альбом мы собираем вручную с вниманием к деталям.</p></div></article>
-      <article class="benefit-card"><img class="benefit-photo" src="/scroll-assets/benefits-markers.webp" alt="Вид сверху: золотой и серебряный маркеры лежат на листах стикеров и чёрных уголков" width="1448" height="1086" loading="lazy" decoding="async"><div class="benefit-copy"><h3>Не просто храни. Создавай.</h3><p>В комплекте — золотой и серебряный маркеры, матовые стикеры и 5 листов уголков для фотографий.</p></div></article>
-      <article class="benefit-card benefit-pages"><div class="benefit-pages-banner" role="img" aria-label="Плотные листы. Чёрные страницы. Идеальное пространство для ваших историй. Веер прямоугольных чёрных листов на серебристых кольцах."></div><div class="benefit-pages-text"><span>Плотные листы</span><h3>Чёрные страницы</h3><p>Идеальное пространство для ваших историй.</p></div></article>
-      <article class="benefit-card benefit-personal"><img class="benefit-photo" src="/scroll-assets/benefits-personal.webp" alt="Гравировка «Твоя история» на деревянном альбоме, кожаная застёжка посередине правого края обложки" width="1536" height="1024" loading="lazy" decoding="async"><div class="benefit-copy"><span class="benefit-pill">Под заказ</span><h3>Сделай альбом своим.</h3><p>Выбирай цвет, прошивку корешка и надпись.</p></div></article>
+      <article class="benefit-card" data-benefit-reveal><div class="benefit-photo benefit-material" role="img" aria-label="Крупный план дерева, фактурного кожаного корешка без прошивки и латунных креплений"></div><div class="benefit-copy"><span class="benefit-pill">Натуральные материалы</span><h3>Дерево и кожа</h3><p>Приятно даже просто держать.</p></div></article>
+      <article class="benefit-card" data-benefit-reveal><div class="benefit-photo benefit-hands" role="img" aria-label="Мастер держит большой деревянный альбом «История нашей семьи»"></div><div class="benefit-copy"><span class="benefit-pill">Ручная сборка</span><h3>Сделано с душой.</h3><p>Каждый альбом мы собираем вручную с вниманием к деталям.</p></div></article>
+      <article class="benefit-card" data-benefit-reveal><img class="benefit-photo" src="/scroll-assets/benefits-markers.webp" alt="Вид сверху: золотой и серебряный маркеры лежат на листах стикеров и чёрных уголков" width="1448" height="1086" loading="lazy" decoding="async"><div class="benefit-copy"><h3>Не просто храни. Создавай.</h3><p>В комплекте — золотой и серебряный маркеры, матовые стикеры и 5 листов уголков для фотографий.</p></div></article>
+      <article class="benefit-card benefit-pages" data-benefit-reveal><div class="benefit-pages-banner" role="img" aria-label="Плотные листы. Чёрные страницы. Идеальное пространство для ваших историй. Веер прямоугольных чёрных листов на серебристых кольцах."></div><div class="benefit-pages-text"><span>Плотные листы</span><h3>Чёрные страницы</h3><p>Идеальное пространство для ваших историй.</p></div></article>
+      <article class="benefit-card benefit-personal" data-benefit-reveal><img class="benefit-photo" src="/scroll-assets/benefits-personal.webp" alt="Гравировка «Твоя история» на деревянном альбоме, кожаная застёжка посередине правого края обложки" width="1536" height="1024" loading="lazy" decoding="async"><div class="benefit-copy"><span class="benefit-pill">Под заказ</span><h3>Сделай альбом своим.</h3><p>Выбирай цвет, прошивку корешка и надпись.</p></div></article>
     </div>
   </div>
   <a class="benefits-cta" href="#constructor">Собрать свой альбом <span aria-hidden="true">↗</span></a>
@@ -517,3 +523,26 @@ document.querySelector('#add-cart').addEventListener('click', () => {
 })();
 
 setupHeaderCollection({models,openProduct,escape,money});
+
+// Reveal each advantage once; fail open when motion or observation is unavailable.
+(() => {
+  const section = document.querySelector('.benefits');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  if (!section || reduceMotion.matches || !('IntersectionObserver' in window)) return;
+  const items = [...section.querySelectorAll('[data-benefit-reveal]')];
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      entry.target.classList.add('is-visible');
+      observer.unobserve(entry.target);
+    }
+  }, { threshold: 0.12, rootMargin: '0px 0px -24px 0px' });
+  section.classList.add('benefits-motion');
+  items.forEach(item => observer.observe(item));
+  reduceMotion.addEventListener('change', event => {
+    if (event.matches) {
+      section.classList.remove('benefits-motion');
+      observer.disconnect();
+    }
+  });
+})();
