@@ -1,0 +1,24 @@
+/* Approved workshop teaser with real text and links over the family-album concept. */
+#about.workshop-teaser {
+ --workshop-paper:#f8f3e9;--workshop-ink:#302117;--workshop-muted:#79644b;
+ display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+ gap:clamp(28px,4vw,78px);align-items:center;
+ max-width:1900px;margin:0 auto;padding:56px 4%;
+ background:var(--workshop-paper);color:var(--workshop-ink);scroll-margin-top:115px;
+}
+.workshop-teaser-photo {position:relative;aspect-ratio:1034/712;overflow:hidden;border-radius:28px;background:#d9c7ac;}
+/* Display only the approved photo region; all website text remains selectable. */
+.workshop-teaser-photo > img {position:absolute;width:191.779497%;max-width:none;height:auto;left:-5.415861%;top:-5.758427%;object-fit:initial;}
+#about.workshop-teaser h2 {font:400 clamp(30px,3.05vw,59px)/1.12 Manrope,Arial,sans-serif;letter-spacing:-1.5px;text-transform:none;margin:0 0 25px;color:var(--workshop-ink);}
+#about.workshop-teaser .workshop-teaser-copy > p:not(.workshop-teaser-materials) {font:400 clamp(16px,1.35vw,23px)/1.55 Manrope,Arial,sans-serif;margin:0 0 32px;color:var(--workshop-ink);max-width:700px;}
+.workshop-teaser-actions {display:flex;flex-direction:column;gap:14px;align-items:flex-start;}
+#about.workshop-teaser .workshop-teaser-actions a {display:flex;justify-content:center;align-items:center;width:min(100%,510px);min-height:52px;padding:14px 22px;border:1.5px solid var(--workshop-ink);border-radius:999px;font:500 clamp(14px,1.15vw,20px)/1.4 Manrope,Arial,sans-serif;text-align:center;text-decoration:none;margin:0;transition:background .18s ease,color .18s ease;}
+.workshop-teaser-actions .workshop-create {background:var(--workshop-ink);color:#fff;}
+.workshop-teaser-actions .workshop-meet {background:transparent;color:var(--workshop-ink);}
+.workshop-teaser-actions .workshop-create:hover {background:#4d3020;}
+.workshop-teaser-actions .workshop-meet:hover {background:#efe2cf;}
+#about.workshop-teaser .workshop-teaser-actions a:focus-visible {outline:3px solid #a5793c;outline-offset:5px;}
+#about.workshop-teaser .workshop-teaser-materials {display:flex;flex-wrap:wrap;gap:8px 14px;margin:28px 0 0;color:var(--workshop-muted);font:400 clamp(11px,1vw,16px)/1.6 Manrope,Arial,sans-serif;}
+@media(max-width:1000px){#about.workshop-teaser {gap:28px;}#about.workshop-teaser h2 {font-size:31px;letter-spacing:-1px;margin-bottom:18px;}#about.workshop-teaser .workshop-teaser-copy > p:not(.workshop-teaser-materials) {font-size:15px;margin-bottom:23px;}.workshop-teaser-photo {aspect-ratio:1034/712;}.workshop-teaser-actions {gap:10px;}#about.workshop-teaser .workshop-teaser-actions a {font-size:13px;padding:12px 15px;min-height:46px;}#about.workshop-teaser .workshop-teaser-materials {gap:7px 9px;margin-top:21px;}}
+@media(max-width:700px){#about.workshop-teaser {grid-template-columns:1fr;padding:36px 5% 45px;gap:26px;}#about.workshop-teaser h2 {font-size:clamp(29px,7vw,40px);line-height:1.16;}#about.workshop-teaser .workshop-teaser-copy > p:not(.workshop-teaser-materials) {font-size:16px;line-height:1.6;}#about.workshop-teaser .workshop-teaser-actions a {width:100%;font-size:15px;min-height:50px;}.workshop-teaser-photo {border-radius:22px;}#about.workshop-teaser .workshop-teaser-materials {font-size:11px;gap:7px 10px;}}
+@media(prefers-reduced-motion:reduce){#about.workshop-teaser .workshop-teaser-actions a {transition:none;}}
