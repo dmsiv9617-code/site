@@ -288,3 +288,17 @@
 .studio .kit-optional {border-top:1px solid var(--studio-line);padding-top:10px;font-size:11px;line-height:1.5;}
 @media(max-width:599px){.studio .studio-composition[open] #price-breakdown {padding:15px;max-height:60svh;}.studio .kit-list strong {font-size:12px;}}
 @media(prefers-reduced-motion:reduce){.studio .kit-summary-chevron {transition:none;}}
+.device-infographic-dialog {position:fixed;inset:0;margin:auto;width:min(1500px,96vw);max-width:96vw;max-height:94svh;padding:36px 18px 15px;overflow:auto;background:#faf5ec;}
+.device-infographic-dialog form {position:absolute;right:13px;top:6px;z-index:2;}
+.device-infographic-dialog .studio-dialog-close {float:none;width:34px;height:34px;padding:0;line-height:30px;border:1px solid #b49b7b;border-radius:50%;background:#fffcf7;color:#302117;}
+.device-infographic-dialog .device-accessible-title {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
+.device-infographic-image {display:block;}
+.device-infographic-dialog .device-infographic-image img {display:block;width:100%;height:auto;max-height:calc(94svh - 110px);object-fit:contain;border-radius:12px;}
+.device-infographic-footer {display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:12px 10px 0;font:12px/1.5 Manrope,Arial,sans-serif;color:#302117;}
+.device-infographic-footer > a {text-decoration:underline;text-underline-offset:4px;}
+.device-infographic-footer details {max-width:780px;}
+.device-infographic-footer summary {cursor:pointer;}
+.device-infographic-footer ol {margin:12px 0 0;padding-left:20px;}
+.device-infographic-footer li {padding:5px 0;line-height:1.6;}
+.device-infographic-dialog button:focus-visible,.device-infographic-dialog a:focus-visible,.device-infographic-dialog summary:focus-visible {outline:3px solid #a5793c;outline-offset:4px;}
+@media(max-width:600px){.device-infographic-dialog {padding:40px 8px 14px;border-radius:18px;}.device-infographic-footer {display:block;font-size:13px;}.device-infographic-footer details {margin-top:15px;}}
