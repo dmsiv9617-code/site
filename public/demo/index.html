@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WoodBase — демо моушен-графики (P2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#150d08; --bg2:#1f130b; --cream:#f4e9dc; --gold:#e8c07a; --copper:#b0763f;
+  --sans:Manrope,Arial,sans-serif; --serif:'Cormorant Garamond',Georgia,serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scrollbar-color:#3a2617 var(--bg)}
+body{background:var(--bg);color:var(--cream);font-family:var(--sans);overflow-x:hidden}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+
+/* ---------- film grain ---------- */
+.grain{position:fixed;inset:-100px;z-index:60;pointer-events:none;opacity:.07;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grainShift .5s steps(4) infinite}
+@keyframes grainShift{
+  0%{transform:translate(0,0)}25%{transform:translate(-38px,22px)}
+  50%{transform:translate(24px,-30px)}75%{transform:translate(-14px,-18px)}100%{transform:translate(0,0)}}
+
+/* ---------- preloader ---------- */
+#preloader{position:fixed;inset:0;z-index:100;background:#0d0806;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:28px}
+#preloader svg{width:min(520px,78vw);height:auto;overflow:visible}
+#preloader path{fill:var(--gold);fill-opacity:0;stroke:#ffb35c;stroke-width:3;stroke-linejoin:round;
+  stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 6px rgba(255,150,60,.9)) drop-shadow(0 0 18px rgba(255,110,30,.45))}
+#laser-dot{position:absolute;width:14px;height:14px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,#fff 0%,#ffd27a 35%,rgba(255,130,40,.85) 60%,transparent 72%);
+  box-shadow:0 0 18px 6px rgba(255,150,60,.75),0 0 46px 18px rgba(255,110,30,.35);transform:translate(-50%,-50%)}
+.spark{position:absolute;width:3px;height:3px;border-radius:50%;background:#ffd27a;pointer-events:none;
+  box-shadow:0 0 6px 2px rgba(255,160,70,.8)}
+#preloader .pl-label{font-size:11px;letter-spacing:.35em;text-transform:uppercase;color:#8a6f52;opacity:0}
+#skip{position:absolute;bottom:34px;right:38px;background:none;border:1px solid #4a3423;color:#b99c78;
+  font-family:var(--sans);font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding:10px 22px;
+  border-radius:999px;cursor:pointer;transition:border-color .25s,color .25s}
+#skip:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ---------- layout ---------- */
+section{position:relative;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;padding:96px 7vw}
+.tag{position:absolute;top:26px;left:7vw;font-size:11px;letter-spacing.3em;letter-spacing:.3em;text-transform:uppercase;color:#9a7c58;
+  border:1px solid #3a2a1c;padding:8px 16px;border-radius:999px;background:rgba(21,13,8,.7);backdrop-filter:blur(4px)}
+.tag b{color:var(--gold);font-weight:600}
+
+/* ---------- hero ---------- */
+#hero{background:radial-gradient(120% 90% at 70% 20%,#241609 0%,var(--bg) 62%)}
+#hero h1{font-family:var(--serif);font-weight:600;font-size:clamp(44px,7.2vw,110px);line-height:1.02;max-width:18ch}
+#hero h1 .ln{display:block;overflow:hidden}
+#hero h1 .ch{display:inline-block;will-change:transform}
+#hero p{margin-top:26px;font-size:17px;line-height:1.65;color:#cbb59a;max-width:52ch}
+#hero .cta-row{margin-top:44px;display:flex;gap:18px;flex-wrap:wrap}
+.btn{position:relative;display:inline-flex;align-items:center;gap:12px;font-family:var(--sans);font-weight:600;
+  font-size:15px;letter-spacing:.04em;padding:18px 38px;border-radius:999px;cursor:pointer;text-decoration:none;
+  transition:background .25s,color .25s,border-color .25s;will-change:transform}
+.btn-gold{background:var(--gold);color:#241304;border:none}
+.btn-gold:hover{background:#f2cf92}
+.btn-ghost{border:1px solid #4a3423;color:var(--cream);background:transparent}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.hint{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.28em;
+  text-transform:uppercase;color:#7a6046;display:flex;flex-direction:column;align-items:center;gap:10px}
+.hint::after{content:"";width:1px;height:44px;background:linear-gradient(#7a6046,transparent);animation:drip 1.8s ease-in-out infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ---------- shimmer ---------- */
+#shimmer{background:linear-gradient(180deg,var(--bg) 0%,#1a0f08 100%)}
+.shimmer-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:6vw;align-items:center}
+.engrave{position:relative;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.engrave img{display:block;width:100%;height:auto}
+.engrave .sweep{position:absolute;inset:-10%;pointer-events:none;mix-blend-mode:soft-light;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,225,170,.9) 50%,transparent 62%);
+  transform:translateX(-120%)}
+.shimmer-copy h2{font-family:var(--serif);font-size:clamp(30px,3.4vw,52px);font-weight:600;line-height:1.1}
+.shimmer-copy p{margin-top:18px;color:#cbb59a;line-height:1.65;font-size:16px;max-width:46ch}
+.shimmer-copy .note{margin-top:22px;font-size:13px;color:#8a6f52}
+
+/* ---------- woody ---------- */
+#woody{overflow:hidden;background:radial-gradient(90% 100% at 50% 100%,#2a1a0d 0%,var(--bg) 70%)}
+.woody-wrap{position:relative;display:flex;justify-content:center;align-items:center;min-height:60vh}
+.woody-bg{position:absolute;inset:-12%;background:url(../hero-assets/workshop-soft-background.webp) center/cover;opacity:.16;filter:blur(2px)}
+.mascot{position:relative;width:min(420px,64vw);will-change:transform}
+.mascot img{display:block;width:100%;height:auto;filter:drop-shadow(0 30px 40px rgba(0,0,0,.5))}
+.mascot .alt{position:absolute;inset:0;opacity:0}
+.woody-caption{text-align:center;margin-top:34px}
+.woody-caption h2{font-family:var(--serif);font-size:clamp(28px,3vw,46px);font-weight:600}
+.woody-caption p{margin-top:12px;color:#cbb59a;font-size:15px}
+
+/* ---------- cards ---------- */
+#cards{background:var(--bg)}
+.cards-row{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:20px}
+.card{background:var(--bg2);border:1px solid #2c1d12;border-radius:16px;overflow:hidden;will-change:transform,opacity}
+.card img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.card .c-body{padding:20px 22px 24px}
+.card h3{font-family:var(--serif);font-size:24px;font-weight:600}
+.card p{margin-top:8px;font-size:13.5px;color:#b39a7e;line-height:1.55}
+
+/* ---------- footer ---------- */
+footer{padding:70px 7vw 60px;border-top:1px solid #2c1d12;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+footer .f-note{font-size:13px;color:#8a6f52;line-height:1.6;max-width:60ch}
+footer .f-logo{font-family:var(--serif);font-size:22px;color:var(--gold)}
+
+@media (max-width:900px){
+  .shimmer-grid{grid-template-columns:1fr;gap:40px}
+  .cards-row{grid-template-columns:1fr}
+  section{padding:80px 6vw}
+}
+@media (prefers-reduced-motion:reduce){
+  .grain{animation:none}
+  .hint::after{animation:none}
+}
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ================= PRELOADER ================= -->
+<div id="preloader" role="status" aria-label="Загрузка демо">
+  <div style="position:relative">
+    <svg id="logo-svg" viewBox="0 0 1798 875" aria-hidden="true"><path d="M795,67L795,91L800,107L814,128L827,139L826,141L809,140L808,144L814,163L821,173L820,202L823,221L840,262L809,295L792,319L780,341L768,372L758,415L755,441L755,488L759,518L802,511L849,490L878,469L899,449L926,414L945,378L946,400L941,421L930,443L912,466L892,484L837,517L797,531L766,537L792,541L831,541L869,535L900,525L942,503L970,481L992,453L1000,435L1005,409L1004,385L997,360L988,344L972,326L959,316L905,286L891,275L875,257L865,236L862,222L862,198L869,173L890,144L915,128L932,123L955,122L983,129L1012,147L1039,177L1039,182L1026,201L1007,221L985,238L950,257L1006,290L1033,317L1048,340L1056,359L1060,376L1061,401L1053,437L1039,464L1026,481L1006,500L970,523L925,541L858,556L813,559L765,556L792,567L819,573L860,576L897,575L896,621L868,610L851,608L826,610L797,622L774,644L765,660L760,676L758,712L763,735L775,758L798,779L826,790L863,789L877,784L898,769L900,784L905,788L942,786L945,779L945,565L970,556L1036,780L1046,781L1073,774L1077,770L1078,761L1106,766L1123,764L1141,758L1164,744L1185,715L1203,738L1229,754L1250,759L1266,759L1279,756L1295,748L1295,762L1299,766L1328,775L1337,770L1374,621L1374,614L1371,610L1336,602L1328,614L1310,594L1294,585L1275,580L1255,580L1234,585L1211,599L1196,615L1183,639L1171,619L1156,603L1136,591L1115,585L1093,585L1070,592L1054,602L1038,619L1015,535L1045,511L1073,479L1090,449L1101,410L1102,374L1093,334L1076,300L1054,273L1068,259L1088,247L1172,226L1200,212L1200,209L1146,181L1115,170L1081,162L1071,129L1053,103L1027,82L1002,70L977,63L944,61L917,66L880,81L840,86L818,81Z"/>
+<path d="M93,619L93,630L143,781L147,786L154,789L175,789L186,782L220,689L258,784L266,789L284,789L297,781L305,765L352,628L350,617L314,615L306,619L276,714L236,618L215,615L205,617L200,622L167,713L137,620L127,615L99,615Z"/>
+<path d="M1421,611L1401,619L1383,636L1376,656L1379,680L1392,697L1406,705L1459,720L1479,729L1484,735L1484,745L1470,757L1446,761L1433,759L1423,754L1414,745L1409,735L1374,734L1371,740L1375,755L1390,776L1417,790L1437,794L1464,794L1486,789L1509,775L1521,758L1524,748L1524,728L1519,715L1504,699L1488,691L1423,673L1416,665L1416,656L1422,648L1430,644L1456,642L1471,648L1483,664L1516,664L1519,661L1516,645L1511,635L1500,624L1478,613L1460,609Z"/>
+<path d="M1614,609L1592,615L1577,623L1553,647L1543,666L1539,681L1538,718L1542,735L1551,753L1560,765L1574,777L1591,786L1608,791L1643,792L1666,786L1695,770L1701,763L1698,753L1680,735L1675,735L1645,751L1617,752L1605,747L1594,738L1585,718L1589,716L1704,716L1711,710L1711,684L1707,666L1699,649L1680,627L1651,612L1637,609Z"/>
+<path d="M643,608L613,615L596,624L579,639L570,651L561,671L558,686L558,713L562,732L577,759L592,774L623,789L658,792L693,783L712,771L724,759L740,729L744,700L743,685L733,655L710,628L679,612Z"/>
+<path d="M443,608L409,616L388,629L375,642L359,673L356,688L356,712L367,746L387,771L422,789L456,792L475,789L497,780L523,758L538,729L542,710L542,690L538,670L532,656L523,642L510,629L495,619L474,611Z"/>
+<path d="M842,650L859,650L877,657L890,669L899,688L899,711L893,726L877,743L859,750L842,750L823,742L809,726L803,708L804,687L813,668L823,658Z"/>
+<path d="M644,650L657,650L674,656L689,670L697,689L697,709L690,728L677,742L657,750L639,749L624,742L610,726L604,705L606,684L614,668L629,655Z"/>
+<path d="M443,650L461,651L478,660L489,673L495,690L495,711L488,728L475,742L456,750L441,750L422,742L409,727L403,711L403,690L409,673L424,657Z"/>
+<path d="M1264,623L1282,625L1300,635L1312,651L1316,667L1315,681L1305,701L1292,713L1269,720L1256,719L1239,711L1227,697L1221,680L1222,661L1232,641L1244,630Z"/>
+<path d="M1088,629L1106,629L1122,636L1136,651L1143,670L1143,687L1137,703L1123,718L1107,725L1089,725L1075,719L1062,707L1053,685L1053,665L1058,651L1072,636Z"/>
+<path d="M1040,216L1059,190L1104,197L1142,209L1135,212L1083,217L1047,218Z"/>
+<path d="M956,157L946,162L936,173L932,186L934,201L941,212L950,219L958,222L975,222L987,216L995,208L1000,197L1000,181L994,169L985,161L971,156Z"/>
+<path d="M1586,677L1592,665L1606,654L1629,650L1648,657L1658,667L1662,683L1587,684Z"/></svg>
+    <div id="laser-dot" style="opacity:0"></div>
+  </div>
+  <div class="pl-label">лазерная гравировка</div>
+  <button id="skip" type="button">Пропустить</button>
+</div>
+
+<!-- ================= HERO ================= -->
+<section id="hero">
+  <div class="tag">Эффект 01 · <b>split-text заголовок + магнитные кнопки</b></div>
+  <h1 id="headline"><span class="ln">Воспоминания</span><span class="ln">— не для галереи</span><span class="ln">телефона.</span></h1>
+  <p>Это демо-страница: на ней собраны эффекты, которые можно перенести на основной сайт WoodBase. Смотрите, листайте, трогайте — и скажите, что зашло.</p>
+  <div class="cta-row">
+    <a class="btn btn-gold magnetic" href="#shimmer">Смотреть эффекты</a>
+    <a class="btn btn-ghost magnetic" href="#cards">К карточкам</a>
+  </div>
+  <div class="hint">листайте</div>
+</section>
+
+<!-- ================= SHIMMER ================= -->
+<section id="shimmer">
+  <div class="tag">Эффект 02 · <b>блик по гравировке</b></div>
+  <div class="shimmer-grid">
+    <div class="engrave" id="engrave">
+      <img src="../configurator-assets/family-black-black-bolts.webp" alt="Альбом «Семья» с золотой гравировкой">
+      <div class="sweep" aria-hidden="true"></div>
+    </div>
+    <div class="shimmer-copy">
+      <h2>Свет скользит по гравировке — как лампа в мастерской</h2>
+      <p>Блик привязан к скроллу: листаете — свет идёт по буквам. Наведите курсор на альбом — получите ещё один проход. На живом сайте так может «оживать» карточка каждой модели.</p>
+      <p class="note">Дёшево по производительности: один градиент, один transform.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WOODY ================= -->
+<section id="woody">
+  <div class="tag">Эффект 03 · <b>живой маскот Вуди</b></div>
+  <div class="woody-bg" aria-hidden="true"></div>
+  <div class="woody-wrap">
+    <div class="mascot" id="mascot">
+      <img src="../images/brand/mascot-greeting.png" alt="Вуди — маскот WoodBase">
+      <img class="alt" src="../images/brand/mascot-joy.png" alt="" aria-hidden="true">
+    </div>
+  </div>
+  <div class="woody-caption">
+    <h2>Вуди дышит, машет и следит за скроллом</h2>
+    <p>Лёгкий параллакс фона, покачивание и смена позы. Без Lottie — двумя картинками.</p>
+  </div>
+</section>
+
+<!-- ================= CARDS ================= -->
+<section id="cards">
+  <div class="tag">Эффект 04 · <b>каскадное появление карточек</b></div>
+  <h2 style="font-family:var(--serif);font-size:clamp(30px,3.4vw,52px);font-weight:600">Коллекция собирается на глазах</h2>
+  <div class="cards-row">
+    <div class="card"><img src="../collection-assets/family-black-three-quarter.webp" alt="Альбом Семья"><div class="c-body"><h3>Семья</h3><p>Карточки въезжают каскадом при скролле — раз, два, три.</p></div></div>
+    <div class="card"><img src="../collection-assets/family-history-three-quarter.webp" alt="Альбом История нашей семьи"><div class="c-body"><h3>История нашей семьи</h3><p>То же можно включить для карусели на главной.</p></div></div>
+    <div class="card"><img src="../collection-assets/once-three-quarter.webp" alt="Альбом Однажды мы загадали тебя"><div class="c-body"><h3>Однажды мы загадали тебя</h3><p>Анимация только на transform и opacity — без фризов.</p></div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-logo">woodbase · демо</div>
+  <div class="f-note">Это черновик эффектов, а не готовый дизайн. Что понравится — перенесём на основной сайт аккуратно и с учётом скорости загрузки. Что не понравится — выбросим без жалости.</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* ---------- smooth scroll ---------- */
+  var lenis = null;
+  if (!reduce && window.Lenis){
+    lenis = new Lenis({ lerp: 0.11 });
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add(function(t){ lenis.raf(t*1000); });
+    gsap.ticker.lagSmoothing(0);
+  }
+
+  /* ---------- split text ---------- */
+  document.querySelectorAll("#headline .ln").forEach(function(ln){
+    var text = ln.textContent; ln.textContent = "";
+    text.split("").forEach(function(c){
+      var s = document.createElement("span");
+      s.className = "ch";
+      s.innerHTML = c === " " ? "&nbsp;" : c;
+      ln.appendChild(s);
+    });
+  });
+
+  function heroIn(){
+    gsap.fromTo("#headline .ch",
+      { yPercent: 112, rotate: 4 },
+      { yPercent: 0, rotate: 0, duration: .9, ease: "power3.out",
+        stagger: { each: .018, from: "start" } });
+    gsap.fromTo("#hero p, #hero .cta-row",
+      { opacity: 0, y: 24 },
+      { opacity: 1, y: 0, duration: .8, ease: "power2.out", stagger: .12, delay: .35 });
+  }
+
+  /* ---------- preloader: laser trace ---------- */
+  var pre = document.getElementById("preloader");
+  var dot = document.getElementById("laser-dot");
+  var paths = Array.prototype.slice.call(document.querySelectorAll("#logo-svg path"));
+  paths.forEach(function(p){ p.style.strokeDasharray = p.getTotalLength(); p.style.strokeDashoffset = p.getTotalLength(); });
+
+  function spawnSparks(x, y, n){
+    for (var i=0;i<n;i++){
+      var s = document.createElement("div");
+      s.className = "spark";
+      s.style.left = x+"px"; s.style.top = y+"px";
+      dot.parentElement.appendChild(s);
+      gsap.fromTo(s, { x:0, y:0, opacity:1 },
+        { x: gsap.utils.random(-46,46), y: gsap.utils.random(-56,10),
+          opacity: 0, duration: gsap.utils.random(.35,.7), ease: "power2.out",
+          onComplete: function(){ this.targets()[0].remove(); } });
+    }
+  }
+
+  function tracePaths(done){
+    var svg = document.getElementById("logo-svg");
+    var rect = svg.getBoundingClientRect();
+    var wrapRect = dot.parentElement.getBoundingClientRect();
+    var i = 0;
+    dot.style.opacity = 1;
+    function next(){
+      if (i >= paths.length){
+        gsap.to(dot, { opacity: 0, duration: .25 });
+        done(); return;
+      }
+      var p = paths[i++], len = p.getTotalLength();
+      var d = Math.min(.62, Math.max(.1, len/9000));
+      var prox = { t: 0 }, lastSpark = 0;
+      gsap.to(prox, { t: 1, duration: d, ease: "power1.inOut",
+        onUpdate: function(){
+          p.style.strokeDashoffset = len * (1 - prox.t);
+          var pt = p.getPointAtLength(len * prox.t);
+          dot.style.left = (rect.left - wrapRect.left + pt.x*rect.width/1798) + "px";
+          dot.style.top  = (rect.top  - wrapRect.top  + pt.y*rect.height/875) + "px";
+          if (prox.t - lastSpark > .18){ lastSpark = prox.t;
+            spawnSparks(parseFloat(dot.style.left), parseFloat(dot.style.top), 2); }
+        },
+        onComplete: next });
+    }
+    next();
+  }
+
+  function burnIn(){
+    var tl = gsap.timeline({ onComplete: removePre });
+    tl.to("#logo-svg path", { fillOpacity: 1, strokeOpacity: .25, duration: .5, ease: "power2.out" })
+      .to("#logo-svg", { scale: 1.04, duration: .5, ease: "power2.out" }, "<")
+      .to(".pl-label", { opacity: 1, duration: .4 }, "<")
+      .to({}, { duration: .55 });
+  }
+  function removePre(){
+    gsap.to(pre, { clipPath: "circle(0% at 50% 42%)", opacity: 0, duration: .9, ease: "power3.inOut",
+      onStart: function(){ pre.style.clipPath = "circle(120% at 50% 42%)"; },
+      onComplete: function(){ pre.remove(); heroIn(); } });
+  }
+  function skip(){ if (document.body.contains(pre)){ gsap.killTweensOf("*"); pre.remove(); heroIn(); } }
+  document.getElementById("skip").addEventListener("click", skip);
+
+  if (reduce){ pre.remove(); heroIn(); }
+  else { tracePaths(burnIn); }
+
+  /* ---------- shimmer sweep (scroll scrub + hover) ---------- */
+  var sweep = document.querySelector("#engrave .sweep");
+  if (!reduce){
+    gsap.fromTo(sweep, { xPercent: -120 }, { xPercent: 120, ease: "none",
+      scrollTrigger: { trigger: "#shimmer", start: "top 80%", end: "bottom 30%", scrub: .6 } });
+  }
+  document.getElementById("engrave").addEventListener("mouseenter", function(){
+    if (reduce) return;
+    gsap.fromTo(sweep, { xPercent: -120 }, { xPercent: 120, duration: .9, ease: "power2.inOut", overwrite: true });
+  });
+
+  /* ---------- woody mascot ---------- */
+  var mascot = document.getElementById("mascot");
+  var alt = mascot.querySelector(".alt");
+  if (!reduce){
+    gsap.to(mascot, { y: -14, rotate: 1.6, duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: -1 });
+    gsap.fromTo(".woody-bg", { yPercent: -6 }, { yPercent: 6, ease: "none",
+      scrollTrigger: { trigger: "#woody", start: "top bottom", end: "bottom top", scrub: true } });
+    ScrollTrigger.create({ trigger: "#woody", start: "top 55%",
+      onEnter: wave, onEnterBack: wave });
+    var waving = false;
+    function wave(){
+      if (waving) return; waving = true;
+      gsap.timeline({ onComplete: function(){ waving = false; } })
+        .to(mascot, { rotate: -5, duration: .18, ease: "power2.out" })
+        .to(alt, { opacity: 1, duration: .15 }, "<")
+        .to(mascot, { rotate: 4, duration: .16, yoyo: true, repeat: 3, ease: "sine.inOut" })
+        .to(alt, { opacity: 0, duration: .2 }, "-=0.1")
+        .to(mascot, { rotate: 0, duration: .3, ease: "power2.out" }, "<");
+    }
+  }
+
+  /* ---------- cards cascade ---------- */
+  if (!reduce){
+    gsap.fromTo(".card", { opacity: 0, y: 60, scale: .96 },
+      { opacity: 1, y: 0, scale: 1, duration: .75, ease: "power3.out", stagger: .14,
+        scrollTrigger: { trigger: "#cards", start: "top 70%" } });
+  }
+
+  /* ---------- magnetic buttons ---------- */
+  if (!reduce && window.matchMedia("(pointer: fine)").matches){
+    document.querySelectorAll(".magnetic").forEach(function(btn){
+      btn.addEventListener("mousemove", function(e){
+        var r = btn.getBoundingClientRect();
+        var dx = e.clientX - (r.left + r.width/2), dy = e.clientY - (r.top + r.height/2);
+        gsap.to(btn, { x: dx*.28, y: dy*.34, duration: .4, ease: "power2.out" });
+      });
+      btn.addEventListener("mouseleave", function(){
+        gsap.to(btn, { x: 0, y: 0, duration: .7, ease: "elastic.out(1,.45)" });
+      });
+    });
+  }
+
+  /* ---------- anchors through lenis ---------- */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener("click", function(e){
+      var t = document.querySelector(a.getAttribute("href"));
+      if (!t) return;
+      e.preventDefault();
+      if (lenis) lenis.scrollTo(t, { offset: -20 }); else t.scrollIntoView({ behavior: "smooth" });
+    });
+  });
+})();
+</script>
+</body>
+</html>
