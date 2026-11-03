@@ -5,7 +5,11 @@
 #preloader{position:fixed;inset:0;z-index:1000;background:#0d0806;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:28px}
 #preloader .pl-stage{position:relative}
 #preloader svg{width:min(520px,78vw);height:auto;overflow:visible}
-#preloader path{fill:#e8c07a;fill-opacity:0;stroke:#ffb35c;stroke-width:3;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 6px rgba(255,150,60,.9)) drop-shadow(0 0 18px rgba(255,110,30,.45))}
+/* Начальное состояние штриха — ПОЛНОСТЬЮ скрытое (dash длины 0, гигантский
+   зазор), иначе до запуска скрипта dasharray:1/dashoffset:1 давал пунктирный
+   контур, который на экране сливался в целый логотип и мелькал перед
+   отрисовкой. Скрипт тут же выставляет реальные длины и ведёт анимацию. */
+#preloader path{fill:#e8c07a;fill-opacity:0;stroke:#ffb35c;stroke-width:3;stroke-linejoin:round;stroke-dasharray:0 99999;stroke-dashoffset:0;filter:drop-shadow(0 0 6px rgba(255,150,60,.9)) drop-shadow(0 0 18px rgba(255,110,30,.45))}
 #preloader path.counter{fill:#0d0806}
 #laser-dot{position:absolute;width:14px;height:14px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,#fff 0%,#ffd27a 35%,rgba(255,130,40,.85) 60%,transparent 72%);box-shadow:0 0 18px 6px rgba(255,150,60,.75),0 0 46px 18px rgba(255,110,30,.35);transform:translate(-50%,-50%)}
 #preloader .pl-label{font-family:Manrope,system-ui,sans-serif;font-size:11px;letter-spacing:.35em;text-transform:uppercase;color:#8a6f52;opacity:0}
