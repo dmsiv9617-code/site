@@ -545,7 +545,9 @@ document.querySelector('#add-cart').addEventListener('click', () => {
       cover.setAttribute('aria-hidden', String(d < -.7));
     });
     bar.style.transform = `scaleX(${(active+1)/items.length})`;
-    if (visible && !reduce.matches) floaters.style.translate = `${progress*22}px ${-progress*50}px`;
+    // Параллакс стены .cosmic-photos убран: translate размытого слоя каждый
+    // кадр заставляет браузер перерастрировать всю blurred-поверхность при
+    // скролле (~15fps и «дерганье» в коллекции). Стена статична — как в дизайне.
   }
   function schedule() { if (!pending) {pending=true; requestAnimationFrame(update);} }
   function go(index) {
