@@ -342,3 +342,47 @@
   .constructor.studio #live-album .custom-album{zoom:.52}
   .constructor.studio #live-album .configured-album img{max-height:104px}
 }
+
+/* Кастомный рисунок: дропзона, миниатюра, настройка перетаскиванием. */
+.studio .studio-custom-art{margin-top:22px}
+.studio .upload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;border:1.5px dashed var(--studio-brass);border-radius:16px;background:var(--studio-panel);padding:22px 16px;cursor:pointer;color:var(--studio-ink);transition:border-color .25s,background .25s}
+.studio .upload:hover,.studio .upload.dragover{border-color:var(--studio-green);background:#f4ecdc}
+.studio .upload .studio-upload-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--studio-ink);color:var(--studio-paper)}
+.studio .upload .studio-upload-icon svg{width:18px;height:18px}
+.studio .upload .studio-upload-title{display:block;font-size:13px;font-weight:600;margin-top:4px;color:var(--studio-ink)}
+.studio .upload .studio-upload-note{display:block;font-size:10px;color:var(--studio-muted);margin-top:0}
+#upload-thumb{display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px;border:1px solid var(--studio-line);border-radius:14px;background:var(--studio-panel)}
+#upload-thumb[hidden]{display:none}
+#upload-thumb-img{width:54px;height:54px;object-fit:cover;border-radius:10px;border:1px solid var(--studio-line);background:#fff}
+.upload-thumb-actions{display:flex;flex-direction:column;gap:3px;font-size:11px}
+#upload-thumb-name{font-weight:600;color:var(--studio-ink)}
+.upload-thumb-actions .text-link{margin:0;padding:0;font-size:10px;text-align:left}
+.studio .art-tools{margin-top:12px;padding:16px;border:1px solid var(--studio-line);border-radius:16px;background:var(--studio-white,#fffcf6)}
+.studio .art-tools[hidden]{display:none}
+.studio .art-tools .art-tools-hint{font-size:10px;line-height:1.6;color:var(--studio-muted);margin:0 0 12px;padding:8px 10px;border-radius:10px;background:var(--studio-panel)}
+.studio .art-tools .art-row{display:flex;flex-direction:column;align-items:stretch;gap:7px;font-size:11px;color:var(--studio-ink);margin-bottom:13px}
+.studio .art-tools .art-row>span{font-size:10px;color:var(--studio-muted)}
+.studio .art-tools input[type=range]{width:100%;accent-color:#65704c;height:22px}
+.studio .studio-mode{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--studio-line);border-radius:999px;overflow:hidden}
+.studio .studio-mode button{padding:9px 6px;font-size:10px;border:0;background:transparent;color:var(--studio-muted);cursor:pointer;transition:background .2s,color .2s}
+.studio .studio-mode button[aria-pressed=true]{background:var(--studio-ink);color:var(--studio-paper)}
+.studio .art-tools .control-hint{font-size:9px;margin:4px 0 10px}
+#live-album.art-draggable .cover-art{cursor:grab;touch-action:none}
+#live-album.art-draggable .cover-art:active{cursor:grabbing}
+/* Надпись на обложке. */
+.studio-inscription{margin-top:22px}
+.studio .studio-field-label{display:block;font-size:11px;letter-spacing:.4px;color:var(--studio-muted);margin-bottom:8px}
+.studio-inscription-field{display:flex;align-items:center;gap:8px;border:1px solid var(--studio-line);border-radius:14px;background:var(--studio-panel);padding:4px 14px}
+.studio-inscription-field:focus-within{border-color:var(--studio-brass)}
+.studio .studio-inscription-field #inscription{flex:1;min-width:0;border:0;background:transparent;padding:10px 0;font-family:var(--serif);font-style:italic;font-size:19px;color:var(--studio-ink)}
+.studio .studio-inscription-field #inscription:focus{outline:none}
+.studio-inscription-mark{font-family:var(--serif);font-size:22px;color:var(--studio-brass);line-height:1}
+#inscription-count{flex:0 0 auto;font-size:9px;color:var(--studio-muted)}
+.studio-inscription-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.studio-chip{padding:6px 11px;font-size:10px;border:1px solid var(--studio-line);border-radius:999px;background:transparent;color:var(--studio-muted);cursor:pointer;transition:border-color .2s,color .2s,background .2s}
+.studio-chip:hover{border-color:var(--studio-brass);color:var(--studio-ink);background:var(--studio-panel)}
+
+/* Компактная дропзона после загрузки. */
+.studio-custom-art.has-art .upload{padding:12px 16px;border-style:solid}
+.studio-custom-art.has-art .studio-upload-icon{width:28px;height:28px}
+.studio-custom-art.has-art .studio-upload-icon svg{width:14px;height:14px}
