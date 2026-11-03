@@ -584,6 +584,7 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   const stage=catalog.querySelector('.cosmic-stage');
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   const stageRide=!reduced.matches&&typeof CSS!=='undefined'&&!!CSS.supports&&CSS.supports('animation-timeline: view()');
+  let rideBroken=false;
   const clamp=n=>Math.max(0,Math.min(1,n));const ease=n=>{n=clamp(n);return n*n*n*(n*(n*6-15)+10);};
   const frames=sources.map(()=>null);let queued=false,cursor=0;
   function draw(){
@@ -607,10 +608,18 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     const text=1-ease((p-.05)/.25);copy.style.opacity=String(text);copy.style.pointerEvents=text>.1?'':'none';copy.style.translate=`0 ${-ease(p/.3)*20}px`;
     hint.style.opacity=String(1-ease(p/.13));
     photo.style.opacity=String(1-ease((p-.52)/.20));black.style.opacity=String(ease((p-.58)/.18));
-    // Появление сцены — только fallback для браузеров без scroll-driven
-    // animations: fade по мере въезда. В современных браузерах въезд+фейд
-    // делает CSS-анимация stage-ride (композитор, без дрожания).
-    if(stage&&!stageRide){const top=catalog.getBoundingClientRect().top;const reveal=reduced.matches||top<=0?1:clamp(1-top/h);stage.style.opacity=String(reveal);stage.style.pointerEvents=reveal>.1?'':'none';}
+    // Появление сцены. Основной путь — CSS-анимация stage-ride (композитор,
+    // без дрожания). Fallback — fade по мере въезда для браузеров без
+    // scroll-driven animations. Страховка: если движок заявил поддержку, но
+    // таймлайн не крутится (сцена наполовину в кадре, а opacity всё ещё ~0),
+    // принудительно глушим анимацию и дальше крутим fallback (без этого
+    // inline-opacity не побил бы ключевые кадры анимации).
+    if(stage){
+      const top=catalog.getBoundingClientRect().top;
+      let ride=stageRide&&!rideBroken;
+      if(ride&&top<h*.5&&(parseFloat(getComputedStyle(stage).opacity)||0)<.02){rideBroken=true;ride=false;stage.style.animation='none';}
+      if(!ride){const reveal=reduced.matches||top<=0?1:clamp(1-top/h);stage.style.opacity=String(reveal);stage.style.pointerEvents=reveal>.1?'':'none';}
+    }
     sequence.dataset.progress=p.toFixed(3);sequence.dataset.frame=String(index);
   }
   function schedule(){if(!queued){queued=true;requestAnimationFrame(draw);}}
