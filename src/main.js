@@ -735,13 +735,16 @@ setupHeaderCollection({models,openProduct,escape,money});
     finished = true;
     liveTween?.kill(); burnTl?.kill();
     try { sessionStorage.setItem('wb-intro', '1'); } catch {}
+    // Текст начинает всплывать СРАЗУ по окончании шоу с гравировкой — одновременно
+    // с растворением прелоадера, а не после него: иначе между исчезновением
+    // лого и всплытием слов возникала пустая секция хиро.
+    revealHero();
     gsap.to(pre, {
       clipPath: 'circle(0% at 50% 42%)', opacity: 0, duration: .9, ease: 'power3.inOut',
       onStart: () => { pre.style.clipPath = 'circle(120% at 50% 42%)'; },
       onComplete: () => {
         pre.remove();
         document.documentElement.classList.remove('intro-lock');
-        revealHero();
       }
     });
   };
