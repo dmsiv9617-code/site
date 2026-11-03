@@ -509,15 +509,24 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   let active = -1, pending = false, visible = false;
   // Прогресс карусели живёт в окне sticky (catalog.top: 0 → -(height-vh)).
-  // Пока сцена только проявляется (въезд/фейд), прогресс = 0 — первый альбом
-  // держится на экране, пока фон до конца не проявится.
+  // Сырый прогресс sticky-окна каталога (0..1).
   function progressOf(rect) {
     return Math.max(0, Math.min(1, -rect.top / Math.max(1, rect.height - innerHeight)));
+  }
+  // Длина фейда появления: первые 60% вьюпорта законного окна. Пока сцена
+  // проявляется, альбомы неподвижны — первый альбом держится, пока фон не
+  // станет полностью ярким; карусель стартует с нуля сразу после фейда.
+  function fadeLen(rect) {
+    return Math.min(innerHeight * .6, Math.max(1, rect.height - innerHeight) * .5);
+  }
+  function carouselProgress(rect) {
+    const total = Math.max(1, rect.height - innerHeight), fade = fadeLen(rect);
+    return Math.max(0, Math.min(1, (-rect.top - fade) / Math.max(1, total - fade)));
   }
   function update() {
     pending = false;
     const rect = section.getBoundingClientRect();
-    const progress = progressOf(rect);
+    const progress = carouselProgress(rect);
     const position = progress * (items.length - 1);
     const current = Math.round(position);
     if (current !== active) {
@@ -551,15 +560,15 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   function schedule() { if (!pending) {pending=true; requestAnimationFrame(update);} }
   function go(index) {
     const rect=section.getBoundingClientRect();
-    const top=scrollY+rect.top;
-    scrollTo({top:top+Math.max(0,Math.min(items.length-1,index))/(items.length-1)*(rect.height-innerHeight),behavior:reduce.matches?'instant':'smooth'});
+    const top=scrollY+rect.top, fade=fadeLen(rect);
+    scrollTo({top:top+fade+Math.max(0,Math.min(items.length-1,index))/(items.length-1)*(rect.height-innerHeight-fade),behavior:reduce.matches?'instant':'smooth'});
   }
   prev.onclick=()=>go(active-1); next.onclick=()=>go(active+1);
   covers.forEach((cover,i)=>{cover.onclick=()=>{
     if(items[i].custom){location.hash='constructor';document.querySelector('#constructor').scrollIntoView({behavior:reduce.matches?'instant':'smooth'});return;}
     if(i!==active){go(i);return;}
     const rect=section.getBoundingClientRect();
-    const position=Math.max(0,Math.min(items.length-1,progressOf(rect)*(items.length-1)));
+    const position=Math.max(0,Math.min(items.length-1,carouselProgress(rect)*(items.length-1)));
     if(Math.abs(position-i)>.08){go(i);return;}
     openProduct(items[i].id);
   };});
@@ -610,10 +619,12 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     // (catTop≤0, sticky держит её композиторно). До этого момента сцена ниже
     // кадра и скрыта чёрным хвостом green-последовательности. Fade крутит
     // только opacity — positional-джиттера не будет (transform в анимации
-    // появления намертво убирал sticky-пиннинг в новых Chrome).
+    // появления намертво убирал sticky-пиннинг в новых Chrome). Длина фейда
+    // = 0.6·вьюпорт — та же константа, что вычитает окно у карусели: на
+    // конце фейда прогресс карусели ровно 0, первый альбом на месте.
     if(stage){
       const top=catalog.getBoundingClientRect().top;
-      const reveal=reduced.matches?1:clamp(-top/h);
+      const reveal=reduced.matches?1:clamp(-top/(innerHeight*.6));
       stage.style.opacity=String(reveal);
       stage.style.pointerEvents=reveal>.1?'':'none';
     }
