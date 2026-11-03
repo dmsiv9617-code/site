@@ -615,18 +615,24 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     const text=1-ease((p-.05)/.25);copy.style.opacity=String(text);copy.style.pointerEvents=text>.1?'':'none';copy.style.translate=`0 ${-ease(p/.3)*20}px`;
     hint.style.opacity=String(1-ease(p/.13));
     photo.style.opacity=String(1-ease((p-.52)/.20));black.style.opacity=String(ease((p-.58)/.18));
-    // Появление сцены: fade из чёрного ПОСЛЕ того, как сцена встала на место
-    // (catTop≤0, sticky держит её композиторно). До этого момента сцена ниже
-    // кадра и скрыта чёрным хвостом green-последовательности. Fade крутит
-    // только opacity — positional-джиттера не будет (transform в анимации
-    // появления намертво убирал sticky-пиннинг в новых Chrome). Длина фейда
-    // = 0.6·вьюпорт — та же константа, что вычитает окно у карусели: на
-    // конце фейда прогресс карусели ровно 0, первый альбом на месте.
+    // Появление сцены: каталог уехал ПОД героя (z-index ниже), поэтому край
+    // и сцена скользят вверх, будучи полностью скрыты за непрозрачным
+    // sticky-героем. Как только сцена встала на место (catTop≤0), герой
+    // растворяется (opacity-only — джиттера не будет) и открывает уже
+    // зафиксированную сцену. Жёсткого края и подъёма снизу нет по построению;
+    // «пустого» чёрного скролла — всего зазор между полным затемнением
+    // последовательности (p=.76) и началом растворения героя.
     if(stage){
       const top=catalog.getBoundingClientRect().top;
       const reveal=reduced.matches?1:clamp(-top/(innerHeight*.6));
       stage.style.opacity=String(reveal);
       stage.style.pointerEvents=reveal>.1?'':'none';
+      // Растворение героя поверх приклеенной сцены. За 0.35·вьюпорта после
+      // catTop=0 герой уходит полностью; указатели отдаём сцене, как только
+      // герой стал полупрозрачным.
+      const heroFade=reduced.matches?(top<0?0:1):1-ease(clamp(-top/(innerHeight*.35)));
+      hero.style.opacity=String(heroFade);
+      hero.style.pointerEvents=heroFade<.5?'none':'';
     }
     sequence.dataset.progress=p.toFixed(3);sequence.dataset.frame=String(index);
   }
