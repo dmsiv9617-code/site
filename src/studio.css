@@ -302,3 +302,64 @@
 .device-infographic-footer li {padding:5px 0;line-height:1.6;}
 .device-infographic-dialog button:focus-visible,.device-infographic-dialog a:focus-visible,.device-infographic-dialog summary:focus-visible {outline:3px solid #a5793c;outline-offset:4px;}
 @media(max-width:600px){.device-infographic-dialog {padding:40px 8px 14px;border-radius:18px;}.device-infographic-footer {display:block;font-size:13px;}.device-infographic-footer details {margin-top:15px;}}
+
+
+/* Мобильный конструктор: вся студия на один экран (без скролла страницы). */
+@media(max-width:700px){
+  .constructor.studio{padding:0;min-height:0;height:100svh;display:flex;flex-direction:column}
+  .constructor.studio>.section-heading{display:none}
+  .constructor.studio .builder{flex:1;min-height:0;display:flex;flex-direction:column;border:0;border-radius:0;overflow:hidden}
+  /* Превью — компактная полоса под фиксированным шапкой (140px). */
+  .constructor.studio .preview{flex:0 0 auto;min-height:0;padding:146px 12px 6px;gap:2px}
+  .constructor.studio #preview-note{display:none}
+  .constructor.studio #live-album{height:96px;min-height:0;overflow:hidden;margin:0}
+  .constructor.studio #live-album .custom-album{zoom:.45;max-width:none}
+  .constructor.studio #live-album .configured-album img{max-height:88px;width:auto}
+  /* Табы шагов. */
+  .constructor.studio .step-tabs{flex:none;margin:0;padding:2px 12px 0;border-bottom:0}
+  .constructor.studio .step-tabs button{padding:8px 4px;font-size:9px}
+  .constructor.studio .step-tabs button>span{font-size:7px;margin-bottom:4px}
+  /* Настройки занимают всё оставшееся место; внутри прокручивается только мастер. */
+  .constructor.studio .options{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:8px 14px calc(10px + env(safe-area-inset-bottom))}
+  .constructor.studio .config-wizard{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .constructor.studio .config-panel{min-height:0}
+  .constructor.studio #panel-binding>.control-hint{display:none}
+  .constructor.studio .studio-progress{margin:0 0 2px;height:8px}
+  .constructor.studio .studio-step-title{margin:0 0 4px;font-size:15px}
+  .constructor.studio #step-hint{margin:0 0 6px;font-size:10px}
+  .constructor.studio .swatches{gap:8px;margin:0}
+  .constructor.studio .swatches button{width:25px;height:25px;border-width:2px}
+  .constructor.studio .option-label{margin:6px 0 5px}
+  .constructor.studio .config-panel>.option-label{margin-top:6px}
+  .constructor.studio .studio-leathers,.constructor.studio .studio-bindings{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .constructor.studio .studio-leathers button,.constructor.studio .studio-bindings button{padding:5px 6px;font-size:9.5px}
+  .constructor.studio .motifs{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .constructor.studio .motifs button{width:auto;height:auto;padding:4px}
+  .constructor.studio .motifs svg{height:30px}
+  .constructor.studio .motifs img{max-height:38px;aspect-ratio:auto}
+  .constructor.studio .motifs button>span{font-size:9px;line-height:1.2;margin:2px 0}
+  .constructor.studio .upload{padding:9px;margin-top:8px;font-size:10px}
+  .constructor.studio .extra{margin:7px 0;font-size:10px}
+  .constructor.studio .art-tools{display:flex;flex-wrap:wrap;gap:6px}
+  .constructor.studio .art-tools button{flex:1 1 calc(50% - 6px);padding:8px 4px;font-size:10px}
+  .constructor.studio .studio-composition{margin-top:5px;padding:5px 10px}
+  .constructor.studio .price-row{margin:6px 0 4px;padding-top:6px;font-size:10px}
+  .constructor.studio .price-row strong{font-size:18px}
+  .constructor.studio .step-actions{margin-top:4px;padding-top:6px}
+  .constructor.studio #add-cart{padding:10px;font-size:11px}
+  .constructor.studio .mascot-success .mascot{display:none}
+  /* Открытый разворот — компактная высота, чтобы не ломать экран. */
+  .constructor.studio .preview:has(.natural-spread) #live-album{height:auto;min-height:0;max-height:196px}
+  .constructor.studio .preview:has(.natural-spread) #live-album .natural-spread img{max-height:170px;width:100%;object-fit:cover;border-radius:8px}
+  .constructor.studio .preview:has(.natural-spread) #live-album figcaption{display:none}
+}
+/* Низкие мобильные экраны: ещё плотнее. */
+@media(max-width:700px) and (max-height:740px){
+  .constructor.studio .preview{padding-top:146px}
+  .constructor.studio #live-album{height:88px;min-height:0;overflow:hidden}
+  .constructor.studio #live-album .custom-album{zoom:.42}
+  .constructor.studio .studio-step-title{font-size:14px}
+  .constructor.studio #step-hint{margin-bottom:6px}
+  .constructor.studio .price-row strong{font-size:19px}
+  .constructor.studio #add-cart{padding:10px}
+}
