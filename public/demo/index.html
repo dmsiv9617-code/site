@@ -30,6 +30,7 @@ html.lenis,html.lenis body{height:auto}
 #preloader svg{width:min(520px,78vw);height:auto;overflow:visible}
 #preloader path{fill:var(--gold);fill-opacity:0;stroke:#ffb35c;stroke-width:3;stroke-linejoin:round;
   stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 6px rgba(255,150,60,.9)) drop-shadow(0 0 18px rgba(255,110,30,.45))}
+#preloader path.counter{fill:#0d0806}
 #laser-dot{position:absolute;width:14px;height:14px;border-radius:50%;pointer-events:none;
   background:radial-gradient(circle,#fff 0%,#ffd27a 35%,rgba(255,130,40,.85) 60%,transparent 72%);
   box-shadow:0 0 18px 6px rgba(255,150,60,.75),0 0 46px 18px rgba(255,110,30,.35);transform:translate(-50%,-50%)}
@@ -245,6 +246,20 @@ footer .f-logo{font-family:var(--serif);font-size:22px;color:var(--gold)}
   var dot = document.getElementById("laser-dot");
   var paths = Array.prototype.slice.call(document.querySelectorAll("#logo-svg path"));
   paths.forEach(function(p){ p.style.strokeDasharray = p.getTotalLength(); p.style.strokeDashoffset = p.getTotalLength(); });
+
+  /* внутренние контуры (глазки букв o, a, e, глаз птицы) — оставить цветом фона */
+  (function markCounters(){
+    var ctx = document.createElement("canvas").getContext("2d");
+    var shapes = paths.map(function(p){ return new Path2D(p.getAttribute("d")); });
+    var lens = paths.map(function(p){ return p.getTotalLength(); });
+    paths.forEach(function(p, i){
+      var pt = p.getPointAtLength(lens[i] * 0.5);
+      for (var j = 0; j < paths.length; j++){
+        if (j === i || lens[j] < lens[i] * 1.5) continue;
+        if (ctx.isPointInPath(shapes[j], pt.x, pt.y)) { p.classList.add("counter"); break; }
+      }
+    });
+  })();
 
   function spawnSparks(x, y, n){
     for (var i=0;i<n;i++){
