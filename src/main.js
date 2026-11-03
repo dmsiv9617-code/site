@@ -485,7 +485,7 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     [91,28,170,-18,2,.35], [18,62,120,20,1,.4], [-7,76,230,-28,3,.38],
     [73,82,200,19,3,.4], [61,-12,95,-17,3,.25], [3,30,100,-8,2,.18]
   ];
-  section.innerHTML = `<div class="cosmic-stage">
+  section.innerHTML = `<div class="cosmic-sticky"><div class="cosmic-stage">
     <div class="cosmic-photos is-paused" aria-hidden="true">${photos.map((p,i)=>`<figure class="cosmic-photo" style="--x:${p[0]}%;--y:${p[1]}%;--size:${p[2]}px;--angle:${p[3]}deg;--blur:${p[4]}px;--opacity:${p[5]};--duration:${19+i*2}s;--delay:-${i*3}s;--position:${i%2?'70%':'30%'} center"><img src="${i%2?'/scroll-assets/27c5ffc5b5ecba4c06b9.webp':'/scroll-assets/b7a3500becccb277ee85.webp'}" alt="" loading="lazy"></figure>`).join('')}</div>
     <div class="cosmic-glow"></div><div class="cosmic-light-trails" aria-hidden="true"><i></i><i></i><i></i></div><div class="cosmic-floor"></div>
     <h2 class="cosmic-sr-only">Коллекция деревянных альбомов</h2>
@@ -496,7 +496,7 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     <div class="cosmic-albums">${items.map((m,i)=>`<button type="button" class="cosmic-album ${m.custom?'cosmic-phantom':''}" data-index="${i}" aria-label="${m.custom?'Создать свой альбом':`Выбрать альбом ${escape(m.name)}`}">${m.custom?`<span class="phantom-cover" aria-hidden="true"><span class="phantom-spine">${'<i></i>'.repeat(5)}</span><span class="phantom-plus">+</span><span class="phantom-title">Создать<br>свой альбом</span><span class="phantom-note">Ваша история начинается здесь</span><span class="phantom-closure"></span></span>`:`<img src="${m.photos[0]}" alt="" width="1536" height="1024">`}</button>`).join('')}</div>
     <div class="cosmic-hint">Нажмите на альбом — он станет первым. Нажмите ещё раз, чтобы заглянуть внутрь.</div>
     <div class="cosmic-track" aria-hidden="true"><span></span></div>
-  </div>`;
+  </div></div>`;
   const covers = [...section.querySelectorAll('.cosmic-album')];
   const title = section.querySelector('.cosmic-title');
   const price = section.querySelector('.cosmic-price');
@@ -508,12 +508,11 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   const peekList = section.querySelector('.cosmic-peek-list');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   let active = -1, pending = false, visible = false;
-  // Прогресс считаем от момента, когда сцена коллекции въезжает во вьюпорт
-  // (stage pinned уже при catalog.top = innerHeight). Старая формула ждала
-  // catalog.top <= 0 — из-за этого ~1 вьюпорт скролла после чёрного листа
-  // коллекция висела статично, а потом «догоняла» — отсюда рывки.
+  // Прогресс карусели живёт в окне sticky (catalog.top: 0 → -(height-vh)).
+  // Пока сцена только проявляется (въезд/фейд), прогресс = 0 — первый альбом
+  // держится на экране, пока фон до конца не проявится.
   function progressOf(rect) {
-    return Math.max(0, Math.min(1, (innerHeight - rect.top) / Math.max(1, rect.height)));
+    return Math.max(0, Math.min(1, -rect.top / Math.max(1, rect.height - innerHeight)));
   }
   function update() {
     pending = false;
@@ -553,8 +552,7 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   function go(index) {
     const rect=section.getBoundingClientRect();
     const top=scrollY+rect.top;
-    const q=Math.max(0,Math.min(items.length-1,index))/(items.length-1);
-    scrollTo({top:top-innerHeight+q*rect.height,behavior:reduce.matches?'instant':'smooth'});
+    scrollTo({top:top+Math.max(0,Math.min(items.length-1,index))/(items.length-1)*(rect.height-innerHeight),behavior:reduce.matches?'instant':'smooth'});
   }
   prev.onclick=()=>go(active-1); next.onclick=()=>go(active+1);
   covers.forEach((cover,i)=>{cover.onclick=()=>{
@@ -585,6 +583,7 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   const header=document.querySelector('header'),hint=hero.querySelector('.green-scroll-hint');
   const stage=catalog.querySelector('.cosmic-stage');
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  const stageRide=!reduced.matches&&typeof CSS!=='undefined'&&!!CSS.supports&&CSS.supports('animation-timeline: view()');
   const clamp=n=>Math.max(0,Math.min(1,n));const ease=n=>{n=clamp(n);return n*n*n*(n*(n*6-15)+10);};
   const frames=sources.map(()=>null);let queued=false,cursor=0;
   function draw(){
@@ -608,12 +607,10 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     const text=1-ease((p-.05)/.25);copy.style.opacity=String(text);copy.style.pointerEvents=text>.1?'':'none';copy.style.translate=`0 ${-ease(p/.3)*20}px`;
     hint.style.opacity=String(1-ease(p/.13));
     photo.style.opacity=String(1-ease((p-.52)/.20));black.style.opacity=String(ease((p-.58)/.18));
-    // Въезд сцены отдаём естественному position:sticky без JS-пиннинга:
-    // раньше сцена позиционировалась inline-трансформом из скролл-слушателя
-    // и на кадр отставала от скролла — вся сцена дрожала по вертикали
-    // ровно на величину тика колеса, пока sticky не перехватывал (~2-й альбом).
-    // Проявление привязано к реальному въезду (catTop: vh → 0).
-    if(stage){const top=catalog.getBoundingClientRect().top;const reveal=reduced.matches||top<=0?1:clamp(1-top/h);stage.style.opacity=String(reveal);stage.style.pointerEvents=reveal>.1?'':'none';}
+    // Появление сцены — только fallback для браузеров без scroll-driven
+    // animations: fade по мере въезда. В современных браузерах въезд+фейд
+    // делает CSS-анимация stage-ride (композитор, без дрожания).
+    if(stage&&!stageRide){const top=catalog.getBoundingClientRect().top;const reveal=reduced.matches||top<=0?1:clamp(1-top/h);stage.style.opacity=String(reveal);stage.style.pointerEvents=reveal>.1?'':'none';}
     sequence.dataset.progress=p.toFixed(3);sequence.dataset.frame=String(index);
   }
   function schedule(){if(!queued){queued=true;requestAnimationFrame(draw);}}
