@@ -386,3 +386,6 @@
 .studio-custom-art.has-art .upload{padding:12px 16px;border-style:solid}
 .studio-custom-art.has-art .studio-upload-icon{width:28px;height:28px}
 .studio-custom-art.has-art .studio-upload-icon svg{width:14px;height:14px}
+
+/* Файловый input: скрыт визуально, но доступен для активации через label на всех мобильных браузерах. */
+.visually-hidden-file{position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none}
