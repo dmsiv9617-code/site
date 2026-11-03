@@ -1,5 +1,7 @@
 import {createAlbumPreview} from './album-preview.js';
 import {variantFor, leatherName} from './album-variants.js';
+import {gsap} from 'gsap';
+import './intro.css';
 import './album-variants.css';
 import './preview.css';
 import './header-collection.css';
@@ -629,4 +631,116 @@ setupHeaderCollection({models,openProduct,escape,money});
       observer.disconnect();
     }
   });
+})();
+
+
+// Лазерный прелоадер с векторным логотипом + всплывающий заголовок главной.
+// Прелоадер показывается один раз за сессию (флаг wb-intro в sessionStorage);
+// пословное всплытие заголовка играет при каждой загрузке.
+(() => {
+  const pre = document.getElementById('preloader');
+  const h1 = document.querySelector('.concept-hero h1');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const seen = document.documentElement.classList.contains('intro-done');
+
+  // Разбить заголовок на строки (по <br>) и слова для пословного всплытия.
+  let words = [];
+  if (h1 && !reduced) {
+    const lines = [[]];
+    [...h1.childNodes].forEach(node => {
+      if (node.nodeName === 'BR') { lines.push([]); return; }
+      node.textContent.split(/(\s+)/).forEach(tok => { if (tok) lines[lines.length - 1].push(tok); });
+    });
+    h1.innerHTML = lines.map(line =>
+      '<span class="ln">' + line.map(t => /^\s+$/.test(t) ? ' ' : `<span class="wd">${escape(t)}</span>`).join('') + '</span>'
+    ).join('');
+    words = [...h1.querySelectorAll('.wd')];
+  }
+
+  const revealHero = () => {
+    if (!words.length) return;
+    gsap.fromTo(words, { yPercent: 115 }, { yPercent: 0, duration: .85, ease: 'power3.out', stagger: .07 });
+    gsap.fromTo('.concept-hero .eyebrow, .concept-hero .hero-actions',
+      { opacity: 0, y: 18 },
+      { opacity: 1, y: 0, duration: .7, ease: 'power2.out', stagger: .12, delay: .3, clearProps: 'opacity,transform' });
+  };
+
+  if (reduced) { pre?.remove(); return; }          // без анимаций — статичная страница
+  if (!pre) { revealHero(); return; }
+  if (seen) { pre.remove(); revealHero(); return; } // повторный визит: только всплытие слов
+
+  // Первый визит за сессию: лазерная обводка логотипа.
+  document.documentElement.classList.add('intro-lock');
+  gsap.set(words, { yPercent: 115 });
+  gsap.set('.concept-hero .eyebrow, .concept-hero .hero-actions', { opacity: 0 });
+
+  const dot = pre.querySelector('#laser-dot');
+  const svg = pre.querySelector('#logo-svg');
+  const paths = [...svg.querySelectorAll('path')];
+  paths.forEach(p => { const l = p.getTotalLength(); p.style.strokeDasharray = l; p.style.strokeDashoffset = l; });
+
+  // Внутренние контуры (глазки букв o, a, e и глаз дятла) остаются цветом фона.
+  (() => {
+    const ctx = document.createElement('canvas').getContext('2d');
+    const shapes = paths.map(p => new Path2D(p.getAttribute('d')));
+    const lens = paths.map(p => p.getTotalLength());
+    paths.forEach((p, i) => {
+      const pt = p.getPointAtLength(lens[i] * .5);
+      for (let j = 0; j < paths.length; j++) {
+        if (j === i || lens[j] < lens[i] * 1.5) continue;
+        if (ctx.isPointInPath(shapes[j], pt.x, pt.y)) { p.classList.add('counter'); break; }
+      }
+    });
+  })();
+
+  let finished = false;
+  let liveTween = null;
+  let burnTl = null;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    liveTween?.kill(); burnTl?.kill();
+    try { sessionStorage.setItem('wb-intro', '1'); } catch {}
+    gsap.to(pre, {
+      clipPath: 'circle(0% at 50% 42%)', opacity: 0, duration: .9, ease: 'power3.inOut',
+      onStart: () => { pre.style.clipPath = 'circle(120% at 50% 42%)'; },
+      onComplete: () => {
+        pre.remove();
+        document.documentElement.classList.remove('intro-lock');
+        revealHero();
+      }
+    });
+  };
+  setTimeout(finish, 9000); // страховка от зависания анимации
+  pre.querySelector('#skip-intro').addEventListener('click', finish);
+
+  const rect = svg.getBoundingClientRect();
+  const wrapRect = dot.parentElement.getBoundingClientRect();
+  dot.hidden = false;
+  let i = 0;
+  const next = () => {
+    if (finished) return;
+    if (i >= paths.length) {
+      gsap.to(dot, { opacity: 0, duration: .25 });
+      burnTl = gsap.timeline({ onComplete: finish })
+        .to(paths, { fillOpacity: 1, strokeOpacity: .25, duration: .5, ease: 'power2.out' })
+        .to(svg, { scale: 1.04, duration: .5, ease: 'power2.out' }, '<')
+        .to(pre.querySelector('.pl-label'), { opacity: 1, duration: .4 }, '<')
+        .to({}, { duration: .55 });
+      return;
+    }
+    const p = paths[i++], len = p.getTotalLength();
+    const prox = { t: 0 };
+    liveTween = gsap.to(prox, {
+      t: 1, duration: Math.min(.62, Math.max(.1, len / 9000)), ease: 'power1.inOut',
+      onUpdate: () => {
+        p.style.strokeDashoffset = len * (1 - prox.t);
+        const pt = p.getPointAtLength(len * prox.t);
+        dot.style.left = (rect.left - wrapRect.left + pt.x * rect.width / 1798) + 'px';
+        dot.style.top = (rect.top - wrapRect.top + pt.y * rect.height / 875) + 'px';
+      },
+      onComplete: next
+    });
+  };
+  next();
 })();

@@ -1,6 +1,23 @@
 <!doctype html>
 <html lang="ru">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#150d08"><title>WoodBase — лазерная мастерская и альбомы из дерева</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#150d08">
+<style>
+#preloader{position:fixed;inset:0;z-index:1000;background:#0d0806;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:28px}
+#preloader .pl-stage{position:relative}
+#preloader svg{width:min(520px,78vw);height:auto;overflow:visible}
+#preloader path{fill:#e8c07a;fill-opacity:0;stroke:#ffb35c;stroke-width:3;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 6px rgba(255,150,60,.9)) drop-shadow(0 0 18px rgba(255,110,30,.45))}
+#preloader path.counter{fill:#0d0806}
+#laser-dot{position:absolute;width:14px;height:14px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,#fff 0%,#ffd27a 35%,rgba(255,130,40,.85) 60%,transparent 72%);box-shadow:0 0 18px 6px rgba(255,150,60,.75),0 0 46px 18px rgba(255,110,30,.35);transform:translate(-50%,-50%)}
+#preloader .pl-label{font-family:Manrope,system-ui,sans-serif;font-size:11px;letter-spacing:.35em;text-transform:uppercase;color:#8a6f52;opacity:0}
+#skip-intro{position:absolute;bottom:34px;right:38px;background:none;border:1px solid #4a3423;color:#b99c78;font-family:Manrope,system-ui,sans-serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding:10px 22px;border-radius:999px;cursor:pointer;transition:border-color .25s,color .25s}
+#skip-intro:hover{border-color:#e8c07a;color:#e8c07a}
+html.intro-done #preloader{display:none}
+html.intro-lock,html.intro-lock body{overflow:hidden}
+#preloader{animation:pl-failsafe 0s 12s forwards}
+@keyframes pl-failsafe{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){#preloader{display:none}}
+</style>
+<script>try{if(sessionStorage.getItem('wb-intro'))document.documentElement.classList.add('intro-done')}catch(e){}</script><title>WoodBase — лазерная мастерская и альбомы из дерева</title>
 <meta name="description" content="Деревянные фотоальбомы ручной работы с лазерной гравировкой. Соберите свой альбом в конфигураторе: дерево, кожа, переплёт, именная гравировка.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
@@ -9,5 +26,13 @@
 <meta property="og:description" content="Деревянные фотоальбомы ручной работы с лазерной гравировкой. Соберите свой альбом в конфигураторе.">
 <meta property="og:image" content="/hero-assets/woody-album-sharp.webp">
 </head>
-<body><div id="app"></div><script type="module" src="/src/main.js"></script></body>
+<body><div id="preloader" role="status" aria-label="Загрузка сайта">
+  <div class="pl-stage">
+    <svg id="logo-svg" viewBox="0 0 1798 875" aria-hidden="true"><path d="M795,67L795,91L800,107L814,128L827,139L826,141L809,140L808,144L814,163L821,173L820,202L823,221L840,262L809,295L792,319L780,341L768,372L758,415L755,441L755,488L759,518L802,511L849,490L878,469L899,449L926,414L945,378L946,400L941,421L930,443L912,466L892,484L837,517L797,531L766,537L792,541L831,541L869,535L900,525L942,503L970,481L992,453L1000,435L1005,409L1004,385L997,360L988,344L972,326L959,316L905,286L891,275L875,257L865,236L862,222L862,198L869,173L890,144L915,128L932,123L955,122L983,129L1012,147L1039,177L1039,182L1026,201L1007,221L985,238L950,257L1006,290L1033,317L1048,340L1056,359L1060,376L1061,401L1053,437L1039,464L1026,481L1006,500L970,523L925,541L858,556L813,559L765,556L792,567L819,573L860,576L897,575L896,621L868,610L851,608L826,610L797,622L774,644L765,660L760,676L758,712L763,735L775,758L798,779L826,790L863,789L877,784L898,769L900,784L905,788L942,786L945,779L945,565L970,556L1036,780L1046,781L1073,774L1077,770L1078,761L1106,766L1123,764L1141,758L1164,744L1185,715L1203,738L1229,754L1250,759L1266,759L1279,756L1295,748L1295,762L1299,766L1328,775L1337,770L1374,621L1374,614L1371,610L1336,602L1328,614L1310,594L1294,585L1275,580L1255,580L1234,585L1211,599L1196,615L1183,639L1171,619L1156,603L1136,591L1115,585L1093,585L1070,592L1054,602L1038,619L1015,535L1045,511L1073,479L1090,449L1101,410L1102,374L1093,334L1076,300L1054,273L1068,259L1088,247L1172,226L1200,212L1200,209L1146,181L1115,170L1081,162L1071,129L1053,103L1027,82L1002,70L977,63L944,61L917,66L880,81L840,86L818,81Z"/><path d="M93,619L93,630L143,781L147,786L154,789L175,789L186,782L220,689L258,784L266,789L284,789L297,781L305,765L352,628L350,617L314,615L306,619L276,714L236,618L215,615L205,617L200,622L167,713L137,620L127,615L99,615Z"/><path d="M1421,611L1401,619L1383,636L1376,656L1379,680L1392,697L1406,705L1459,720L1479,729L1484,735L1484,745L1470,757L1446,761L1433,759L1423,754L1414,745L1409,735L1374,734L1371,740L1375,755L1390,776L1417,790L1437,794L1464,794L1486,789L1509,775L1521,758L1524,748L1524,728L1519,715L1504,699L1488,691L1423,673L1416,665L1416,656L1422,648L1430,644L1456,642L1471,648L1483,664L1516,664L1519,661L1516,645L1511,635L1500,624L1478,613L1460,609Z"/><path d="M1614,609L1592,615L1577,623L1553,647L1543,666L1539,681L1538,718L1542,735L1551,753L1560,765L1574,777L1591,786L1608,791L1643,792L1666,786L1695,770L1701,763L1698,753L1680,735L1675,735L1645,751L1617,752L1605,747L1594,738L1585,718L1589,716L1704,716L1711,710L1711,684L1707,666L1699,649L1680,627L1651,612L1637,609Z"/><path d="M643,608L613,615L596,624L579,639L570,651L561,671L558,686L558,713L562,732L577,759L592,774L623,789L658,792L693,783L712,771L724,759L740,729L744,700L743,685L733,655L710,628L679,612Z"/><path d="M443,608L409,616L388,629L375,642L359,673L356,688L356,712L367,746L387,771L422,789L456,792L475,789L497,780L523,758L538,729L542,710L542,690L538,670L532,656L523,642L510,629L495,619L474,611Z"/><path d="M842,650L859,650L877,657L890,669L899,688L899,711L893,726L877,743L859,750L842,750L823,742L809,726L803,708L804,687L813,668L823,658Z"/><path d="M644,650L657,650L674,656L689,670L697,689L697,709L690,728L677,742L657,750L639,749L624,742L610,726L604,705L606,684L614,668L629,655Z"/><path d="M443,650L461,651L478,660L489,673L495,690L495,711L488,728L475,742L456,750L441,750L422,742L409,727L403,711L403,690L409,673L424,657Z"/><path d="M1264,623L1282,625L1300,635L1312,651L1316,667L1315,681L1305,701L1292,713L1269,720L1256,719L1239,711L1227,697L1221,680L1222,661L1232,641L1244,630Z"/><path d="M1088,629L1106,629L1122,636L1136,651L1143,670L1143,687L1137,703L1123,718L1107,725L1089,725L1075,719L1062,707L1053,685L1053,665L1058,651L1072,636Z"/><path d="M1040,216L1059,190L1104,197L1142,209L1135,212L1083,217L1047,218Z"/><path d="M956,157L946,162L936,173L932,186L934,201L941,212L950,219L958,222L975,222L987,216L995,208L1000,197L1000,181L994,169L985,161L971,156Z"/><path d="M1586,677L1592,665L1606,654L1629,650L1648,657L1658,667L1662,683L1587,684Z"/></svg>
+    <div id="laser-dot" hidden></div>
+  </div>
+  <div class="pl-label">лазерная гравировка</div>
+  <button id="skip-intro" type="button">Пропустить</button>
+</div>
+<div id="app"></div><script type="module" src="/src/main.js"></script></body>
 </html>
