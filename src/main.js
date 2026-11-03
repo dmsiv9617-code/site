@@ -608,7 +608,12 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     const text=1-ease((p-.05)/.25);copy.style.opacity=String(text);copy.style.pointerEvents=text>.1?'':'none';copy.style.translate=`0 ${-ease(p/.3)*20}px`;
     hint.style.opacity=String(1-ease(p/.13));
     photo.style.opacity=String(1-ease((p-.52)/.20));black.style.opacity=String(ease((p-.58)/.18));
-    if(stage){const top=catalog.getBoundingClientRect().top;const reveal=reduced.matches||top<=0?1:ease((p-.72)/.14);stage.style.opacity=String(reveal);stage.style.transform=reduced.matches?'':`translateY(${-Math.max(0,Math.min(h,top))}px)`;stage.style.pointerEvents=reveal>.1?'':'none';}
+    // Въезд сцены отдаём естественному position:sticky без JS-пиннинга:
+    // раньше сцена позиционировалась inline-трансформом из скролл-слушателя
+    // и на кадр отставала от скролла — вся сцена дрожала по вертикали
+    // ровно на величину тика колеса, пока sticky не перехватывал (~2-й альбом).
+    // Проявление привязано к реальному въезду (catTop: vh → 0).
+    if(stage){const top=catalog.getBoundingClientRect().top;const reveal=reduced.matches||top<=0?1:clamp(1-top/h);stage.style.opacity=String(reveal);stage.style.pointerEvents=reveal>.1?'':'none';}
     sequence.dataset.progress=p.toFixed(3);sequence.dataset.frame=String(index);
   }
   function schedule(){if(!queued){queued=true;requestAnimationFrame(draw);}}
