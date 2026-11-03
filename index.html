@@ -1,6 +1,23 @@
 <!doctype html>
 <html lang="ru">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#150d08"><title>WoodBase — лазерная мастерская и альбомы из дерева</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#150d08">
+<style>
+#preloader{position:fixed;inset:0;z-index:1000;background:#0d0806;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:28px}
+#preloader .pl-stage{position:relative}
+#preloader svg{width:min(520px,78vw);height:auto;overflow:visible}
+#preloader path{fill:#e8c07a;fill-opacity:0;stroke:#ffb35c;stroke-width:3;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 6px rgba(255,150,60,.9)) drop-shadow(0 0 18px rgba(255,110,30,.45))}
+#preloader path.counter{fill:#0d0806}
+#laser-dot{position:absolute;width:14px;height:14px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,#fff 0%,#ffd27a 35%,rgba(255,130,40,.85) 60%,transparent 72%);box-shadow:0 0 18px 6px rgba(255,150,60,.75),0 0 46px 18px rgba(255,110,30,.35);transform:translate(-50%,-50%)}
+#preloader .pl-label{font-family:Manrope,system-ui,sans-serif;font-size:11px;letter-spacing:.35em;text-transform:uppercase;color:#8a6f52;opacity:0}
+#skip-intro{position:absolute;bottom:34px;right:38px;background:none;border:1px solid #4a3423;color:#b99c78;font-family:Manrope,system-ui,sans-serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding:10px 22px;border-radius:999px;cursor:pointer;transition:border-color .25s,color .25s}
+#skip-intro:hover{border-color:#e8c07a;color:#e8c07a}
+html.intro-done #preloader{display:none}
+html.intro-lock,html.intro-lock body{overflow:hidden}
+#preloader{animation:pl-failsafe 0s 12s forwards}
+@keyframes pl-failsafe{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){#preloader{display:none}}
+</style>
+<script>try{if(sessionStorage.getItem('wb-intro'))document.documentElement.classList.add('intro-done')}catch(e){}</script><title>WoodBase — лазерная мастерская и альбомы из дерева</title>
 <meta name="description" content="Деревянные фотоальбомы ручной работы с лазерной гравировкой. Соберите свой альбом в конфигураторе: дерево, кожа, переплёт, именная гравировка.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
@@ -9,5 +26,13 @@
 <meta property="og:description" content="Деревянные фотоальбомы ручной работы с лазерной гравировкой. Соберите свой альбом в конфигураторе.">
 <meta property="og:image" content="/hero-assets/woody-album-sharp.webp">
 </head>
-<body><div id="app"></div><script type="module" src="/src/main.js"></script></body>
+<body><div id="preloader" role="status" aria-label="Загрузка сайта">
+  <div class="pl-stage">
+    <svg id="logo-svg" viewBox="0 0 1798 875" aria-hidden="true">LOGO_PATHS_PLACEHOLDER</svg>
+    <div id="laser-dot" hidden></div>
+  </div>
+  <div class="pl-label">лазерная гравировка</div>
+  <button id="skip-intro" type="button">Пропустить</button>
+</div>
+<div id="app"></div><script type="module" src="/src/main.js"></script></body>
 </html>
