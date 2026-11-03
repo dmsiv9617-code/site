@@ -309,19 +309,20 @@
   .constructor.studio>.section-heading{display:none}
   .constructor.studio .builder{display:block;flex:none;min-height:0;overflow:visible;border:0;border-radius:0;background:none}
   /* Превью — липкая полоса под фиксированной шапкой. */
-  .constructor.studio .preview{position:sticky;top:120px;z-index:6;display:flex;flex-direction:row;align-items:center;gap:12px;padding:10px 14px;border-radius:0;min-height:0;border-left:0;border-right:0}
-  .constructor.studio .studio-preset{flex:0 0 104px;margin:0}
-  .constructor.studio #live-album{flex:1;min-width:0;height:88px;min-height:0;margin:0}
-  .constructor.studio #live-album .custom-album{zoom:.45;max-width:none}
-  .constructor.studio #live-album .configured-album img{max-height:82px;width:auto}
+  .constructor.studio .preview{position:sticky;top:120px;z-index:6;display:flex;flex-direction:row;align-items:center;gap:10px;padding:10px 12px;border-radius:0;min-height:0;border-left:0;border-right:0}
+  .constructor.studio .studio-preset{flex:0 0 76px;margin:0;font-size:9px;line-height:1.4}
+  .constructor.studio #live-album{flex:1;min-width:0;height:148px;min-height:0;margin:0}
+  .constructor.studio #live-album .custom-album{zoom:.68;max-width:none}
+  .constructor.studio #live-album .configured-album img{max-height:140px;width:auto}
   .constructor.studio .preview:has(.natural-spread) #live-album{height:auto;min-height:0;max-height:170px}
+  .constructor.studio .preview:has(.natural-spread) #live-album .natural-spread img{max-height:150px;width:auto}
   .constructor.studio .preview:has(.natural-spread) #live-album .natural-spread img{max-height:150px;width:100%;object-fit:cover;border-radius:8px}
   .constructor.studio .preview:has(.natural-spread) #live-album figcaption{display:none}
   .constructor.studio #preview-note{display:none}
   .constructor.studio .preview>.text-link{flex:0 0 auto;align-self:center}
-  .constructor.studio #studio-device{padding:7px 10px;font-size:9px;white-space:nowrap;gap:6px}
+  .constructor.studio #studio-device{padding:6px 8px;font-size:8px;white-space:nowrap;gap:5px}
   /* Табы шагов — липкие под превью. */
-  .constructor.studio .step-tabs{position:sticky;top:230px;z-index:5;margin:0;padding:6px 14px 0;border-bottom:0;background:var(--studio-paper,#fffaf2)}
+  .constructor.studio .step-tabs{position:sticky;top:292px;z-index:5;margin:0;padding:6px 14px 0;border-bottom:0;background:var(--studio-paper,#fffaf2)}
   .constructor.studio .step-tabs button{flex:1 1 0;min-height:40px;padding:8px 6px;font-size:11px;gap:6px;white-space:nowrap}
   .constructor.studio .step-tabs button>span{font-size:10px;margin:0}
   .constructor.studio .options{padding:14px 16px calc(16px + env(safe-area-inset-bottom))}
@@ -336,8 +337,8 @@
 }
 @media(max-width:700px) and (max-height:740px){
   .constructor.studio .preview{top:120px}
-  .constructor.studio .step-tabs{top:222px}
-  .constructor.studio #live-album{height:76px}
-  .constructor.studio #live-album .custom-album{zoom:.4}
-  .constructor.studio #live-album .configured-album img{max-height:70px}
+  .constructor.studio .step-tabs{top:252px}
+  .constructor.studio #live-album{height:112px}
+  .constructor.studio #live-album .custom-album{zoom:.52}
+  .constructor.studio #live-album .configured-album img{max-height:104px}
 }
