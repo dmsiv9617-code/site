@@ -508,11 +508,17 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   const peekList = section.querySelector('.cosmic-peek-list');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   let active = -1, pending = false, visible = false;
+  // Прогресс считаем от момента, когда сцена коллекции въезжает во вьюпорт
+  // (stage pinned уже при catalog.top = innerHeight). Старая формула ждала
+  // catalog.top <= 0 — из-за этого ~1 вьюпорт скролла после чёрного листа
+  // коллекция висела статично, а потом «догоняла» — отсюда рывки.
+  function progressOf(rect) {
+    return Math.max(0, Math.min(1, (innerHeight - rect.top) / Math.max(1, rect.height)));
+  }
   function update() {
     pending = false;
     const rect = section.getBoundingClientRect();
-    const range = Math.max(1, rect.height - innerHeight);
-    const progress = Math.max(0, Math.min(1, -rect.top / range));
+    const progress = progressOf(rect);
     const position = progress * (items.length - 1);
     const current = Math.round(position);
     if (current !== active) {
@@ -545,14 +551,15 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   function go(index) {
     const rect=section.getBoundingClientRect();
     const top=scrollY+rect.top;
-    scrollTo({top:top+Math.max(0,Math.min(items.length-1,index))/(items.length-1)*(rect.height-innerHeight),behavior:reduce.matches?'instant':'smooth'});
+    const q=Math.max(0,Math.min(items.length-1,index))/(items.length-1);
+    scrollTo({top:top-innerHeight+q*rect.height,behavior:reduce.matches?'instant':'smooth'});
   }
   prev.onclick=()=>go(active-1); next.onclick=()=>go(active+1);
   covers.forEach((cover,i)=>{cover.onclick=()=>{
     if(items[i].custom){location.hash='constructor';document.querySelector('#constructor').scrollIntoView({behavior:reduce.matches?'instant':'smooth'});return;}
     if(i!==active){go(i);return;}
     const rect=section.getBoundingClientRect();
-    const position=Math.max(0,Math.min(items.length-1,-rect.top/Math.max(1,rect.height-innerHeight)*(items.length-1)));
+    const position=Math.max(0,Math.min(items.length-1,progressOf(rect)*(items.length-1)));
     if(Math.abs(position-i)>.08){go(i);return;}
     openProduct(items[i].id);
   };});
