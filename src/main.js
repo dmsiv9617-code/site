@@ -485,7 +485,7 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     [91,28,170,-18,2,.35], [18,62,120,20,1,.4], [-7,76,230,-28,3,.38],
     [73,82,200,19,3,.4], [61,-12,95,-17,3,.25], [3,30,100,-8,2,.18]
   ];
-  section.innerHTML = `<div class="cosmic-sticky"><div class="cosmic-stage">
+  section.innerHTML = `<div class="cosmic-stage">
     <div class="cosmic-photos is-paused" aria-hidden="true">${photos.map((p,i)=>`<figure class="cosmic-photo" style="--x:${p[0]}%;--y:${p[1]}%;--size:${p[2]}px;--angle:${p[3]}deg;--blur:${p[4]}px;--opacity:${p[5]};--duration:${19+i*2}s;--delay:-${i*3}s;--position:${i%2?'70%':'30%'} center"><img src="${i%2?'/scroll-assets/27c5ffc5b5ecba4c06b9.webp':'/scroll-assets/b7a3500becccb277ee85.webp'}" alt="" loading="lazy"></figure>`).join('')}</div>
     <div class="cosmic-glow"></div><div class="cosmic-light-trails" aria-hidden="true"><i></i><i></i><i></i></div><div class="cosmic-floor"></div>
     <h2 class="cosmic-sr-only">Коллекция деревянных альбомов</h2>
@@ -496,7 +496,7 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     <div class="cosmic-albums">${items.map((m,i)=>`<button type="button" class="cosmic-album ${m.custom?'cosmic-phantom':''}" data-index="${i}" aria-label="${m.custom?'Создать свой альбом':`Выбрать альбом ${escape(m.name)}`}">${m.custom?`<span class="phantom-cover" aria-hidden="true"><span class="phantom-spine">${'<i></i>'.repeat(5)}</span><span class="phantom-plus">+</span><span class="phantom-title">Создать<br>свой альбом</span><span class="phantom-note">Ваша история начинается здесь</span><span class="phantom-closure"></span></span>`:`<img src="${m.photos[0]}" alt="" width="1536" height="1024">`}</button>`).join('')}</div>
     <div class="cosmic-hint">Нажмите на альбом — он станет первым. Нажмите ещё раз, чтобы заглянуть внутрь.</div>
     <div class="cosmic-track" aria-hidden="true"><span></span></div>
-  </div></div>`;
+  </div>`;
   const covers = [...section.querySelectorAll('.cosmic-album')];
   const title = section.querySelector('.cosmic-title');
   const price = section.querySelector('.cosmic-price');
@@ -583,8 +583,6 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   const header=document.querySelector('header'),hint=hero.querySelector('.green-scroll-hint');
   const stage=catalog.querySelector('.cosmic-stage');
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
-  const stageRide=!reduced.matches&&typeof CSS!=='undefined'&&!!CSS.supports&&CSS.supports('animation-timeline: view()');
-  let rideBroken=false;
   const clamp=n=>Math.max(0,Math.min(1,n));const ease=n=>{n=clamp(n);return n*n*n*(n*(n*6-15)+10);};
   const frames=sources.map(()=>null);let queued=false,cursor=0;
   function draw(){
@@ -608,17 +606,16 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     const text=1-ease((p-.05)/.25);copy.style.opacity=String(text);copy.style.pointerEvents=text>.1?'':'none';copy.style.translate=`0 ${-ease(p/.3)*20}px`;
     hint.style.opacity=String(1-ease(p/.13));
     photo.style.opacity=String(1-ease((p-.52)/.20));black.style.opacity=String(ease((p-.58)/.18));
-    // Появление сцены. Основной путь — CSS-анимация stage-ride (композитор,
-    // без дрожания). Fallback — fade по мере въезда для браузеров без
-    // scroll-driven animations. Страховка: если движок заявил поддержку, но
-    // таймлайн не крутится (сцена наполовину в кадре, а opacity всё ещё ~0),
-    // принудительно глушим анимацию и дальше крутим fallback (без этого
-    // inline-opacity не побил бы ключевые кадры анимации).
+    // Появление сцены: fade из чёрного ПОСЛЕ того, как сцена встала на место
+    // (catTop≤0, sticky держит её композиторно). До этого момента сцена ниже
+    // кадра и скрыта чёрным хвостом green-последовательности. Fade крутит
+    // только opacity — positional-джиттера не будет (transform в анимации
+    // появления намертво убирал sticky-пиннинг в новых Chrome).
     if(stage){
       const top=catalog.getBoundingClientRect().top;
-      let ride=stageRide&&!rideBroken;
-      if(ride&&top<h*.5&&(parseFloat(getComputedStyle(stage).opacity)||0)<.02){rideBroken=true;ride=false;stage.style.animation='none';}
-      if(!ride){const reveal=reduced.matches||top<=0?1:clamp(1-top/h);stage.style.opacity=String(reveal);stage.style.pointerEvents=reveal>.1?'':'none';}
+      const reveal=reduced.matches?1:clamp(-top/h);
+      stage.style.opacity=String(reveal);
+      stage.style.pointerEvents=reveal>.1?'':'none';
     }
     sequence.dataset.progress=p.toFixed(3);sequence.dataset.frame=String(index);
   }
