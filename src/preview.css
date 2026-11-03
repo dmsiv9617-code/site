@@ -335,8 +335,21 @@ footer .brand-logo{width:155px;height:79px;object-fit:contain;mix-blend-mode:mul
 @media(max-width:1100px) and (min-width:701px){.hero-woody{right:1%;width:47%}}
 @media(max-width:700px){.hero.concept-hero{height:940px}.hero.concept-hero>.hero-photo{position:absolute;inset:0;width:100%;height:100%;margin:0;mask-image:none;object-fit:cover;object-position:65% center;filter:blur(4px) brightness(.65)}.hero.concept-hero::after{background:linear-gradient(#060403e8 0%,#060403d9 38%,#06040399 58%,#06040330 83%)}.hero-woody{right:0;bottom:0;width:104%;aspect-ratio:1024/1100}.hero-woody>img{width:100%;height:auto}}
 
-#catalog.cosmic-collection{position:relative;max-width:none;width:100%;height:600svh;padding:0;margin:0;background:#0b0907;color:#f5eddf;isolation:isolate}
-.cosmic-stage{position:sticky;top:0;height:100svh;min-height:600px;overflow:hidden;background:radial-gradient(ellipse at 66% 62%,#a3662838,transparent 45%),linear-gradient(135deg,#080908,#1b1009 65%,#080706);isolation:isolate}
+#catalog.cosmic-collection{position:relative;max-width:none;width:100%;height:600svh;padding:0;background:#0b0907;color:#f5eddf;isolation:isolate}
+.cosmic-sticky{position:sticky;top:0;height:100svh}
+.cosmic-stage{height:100%;min-height:600px;overflow:hidden;background:radial-gradient(ellipse at 66% 62%,#a3662838,transparent 45%),linear-gradient(135deg,#080908,#1b1009 65%,#080706);isolation:isolate}
+/* Появление коллекции «на месте»: ride+fade крутит композитор (scroll-driven
+   animation) — без задержки на кадр, без дрожания. Отрицательный margin у
+   каталога втаскивает окно въезда в хвост green-последовательности, чтобы
+   проявление шло сразу после чёрного листа, а не после паузы. */
+@supports (animation-timeline: view()){
+  .cosmic-sticky{animation:stage-ride linear both;animation-timeline:view();animation-range:entry}
+  @keyframes stage-ride{
+    0%{transform:translateY(-100svh);opacity:0;pointer-events:none}
+    100%{transform:translateY(0);opacity:1;pointer-events:auto}
+  }
+}
+@media (prefers-reduced-motion: reduce){.cosmic-sticky{animation:none!important}}
 .cosmic-stage::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,#090907f2,transparent 45%),linear-gradient(0deg,#090806 1%,transparent 28%,transparent 80%,#08070566)}
 .cosmic-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 77% 63%,#d6913d30,transparent 37%);filter:blur(20px)}
 .cosmic-floor{position:absolute;left:20%;right:-10%;top:69%;height:45%;transform:perspective(600px) rotateX(48deg);transform-origin:top;background:linear-gradient(#160d0577,#090806),url('/scroll-assets/c5e6c8488a06179ed746.svg') center/650px;opacity:.5;border-top:1px solid #c18d3b33}
@@ -446,7 +459,7 @@ footer .brand-logo{width:155px;height:79px;object-fit:contain;mix-blend-mode:mul
 .green-scroll-black{position:absolute;inset:0;z-index:3;background:#000;opacity:0;pointer-events:none}
 .green-scroll-hint{position:absolute;left:7%;bottom:4%;z-index:4;color:#dec5a3;font:10px/1.7 Arial,sans-serif;letter-spacing:.5px;pointer-events:none}
 .green-scroll-skip{position:absolute;right:5%;bottom:4%;z-index:4;color:#f8e2c0;font:10px/1.7 Arial,sans-serif;text-decoration:none;border-bottom:1px solid #c8a06a66;padding:5px}
-body:has(.green-scroll-sequence) #catalog{margin-top:-100svh;background:#000;z-index:5;border:0}
+body:has(.green-scroll-sequence) #catalog{margin-top:-75svh;background:#000;z-index:5;border:0}
 body:has(.green-scroll-sequence) #app>header{position:fixed!important;inset:0 0 auto;z-index:100;opacity:1!important;pointer-events:auto!important;background:transparent!important;backdrop-filter:none!important;isolation:isolate;color:#fff4e1}
 body:has(.green-scroll-sequence) #app>header::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#050403e8,#050403b8 48%,#05040380),url('/hero-assets/workshop-soft-background.webp') center top/100vw auto;mask-image:linear-gradient(#000 0%,#000 55%,transparent 100%);pointer-events:none}
 body:has(.green-scroll-sequence) #app>header nav a,body:has(.green-scroll-sequence) #app>header .cart-button{color:#fff4e1}
