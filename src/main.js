@@ -234,6 +234,9 @@ const customArtwork=document.createElement('div');customArtwork.className='studi
 const uploadLabel=stepPanels.cover.querySelector('.upload');
 uploadLabel.innerHTML='<span class="studio-upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0 4 4m-4-4L8 8"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></span><span class="studio-upload-title">Загрузите свой рисунок</span><span class="studio-upload-note">Перетащите файл сюда или нажмите · PNG, JPG, WebP до 5 МБ</span>';
 const uploadInput=stepPanels.cover.querySelector('#upload');
+// Visually-hidden (not display:none) so label activation opens the picker in every mobile browser.
+uploadInput.className='visually-hidden-file';uploadInput.removeAttribute('hidden');
+uploadLabel.addEventListener('click',e=>{e.preventDefault();uploadInput.click();});
 const uploadStatus=stepPanels.cover.querySelector('#upload-status');
 const artTools=stepPanels.cover.querySelector('.art-tools');
 // Rebuild the tuning card: hint, compact rows, segmented mode switch.
