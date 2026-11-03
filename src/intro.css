@@ -1,0 +1,4 @@
+/* Лазерный прелоадер и всплывающий заголовок главной.
+   Состояние скрытия выставляется из JS (gsap), чтобы без JS ничего не пропадало. */
+.concept-hero h1 .ln{display:block;overflow:hidden;padding-bottom:.09em;margin-bottom:-.09em}
+.concept-hero h1 .wd{display:inline-block;will-change:transform}
