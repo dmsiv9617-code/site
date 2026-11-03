@@ -229,12 +229,46 @@ function syncStudio(){
   }
  });
 }
-// Custom artwork is optional; keep the ready-made covers visible without scrolling.
-const customArtwork=document.createElement('details');customArtwork.className='studio-custom-art';customArtwork.innerHTML='<summary>Загрузить свой рисунок</summary>';
-for(const selector of ['.upload','#upload','#upload-status','.art-tools','#remove-image']){
- const node=stepPanels.cover.querySelector(selector);if(node)customArtwork.append(node);
-}
+// Custom artwork: dropzone + thumbnail + tuning card, always visible (no nested details).
+const customArtwork=document.createElement('div');customArtwork.className='studio-custom-art';
+const uploadLabel=stepPanels.cover.querySelector('.upload');
+uploadLabel.innerHTML='<span class="studio-upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0 4 4m-4-4L8 8"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></span><span class="studio-upload-title">Загрузите свой рисунок</span><span class="studio-upload-note">Перетащите файл сюда или нажмите · PNG, JPG, WebP до 5 МБ</span>';
+const uploadInput=stepPanels.cover.querySelector('#upload');
+const uploadStatus=stepPanels.cover.querySelector('#upload-status');
+const artTools=stepPanels.cover.querySelector('.art-tools');
+// Rebuild the tuning card: hint, compact rows, segmented mode switch.
+const artCard=document.createElement('div');artCard.className='art-tools';artCard.hidden=true;artTools.replaceWith(artCard);
+artCard.innerHTML='<p class="art-tools-hint">Двигайте рисунок прямо по превью альбома — зажмите его и перетаскивайте.</p>'
+ +'<label class="art-row">Размер <input id="image-scale" type="range" min="0.5" max="1.5" step="0.05" value="1"></label>'
+ +'<label class="art-row art-row-x">Сдвиг по горизонтали <input id="image-x" type="range" min="-20" max="20" step="0.5" value="0"></label>'
+ +'<label class="art-row art-row-y">Сдвиг по вертикали <input id="image-y" type="range" min="-20" max="20" step="0.5" value="0"></label>'
+ +'<label class="art-row">Поворот <input id="image-rotation" type="range" min="-45" max="45" step="1" value="0"></label>'
+ +'<div class="art-row art-row-mode"><span>Обработка</span><div class="studio-mode" role="group" aria-label="Обработка загруженного рисунка"><button type="button" data-image-mode="engrave" aria-pressed="true">Эскиз гравировки</button><button type="button" data-image-mode="original" aria-pressed="false">Цветной</button></div></div>'
+ +'<label class="art-row art-row-threshold">Порог чёрного <input id="image-threshold" type="range" min="40" max="220" value="140"></label>'
+ +'<p class="control-hint">Мелкие детали и полутона могут потеряться. Изображение на экране — эскиз, окончательный макет согласуем.</p>'
+ +'<button class="text-link" id="reset-art">Сбросить положение рисунка</button>';
+// Hidden native select keeps legacy save/cart logic as the source of truth.
+const modeSelect=document.createElement('select');modeSelect.id='image-mode';modeSelect.hidden=true;
+modeSelect.innerHTML='<option value="engrave">Чёрно-белый эскиз гравировки</option><option value="original">Исходное изображение</option>';
+artCard.append(modeSelect);
+// Thumbnail row (visible after upload).
+const thumbRow=document.createElement('div');thumbRow.id='upload-thumb';thumbRow.hidden=true;
+thumbRow.innerHTML='<img id="upload-thumb-img" alt="Загруженный рисунок"><div class="upload-thumb-actions"><span id="upload-thumb-name">Ваш рисунок</span><label class="text-link" for="upload">Заменить</label><button type="button" id="remove-image" class="text-link">Убрать</button></div>';
+customArtwork.append(uploadLabel,uploadInput,thumbRow,uploadStatus,artCard);
+stepPanels.cover.querySelector('#remove-image')?.remove();
 stepPanels.cover.append(customArtwork);
+// Inscription card on the cover step (field moves out of the hidden legacy panel).
+const inscriptionCard=document.createElement('div');inscriptionCard.className='studio-inscription';
+const inscriptionLabel=stepPanels.inscription.querySelector('label[for="inscription"]');
+const inscriptionInput=stepPanels.inscription.querySelector('#inscription');
+const chips=['Наша история','Счастье внутри','Семья Ивановых','С любовью','Начало твоей истории'];
+inscriptionCard.innerHTML='<span class="studio-field-label">Надпись на обложке</span>'
+ +'<div class="studio-inscription-field"><span class="studio-inscription-mark" aria-hidden="true">«</span></div>'
+ +'<div class="studio-inscription-chips">'+chips.map(c=>`<button type="button" class="studio-chip" data-inscription="${escape(c)}">${escape(c)}</button>`).join('')+'</div>';
+inscriptionCard.querySelector('.studio-inscription-field').append(inscriptionInput);
+inscriptionCard.querySelector('.studio-inscription-field').insertAdjacentHTML('beforeend','<span id="inscription-count" aria-hidden="true"></span><span class="studio-inscription-mark" aria-hidden="true">»</span>');
+if(inscriptionLabel)inscriptionLabel.remove();
+stepPanels.cover.append(inscriptionCard);
 setStep('binding');
 
 const albumPreview = createAlbumPreview(document.querySelector('#live-album'));
@@ -279,6 +313,8 @@ function syncControls() {
  document.querySelector('#model').value = state.model; document.querySelector('#binding').value = state.binding; document.querySelector('#inscription').value = state.inscription;
  for (const [id,key] of [['image-scale','imageScale'],['image-x','imageX'],['image-y','imageY'],['image-rotation','imageRotation'],['image-threshold','threshold'],['image-mode','imageMode']]) document.querySelector('#'+id).value = state[key];
  document.querySelectorAll('.extra input').forEach(el => el.checked = state.extras.includes(el.value));
+ syncArtworkUI();
+ const ins=document.querySelector('#inscription');const cnt=document.querySelector('#inscription-count');if(ins&&cnt)cnt.textContent=`${ins.value.length}/45`;
 }
 function openProduct(i) {
  const m = models[i]; const dialog = document.querySelector('#product-detail');
@@ -333,7 +369,39 @@ function changeAlbumPage(page) {
 document.querySelector('#toggle-album').onclick = () => changeAlbumPage(state.page === 0 ? 1 : 0);
 document.querySelector('#prev-page').onclick = () => changeAlbumPage(Math.max(0,state.page - 1));
 document.querySelector('#next-page').onclick = () => changeAlbumPage(Math.min(3,state.page + 1));
-document.querySelector('#remove-image').onclick = () => { state.image = null; document.querySelector('#upload').value = ''; document.querySelector('#upload-status').textContent = ''; renderPreview(); };
+document.querySelector('#remove-image').onclick = () => { state.image = null; document.querySelector('#upload').value = ''; document.querySelector('#upload-status').textContent = ''; syncArtworkUI(); renderPreview(); };
+function syncArtworkUI(){
+ const has=!!state.image;
+ const thumb=document.querySelector('#upload-thumb');if(!thumb)return;
+ thumb.hidden=!has;
+ const wrap=document.querySelector('.studio-custom-art');if(wrap)wrap.classList.toggle('has-art',has);
+ const title=wrap?.querySelector('.studio-upload-title');if(title)title.textContent=has?'Заменить рисунок':'Загрузите свой рисунок';
+ const note=wrap?.querySelector('.studio-upload-note');if(note)note.textContent=has?'PNG, JPG, WebP до 5 МБ · хранится только в вашем браузере':'Перетащите файл сюда или нажмите · PNG, JPG, WebP до 5 МБ';
+ document.querySelector('#live-album')?.classList.toggle('art-draggable',has);
+ document.querySelector('.art-tools').hidden=!has;
+ if(has){const img=document.querySelector('#upload-thumb-img');if(img&&img.src!==state.image)img.src=state.image;}
+ document.querySelectorAll('[data-image-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.imageMode===state.imageMode)));
+ const thresholdRow=document.querySelector('.art-row-threshold');if(thresholdRow)thresholdRow.hidden=state.imageMode!=='engrave';
+}
+// Drag the uploaded drawing directly on the album preview.
+(()=>{const live=()=>document.querySelector('#live-album');let drag=null;
+ const onDown=e=>{if(!state.image)return;const art=e.target.closest('.cover-art');if(!art||!live())return;drag={x0:e.clientX,y0:e.clientY,ix:state.imageX,iy:state.imageY};live().setPointerCapture(e.pointerId);e.preventDefault();};
+ const onMove=e=>{if(!drag)return;const box=live().getBoundingClientRect();const dx=(e.clientX-drag.x0)/Math.max(1,box.width)*100*0.6;const dy=(e.clientY-drag.y0)/Math.max(1,box.height)*100*0.6;
+  state.imageX=Math.round(Math.min(20,Math.max(-20,drag.ix+dx))*2)/2;state.imageY=Math.round(Math.min(20,Math.max(-20,drag.iy+dy))*2)/2;
+  const sx=document.querySelector('#image-x'),sy=document.querySelector('#image-y');if(sx)sx.value=state.imageX;if(sy)sy.value=state.imageY;renderPreview();};
+ const onUp=()=>{drag=null;};
+ document.addEventListener('pointerdown',onDown,true);document.addEventListener('pointermove',onMove,true);document.addEventListener('pointerup',onUp,true);document.addEventListener('pointercancel',onUp,true);
+})();
+// Inscription chips and counter.
+document.querySelectorAll('[data-inscription]').forEach(el=>el.onclick=()=>{const input=document.querySelector('#inscription');input.value=el.dataset.inscription;input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();});
+document.querySelector('#inscription').addEventListener('input',()=>{const input=document.querySelector('#inscription');const c=document.querySelector('#inscription-count');if(c)c.textContent=`${input.value.length}/45`;});
+// Dropzone drag&drop.
+(()=>{const zone=document.querySelector('.studio-custom-art .upload');if(!zone)return;
+ zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('dragover');});
+ zone.addEventListener('dragleave',()=>zone.classList.remove('dragover'));
+ zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('dragover');const file=e.dataTransfer.files[0];if(!file)return;
+  const input=document.querySelector('#upload');const dt=new DataTransfer();dt.items.add(file);input.files=dt.files;input.dispatchEvent(new Event('change',{bubbles:true}));});
+})();
 document.querySelector('#upload').onchange = async e => {
   const file = e.target.files[0]; if (!file) return;
   const status = document.querySelector('#upload-status');
@@ -341,7 +409,7 @@ document.querySelector('#upload').onchange = async e => {
   try {
     const bitmap = await createImageBitmap(file);
     const canvas = document.createElement('canvas'); const scale = Math.min(1, 600 / Math.max(bitmap.width, bitmap.height)); canvas.width = Math.max(1, Math.round(bitmap.width * scale)); canvas.height = Math.max(1, Math.round(bitmap.height * scale)); canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height); bitmap.close();
-    state.image = canvas.toDataURL('image/png'); state.page = 0; status.textContent = 'Рисунок загружен. Он хранится только в вашем браузере.'; renderPreview();
+    state.image = canvas.toDataURL('image/png'); state.page = 0; status.textContent = 'Рисунок загружен. Он хранится только в вашем браузере.'; syncArtworkUI(); renderPreview();
   } catch { status.textContent = 'Не удалось открыть изображение. Попробуйте другой файл.'; }
 };
 function saveCart() { document.querySelector('#cart-count').textContent = cart.length; try { localStorage.setItem('sloy-cart', JSON.stringify(cart)); } catch { document.querySelector('#cart-status').textContent = 'Корзина доступна до закрытия страницы: хранилище браузера заполнено.'; } }
@@ -360,7 +428,8 @@ for (const [id,key] of [['image-scale','imageScale'],['image-x','imageX'],['imag
 document.querySelector('#telegram-request').onclick = () => { const text = requestText(); const base = workshopTelegram ? `https://t.me/${workshopTelegram}?text=` : 'https://t.me/share/url?url=&text='; window.open(base + encodeURIComponent(text),'_blank','noopener,noreferrer'); document.querySelector('#request-status').textContent = workshopTelegram ? 'Проверьте текст в Telegram и подтвердите отправку. Файл проекта приложите отдельно.' : 'Выберите чат мастерской в Telegram. Публичный адрес получателя ещё не настроен; рисунок приложите отдельно.'; };
 document.querySelector('#copy-request').onclick = async () => { try { await navigator.clipboard.writeText(requestText()); document.querySelector('#request-status').textContent='Текст скопирован. Вставьте его в чат мастерской и приложите скачанный файл запроса.'; } catch { document.querySelector('#request-status').textContent='Копирование недоступно. Используйте кнопку Telegram или скачайте запрос.'; } };
 function requestText() { const customer = document.querySelector('#customer-name').value.trim(); const contact=document.querySelector('#customer-contact').value.trim(); const comment=document.querySelector('#customer-comment').value.trim(); return ['Здравствуйте! Хочу согласовать альбом WoodBase.', ...cart.map((item,i)=>`${i+1}. ${item.model} — ${item.size}\nЦвет: ${item.color}\nКожа: ${item.leather||'Уточнить'}\nПереплёт: ${item.binding||'Уточнить'}\nНадпись: ${item.inscription||'Без надписи'}\nРисунок: ${item.image?'Свой, приложу проект':item.motif}\nДополнения: ${item.extras.join(', ')||'Без дополнений'}`), `Стоимость альбомов: ${money(cartTotal())}. Базовый комплект включён.`, hasOptionalExtras(cart) ? 'Стоимость дополнений: по согласованию.' : '', 'Срок изготовления: по согласованию.', customer ? `Имя: ${customer}` : '', contact ? `Связь: ${contact}` : '', comment ? `Пожелания: ${comment}` : '', cart.some(i=>i.image) ? 'Загруженный рисунок передам в отдельном файле проекта.' : ''].filter(Boolean).join('\n\n'); }
-document.querySelector('#image-mode').onchange = e => { state.imageMode = e.target.value; renderPreview(); };
+document.querySelector('#image-mode').onchange = e => { state.imageMode = e.target.value; syncArtworkUI(); renderPreview(); };
+document.querySelectorAll('[data-image-mode]').forEach(el=>el.onclick=()=>{const select=document.querySelector('#image-mode');select.value=el.dataset.imageMode;select.dispatchEvent(new Event('change',{bubbles:true}));});
 document.querySelector('#reset-art').onclick = () => { Object.assign(state,{ imageScale:1,imageX:0,imageY:0,imageRotation:0 }); syncControls(); renderPreview(); };
 const projectStatus = document.querySelector('#project-status');
 function validateProject(data) {
