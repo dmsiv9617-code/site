@@ -367,8 +367,10 @@
 .studio .studio-mode button{padding:9px 6px;font-size:10px;border:0;background:transparent;color:var(--studio-muted);cursor:pointer;transition:background .2s,color .2s}
 .studio .studio-mode button[aria-pressed=true]{background:var(--studio-ink);color:var(--studio-paper)}
 .studio .art-tools .control-hint{font-size:9px;margin:4px 0 10px}
+@media (hover:hover) and (pointer:fine){
 #live-album.art-draggable .cover-art{cursor:grab;touch-action:none}
 #live-album.art-draggable .cover-art:active{cursor:grabbing}
+}
 /* Надпись на обложке. */
 .studio-inscription{margin-top:22px}
 .studio .studio-field-label{display:block;font-size:11px;letter-spacing:.4px;color:var(--studio-muted);margin-bottom:8px}

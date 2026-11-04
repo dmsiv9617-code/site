@@ -9,7 +9,7 @@ export function setupHeaderCollection({models,openProduct,escape,money}) {
  const actions=document.createElement('div');actions.className='header-actions';cart.before(actions);
  actions.innerHTML=`<button class="header-favorites" type="button" aria-label="Открыть избранное">${heart}<span class="favorites-count" hidden></span></button>`;actions.append(cart);
  const nav=header.querySelector('nav');
- nav.insertAdjacentHTML('beforeend','<a href="#cartoons">Мультики</a><a href="#reviews">Отзывы</a><a href="#delivery">Доставка</a>');
+ nav.insertAdjacentHTML('beforeend','<a href="#reviews">Отзывы</a><a href="#delivery">Доставка</a>');
  document.querySelector('.hero-invitation-label')?.remove();document.querySelector('.hero-invitation-arrow')?.remove();
  document.querySelector('.hero-invitation')?.setAttribute('aria-label','Давай сохраним их в альбоме? Перейти в конструктор');
  document.querySelectorAll('.green-scroll-hint,.green-scroll-skip').forEach(el=>el.hidden=true);

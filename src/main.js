@@ -62,9 +62,9 @@ function spine(binding) { return `<div class="outer-spine ${binding}">${Array.fr
 const album = (i, cls = '') => `<div class="album ${cls} ${models[i].color === 2 ? 'dark-cover' : ''}" style="--wood:${colors[models[i].color].value}">${spine(models[i].binding)}<div class="cover-art">${coverDrawing(i)}</div><span>${escape(models[i].inscription)}</span><div class="closure"></div></div>`;
 
 document.querySelector('#app').innerHTML = `
-<header><a class="logo" href="#" aria-label="WoodBase — главная"><img class="brand-logo" src="/hero-assets/woodbase-light.svg" alt="WoodBase — логотип с дятлом" width="180" height="88"></a><nav aria-label="Основная навигация"><a href="#catalog">Коллекция</a><a href="#constructor">Дизайн</a><a href="#workshop">Мастерская</a><a href="#about">О нас</a></nav><button class="cart-button" id="open-cart" aria-label="Открыть корзину"><svg class="branded-bag" viewBox="500 225 530 530" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"><defs><mask id="bag-rim-mask" maskUnits="userSpaceOnUse" x="500" y="225" width="530" height="530"><rect x="500" y="225" width="530" height="530" fill="white" stroke="none"/><path d="M632 405 C667 309 709 245 771 250 C838 248 859 310 897 417 L931 480 C876 491 861 463 850 418 C831 338 817 265 777 253 C724 269 722 326 733 394 C744 455 748 494 679 503 C696 461 698 422 697 379 C693 318 725 260 771 250" fill="black" stroke="black" stroke-width="24"/></mask></defs><g mask="url(#bag-rim-mask)"><path d="M536 423 917 385 1003 414 1003 666 596 729 525 687Z M536 423 596 455 1003 414 M596 455V729"/></g><path d="M632 405 C667 309 709 245 771 250 C838 248 859 310 897 417 L931 480 C876 491 861 463 850 418 C831 338 817 265 777 253 C724 269 722 326 733 394 C744 455 748 494 679 503 C696 461 698 422 697 379 C693 318 725 260 771 250"/></svg><span id="cart-count">${cart.length}</span></button></header>
+<header><a class="logo" href="#" aria-label="WoodBase — главная"><img class="brand-logo" src="/hero-assets/woodbase-light.svg" alt="WoodBase — логотип с дятлом" width="180" height="88"></a><nav aria-label="Основная навигация"><a href="#catalog">Коллекция</a><a href="#constructor">Дизайн</a><a href="#about">О нас</a></nav><button class="cart-button" id="open-cart" aria-label="Открыть корзину"><svg class="branded-bag" viewBox="500 225 530 530" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"><defs><mask id="bag-rim-mask" maskUnits="userSpaceOnUse" x="500" y="225" width="530" height="530"><rect x="500" y="225" width="530" height="530" fill="white" stroke="none"/><path d="M632 405 C667 309 709 245 771 250 C838 248 859 310 897 417 L931 480 C876 491 861 463 850 418 C831 338 817 265 777 253 C724 269 722 326 733 394 C744 455 748 494 679 503 C696 461 698 422 697 379 C693 318 725 260 771 250" fill="black" stroke="black" stroke-width="24"/></mask></defs><g mask="url(#bag-rim-mask)"><path d="M536 423 917 385 1003 414 1003 666 596 729 525 687Z M536 423 596 455 1003 414 M596 455V729"/></g><path d="M632 405 C667 309 709 245 771 250 C838 248 859 310 897 417 L931 480 C876 491 861 463 850 418 C831 338 817 265 777 253 C724 269 722 326 733 394 C744 455 748 494 679 503 C696 461 698 422 697 379 C693 318 725 260 771 250"/></svg><span id="cart-count">${cart.length}</span></button></header>
 <main>
-<section class="hero concept-hero"><img class="hero-photo" src="/hero-assets/workshop-soft-background.webp" alt="" aria-hidden="true" width="1536" height="1024" fetchpriority="high"><div class="hero-woody"><img src="/hero-assets/woody-album-sharp.webp" alt="Вуди держит деревянный альбом «История нашей семьи»" width="1024" height="1536" fetchpriority="high"></div><div class="hero-copy"><div class="eyebrow">WOODBASE / ДЕРЕВЯННЫЕ ФОТОАЛЬБОМЫ</div><h1><span>Воспоминания —</span><br>не для галереи<br>телефона.</h1><div class="hero-actions"><a class="button" href="#constructor">Собрать свой альбом <span>→</span></a><a class="text-link" href="#catalog">Посмотреть коллекцию ↓</a></div></div></section>
+<section class="hero concept-hero"><img class="hero-photo" src="/hero-assets/workshop-soft-background.webp" alt="" aria-hidden="true" width="1536" height="1024" fetchpriority="high"><div class="hero-woody"><img src="/hero-assets/woody-album-sharp.webp" alt="Вуди держит деревянный альбом «История нашей семьи»" width="1024" height="1536" fetchpriority="high"></div><div class="hero-copy"><div class="eyebrow">WOODBASE / ДЕРЕВЯННЫЕ ФОТОАЛЬБОМЫ</div><h1><span>Воспоминания —</span><br>не для галереи<br>телефона</h1><div class="hero-actions"><a class="button" href="#constructor">Собрать свой альбом <span>→</span></a><a class="text-link" href="#catalog">Посмотреть коллекцию ↓</a></div></div></section>
 <section id="details" class="benefits" aria-labelledby="benefits-title">
   <div class="benefits-banner" aria-hidden="true"><div class="benefits-banner-heading"></div>
 <div class="benefits-tile" data-benefit-reveal style="left:0.000000%;top:4.622322%;width:49.887260%;height:39.909808%;--benefit-delay:0ms"><img src="/scroll-assets/benefits-approved.webp" alt="" width="1774" height="887" loading="lazy" decoding="async" style="width:200.451977%;height:250.564972%;left:0.000000%;top:-11.581921%"></div>
@@ -107,7 +107,7 @@ function showRoute() {
  document.querySelector('#workshop-page').hidden = !workshop;
  document.title = workshop ? 'О мастерской — WoodBase' : homeTitle;
  const workshopLink = document.querySelector('nav a[href="#workshop"]');
- if(workshop) workshopLink.setAttribute('aria-current','page'); else workshopLink.removeAttribute('aria-current');
+ if(workshop) workshopLink?.setAttribute('aria-current','page'); else workshopLink?.removeAttribute('aria-current');
  if(workshop) {
   window.scrollTo({top:0,behavior:'instant'});
   document.querySelector('#workshop-page h1').focus({preventScroll:true});
@@ -241,7 +241,7 @@ const uploadStatus=stepPanels.cover.querySelector('#upload-status');
 const artTools=stepPanels.cover.querySelector('.art-tools');
 // Rebuild the tuning card: hint, compact rows, segmented mode switch.
 const artCard=document.createElement('div');artCard.className='art-tools';artCard.hidden=true;artTools.replaceWith(artCard);
-artCard.innerHTML='<p class="art-tools-hint">Двигайте рисунок прямо по превью альбома — зажмите его и перетаскивайте.</p>'
+artCard.innerHTML='<p class="art-tools-hint">Положение рисунка настраивается ползунками ниже. На компьютере его также можно перетаскивать прямо по превью альбома.</p>'
  +'<label class="art-row">Размер <input id="image-scale" type="range" min="0.5" max="1.5" step="0.05" value="1"></label>'
  +'<label class="art-row art-row-x">Сдвиг по горизонтали <input id="image-x" type="range" min="-20" max="20" step="0.5" value="0"></label>'
  +'<label class="art-row art-row-y">Сдвиг по вертикали <input id="image-y" type="range" min="-20" max="20" step="0.5" value="0"></label>'
@@ -388,7 +388,7 @@ function syncArtworkUI(){
 }
 // Drag the uploaded drawing directly on the album preview.
 (()=>{const live=()=>document.querySelector('#live-album');let drag=null;
- const onDown=e=>{if(!state.image)return;const art=e.target.closest('.cover-art');if(!art||!live())return;drag={x0:e.clientX,y0:e.clientY,ix:state.imageX,iy:state.imageY};live().setPointerCapture(e.pointerId);e.preventDefault();};
+ const onDown=e=>{if(e.pointerType==='touch')return;if(!state.image)return;const art=e.target.closest('.cover-art');if(!art||!live())return;drag={x0:e.clientX,y0:e.clientY,ix:state.imageX,iy:state.imageY};live().setPointerCapture(e.pointerId);e.preventDefault();};
  const onMove=e=>{if(!drag)return;const box=live().getBoundingClientRect();const dx=(e.clientX-drag.x0)/Math.max(1,box.width)*100*0.6;const dy=(e.clientY-drag.y0)/Math.max(1,box.height)*100*0.6;
   state.imageX=Math.round(Math.min(20,Math.max(-20,drag.ix+dx))*2)/2;state.imageY=Math.round(Math.min(20,Math.max(-20,drag.iy+dy))*2)/2;
   const sx=document.querySelector('#image-x'),sy=document.querySelector('#image-y');if(sx)sx.value=state.imageX;if(sy)sy.value=state.imageY;renderPreview();};
@@ -569,7 +569,7 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     <div class="cosmic-controls" aria-label="Переключение альбомов"><button class="cosmic-prev" aria-label="Предыдущий альбом">‹</button><button class="cosmic-next" aria-label="Следующий альбом">›</button></div>
     <div class="cosmic-dots" aria-label="Выбрать альбом">${items.map((m,i)=>`<button type="button" aria-label="Показать альбом ${escape(m.name)}" aria-pressed="false" data-index="${i}"></button>`).join('')}</div>
     <div class="cosmic-albums">${items.map((m,i)=>`<button type="button" class="cosmic-album ${m.custom?'cosmic-phantom':''}" data-index="${i}" aria-label="${m.custom?'Создать свой альбом':`Выбрать альбом ${escape(m.name)}`}">${m.custom?`<span class="phantom-cover" aria-hidden="true"><span class="phantom-spine">${'<i></i>'.repeat(5)}</span><span class="phantom-plus">+</span><span class="phantom-title">Создать<br>свой альбом</span><span class="phantom-note">Ваша история начинается здесь</span><span class="phantom-closure"></span></span>`:`<img src="${m.photos[0]}" alt="" width="1536" height="1024">`}</button>`).join('')}</div>
-    <div class="cosmic-hint">Нажмите на альбом — он станет первым. Нажмите ещё раз, чтобы заглянуть внутрь.</div>
+
     <div class="cosmic-track" aria-hidden="true"><span></span></div>
   </div>`;
   const covers = [...section.querySelectorAll('.cosmic-album')];
