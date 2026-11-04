@@ -478,6 +478,7 @@ setupReveals();
 
 // Taller cards stick only after their bottom is visible, including on small phones.
 const catalogCards = [...document.querySelectorAll('#catalog .product')];
+
 function fitCatalogStack() {
   catalogCards.forEach((card, index) => {
     card.style.top = `${Math.min(20 + index * 10, innerHeight - card.offsetHeight - 16)}px`;
@@ -553,12 +554,14 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   items.push({id:null,name:'Создать свой альбом',custom:true});
   section.classList.add('cosmic-collection');
   const photos = [
-    [24,-8,190,-24,2,.32], [46,5,115,19,.6,.45], [74,8,150,25,1,.5],
-    [91,28,170,-18,2,.35], [18,62,120,20,1,.4], [-7,76,230,-28,3,.38],
-    [73,82,200,19,3,.4], [61,-12,95,-17,3,.25], [3,30,100,-8,2,.18]
+    [24,-8,190,-24,1,.42,26,30], [46,5,115,19,0,.5,-22,34], [74,8,150,25,1,.55,30,-26],
+    [91,28,170,-18,1,.46,-34,-22], [18,62,120,20,0,.5,24,-30], [-7,76,230,-28,2,.5,28,26],
+    [73,82,200,19,2,.52,-30,24], [61,-12,95,-17,2,.34,22,-20], [3,30,100,-8,1,.3,-26,28],
+    [36,38,130,12,0,.44,30,30], [56,58,110,-14,0,.48,-24,-26], [84,52,140,22,1,.42,26,-30]
   ];
+  const floatImgs = ['/scroll-assets/27c5ffc5b5ecba4c06b9.webp','/scroll-assets/653cf8fe0931c6345787.webp','/scroll-assets/144c86df5f17442a511d.webp','/scroll-assets/b7a3500becccb277ee85.webp','/scroll-assets/ebc213ef22f495b9091d.webp','/scroll-assets/1cb52a5d921355f655d6.webp','/scroll-assets/7d390838829d03dbd7aa.webp','/scroll-assets/9e8e0efc78211cb7ed.webp','/scroll-assets/05f08141ea599a2aef81.webp','/scroll-assets/workshop-family.webp'];
   section.innerHTML = `<div class="cosmic-stage">
-    <div class="cosmic-photos is-paused" aria-hidden="true">${photos.map((p,i)=>`<figure class="cosmic-photo" style="--x:${p[0]}%;--y:${p[1]}%;--size:${p[2]}px;--angle:${p[3]}deg;--blur:${p[4]}px;--opacity:${p[5]};--duration:${19+i*2}s;--delay:-${i*3}s;--position:${i%2?'70%':'30%'} center"><img src="${i%2?'/scroll-assets/27c5ffc5b5ecba4c06b9.webp':'/scroll-assets/b7a3500becccb277ee85.webp'}" alt="" loading="lazy"></figure>`).join('')}</div>
+    <div class="cosmic-photos is-paused" aria-hidden="true">${photos.map((p,i)=>`<figure class="cosmic-photo" style="--x:${p[0]}%;--y:${p[1]}%;--size:${p[2]}px;--angle:${p[3]}deg;--blur:${p[4]}px;--opacity:${p[5]};--duration:${19+i*2}s;--delay:-${i*3}s;--dx:${p[6]}px;--dy:${p[7]}px;--position:${i%2?'70%':'30%'} center"><img src="${floatImgs[i%floatImgs.length]}" alt="" loading="lazy"></figure>`).join('')}</div>
     <div class="cosmic-glow"></div><div class="cosmic-light-trails" aria-hidden="true"><i></i><i></i><i></i></div><div class="cosmic-floor"></div>
     <h2 class="cosmic-sr-only">Коллекция деревянных альбомов</h2>
     <div class="cosmic-details" aria-live="polite" aria-atomic="true"><span class="cosmic-kicker">Коллекция</span><h3 class="cosmic-title"></h3><p class="cosmic-price"></p></div>
