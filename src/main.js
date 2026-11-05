@@ -1,3 +1,4 @@
+import {setupCommerce} from './commerce-ui.js';
 import {createAlbumPreview} from './album-preview.js';
 import {variantFor, leatherName} from './album-variants.js';
 import {gsap} from 'gsap';
@@ -35,7 +36,9 @@ let cart;
 try { cart = JSON.parse(localStorage.getItem('sloy-cart') || '[]'); if (!Array.isArray(cart)) cart = []; } catch { cart = []; }
 const money = n => Number.isFinite(n) ? new Intl.NumberFormat('ru-RU').format(n) + ' ₽' : 'По запросу';
 const escape = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const total = () => albumBasePrice;
+let commerceProduct = null;
+let originalArtwork = null;
+const total = () => commerceProduct && state.model === 5 ? Number(commerceProduct.price) : albumBasePrice;
 const hasOptionalExtras = items => items.some(item => item.extras.some(name => !extras.some(extra => includedExtras.has(extra.id) && extra.name === name)));
 
 cart = cart.filter(item => item && typeof item === 'object' && Array.isArray(item.extras)).map(item => ({ ...item, price: albumBasePrice }));
@@ -412,7 +415,7 @@ document.querySelector('#upload').onchange = async e => {
   try {
     const bitmap = await createImageBitmap(file);
     const canvas = document.createElement('canvas'); const scale = Math.min(1, 600 / Math.max(bitmap.width, bitmap.height)); canvas.width = Math.max(1, Math.round(bitmap.width * scale)); canvas.height = Math.max(1, Math.round(bitmap.height * scale)); canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height); bitmap.close();
-    state.image = canvas.toDataURL('image/png'); state.page = 0; status.textContent = 'Рисунок загружен. Он хранится только в вашем браузере.'; syncArtworkUI(); renderPreview();
+    state.image = canvas.toDataURL('image/png'); originalArtwork = {file, preview: state.image}; state.page = 0; status.textContent = 'Рисунок загружен. Он хранится только в вашем браузере.'; syncArtworkUI(); renderPreview();
   } catch { status.textContent = 'Не удалось открыть изображение. Попробуйте другой файл.'; }
 };
 function saveCart() { document.querySelector('#cart-count').textContent = cart.length; try { localStorage.setItem('sloy-cart', JSON.stringify(cart)); } catch { document.querySelector('#cart-status').textContent = 'Корзина доступна до закрытия страницы: хранилище браузера заполнено.'; } }
@@ -551,6 +554,7 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   const names = ['family-history-three-quarter', 'once-three-quarter', 'beginning-three-quarter', 'happiness-three-quarter', 'moments-three-quarter', 'family-black-three-quarter'];
   order.forEach((id, index) => { models[id].photos = [`/collection-assets/${names[index]}.webp`]; });
   const items = order.map(id => ({ id, ...models[id] }));
+  window.addEventListener('woodbase-product',({detail:p})=>{const item=items.find(m=>m.id===5);Object.assign(item,{name:p.name,price:Number(p.price)});active=-1;update();});
   items.push({id:null,name:'Создать свой альбом',custom:true});
   section.classList.add('cosmic-collection');
   const photos = [
@@ -856,3 +860,5 @@ setupHeaderCollection({models,openProduct,escape,money});
   };
   next();
 })();
+
+setupCommerce({getState:()=>state, models, refresh:renderPreview, onProduct:p=>{commerceProduct=p;}, getOriginalFile:()=>originalArtwork});
