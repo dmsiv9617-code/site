@@ -1,0 +1,10 @@
+name: woodbase-staging
+services:
+  wordpress:
+    environment:
+      WB_ENVIRONMENT: staging
+  web:
+    volumes:
+      - ./staging-access.conf:/etc/nginx/woodbase/access.conf:ro
+      - ./staging-auth.conf:/etc/nginx/woodbase/auth-forward.conf:ro
+      - ${STAGING_AUTH_FILE:?Generate a separate staging htpasswd file}:/run/secrets/staging.htpasswd:ro

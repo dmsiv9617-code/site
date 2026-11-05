@@ -7,3 +7,5 @@ dist/
 work/
 integrations/woocommerce/.env
 __pycache__/
+backups/
+*.gpg

@@ -1,3 +1,4 @@
+import {commerceError} from './commerce-errors.js';
 import {configurationFromState, StoreCart} from './commerce.js';
 export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile}) {
  const live=import.meta.env.VITE_COMMERCE_MODE==='woocommerce';
@@ -11,8 +12,9 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
  const add=document.querySelector('#add-cart');add.disabled=true;
  document.querySelector('#mascot-success').hidden=true;
  async function json(path,options={}) {
-  const r=await fetch(origin+'/wp-json/woodbase/v1'+path,{credentials:'include',...options,signal:AbortSignal.timeout(15000)});
-  const data=await r.json();if(!r.ok)throw new Error(data.message||'Сервис недоступен');return data;
+  let r;
+  try{r=await fetch(origin+'/wp-json/woodbase/v1'+path,{credentials:'include',...options,signal:AbortSignal.timeout(15000)});}catch{throw commerceError(503);}
+  let data;try{data=await r.json();}catch{throw commerceError(r.ok?503:r.status);}if(!r.ok)throw commerceError(r.status,r.headers.get('Retry-After'));return data;
  }
  const fail=e=>{status.textContent='Не удалось выполнить действие: '+e.message;};
  const dialog=document.querySelector('#cart');
@@ -79,6 +81,6 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
   if(p.images.length)models[5].photos=p.images;
   onProduct(p);refresh();window.dispatchEvent(new CustomEvent('woodbase-product',{detail:p}));
   badge.textContent='Тестовый WooCommerce: доступен только альбом «'+p.name+'». Остальная коллекция — демо.';
-  add.disabled=false;render(await client.get());
+  render(await client.get());add.disabled=false;
  }).catch(e=>{product=null;add.disabled=true;badge.textContent='WooCommerce недоступен. Оформление заблокировано; попробуйте обновить страницу.';fail(e);});
 }

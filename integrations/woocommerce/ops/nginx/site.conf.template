@@ -1,0 +1,83 @@
+# Default: Nginx is the public edge. Never trust client-supplied X-Forwarded-For.
+# When adding a load balancer, set_real_ip_from must contain ONLY its documented CIDRs.
+map $args $woodbase_wp_query {
+ default 0;
+ ~*(^|&)(wc-ajax|wc-api|rest_route|preview|preview_id)= 1;
+}
+log_format woodbase '$time_iso8601 $request_method $uri $status $body_bytes_sent';
+limit_req_zone $binary_remote_addr zone=woodbase_upload:10m rate=2r/s;
+server {
+ listen 80;
+ server_name ${WOODBASE_DOMAIN};
+ if ($host != ${WOODBASE_DOMAIN}) { return 444; }
+ location ^~ /.well-known/acme-challenge/ { root /var/www/acme; }
+ location / { return 308 https://$host$request_uri; }
+}
+server {
+ listen 443 ssl;
+ server_name ${WOODBASE_DOMAIN};
+ if ($host != ${WOODBASE_DOMAIN}) { return 444; }
+ ssl_certificate /etc/woodbase-tls/fullchain.pem;
+ ssl_certificate_key /etc/woodbase-tls/privkey.pem;
+ ssl_protocols TLSv1.2 TLSv1.3;
+ server_tokens off;
+ access_log /var/log/nginx/access.log woodbase;
+ root /var/www/html;
+ client_max_body_size 6m;
+ limit_req_status 429;
+ include /etc/nginx/woodbase/access.conf;
+ add_header X-Content-Type-Options nosniff always;
+ add_header Referrer-Policy same-origin always;
+ # Enable a longer HSTS policy only after the target domain has passed HTTPS acceptance.
+ add_header Strict-Transport-Security "max-age=300" always;
+ error_page 429 = @rate_error;
+ error_page 502 504 = @unavailable;
+ location @unavailable {
+  default_type application/json;
+  add_header Cache-Control "no-store, private" always;
+  return 503 '{"code":"wb_unavailable","message":"Сервис временно недоступен. Повторите позже."}';
+ }
+ location @rate_error {
+  default_type application/json;
+  add_header Retry-After 60 always;
+  add_header Cache-Control "no-store, private" always;
+  return 429 '{"code":"wb_rate","message":"Слишком много запросов. Повторите позже."}';
+ }
+ location = /wp-admin { return 308 /wp-admin/; }
+ location /wp-admin/ { index index.php; try_files $uri $uri/ /wp-admin/index.php?$args; add_header Cache-Control "no-store, private" always; }
+ location = /wp-cron.php { return 403; }
+ location = /xmlrpc.php { return 403; }
+ location ~ ^/(wp-json(?:/|$)|checkout(?:/|$)|cart(?:/|$)|my-account(?:/|$)|wc-api(?:/|$)|wp-sitemap) { try_files $uri $uri/ /index.php?$args; }
+ location ~ /\. { deny all; }
+ location ~ ^/(index\.php|wp-login\.php|wp-admin/.+\.php)$ {
+  try_files $uri =404;
+  include /etc/nginx/fastcgi_params;
+  include /etc/nginx/woodbase/auth-forward.conf;
+  fastcgi_param SCRIPT_FILENAME /var/www/html$fastcgi_script_name;
+  fastcgi_param HTTPS on;
+  fastcgi_param HTTP_PROXY "";
+  fastcgi_pass wordpress:9000;
+  fastcgi_hide_header Cache-Control;
+  fastcgi_no_cache 1;
+  fastcgi_cache_bypass 1;
+  add_header Cache-Control "no-store, private" always;
+  add_header X-Content-Type-Options nosniff always;
+ }
+ location ~* ^/(wp-content|wp-includes)/.+\.(css|js|mjs|png|jpe?g|webp|gif|svg|ico|woff2?|ttf|otf|eot)$ {
+  try_files $uri =404;
+  add_header Cache-Control "public, max-age=3600";
+  add_header X-Content-Type-Options nosniff always;
+ }
+ location ~ ^/(wp-content|wp-includes)/ { return 404; }
+ location = /wp-config.php { return 404; }
+ location ~ \.php(?:/|$) { return 404; }
+ location = /wp-json/woodbase/v1/artwork { limit_req zone=woodbase_upload burst=10 nodelay; try_files $uri /index.php?$args; }
+ location = /wp-json { return 308 /wp-json/; }
+ location = /index.html { root /srv/vite; add_header Cache-Control no-cache; }
+ location /assets/ { root /srv/vite; try_files $uri =404; add_header Cache-Control "public, max-age=31536000, immutable"; }
+ location / {
+  if ($woodbase_wp_query) { rewrite ^ /index.php last; }
+  root /srv/vite;
+  try_files $uri $uri/ /index.html;
+ }
+}

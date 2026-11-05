@@ -1,0 +1,80 @@
+# Template only: no deployment or domain changes are performed by this file.
+name: woodbase-production
+x-logging: &bounded_logs
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+services:
+  db:
+    logging: *bounded_logs
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: woodbase
+      MARIADB_USER: woodbase
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Generate protected environment file}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Generate protected environment file}
+    volumes: [db:/var/lib/mysql]
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      interval: 5s
+      retries: 30
+  wordpress:
+    logging: *bounded_logs
+    image: wordpress:6.8.3-php8.3-fpm-alpine
+    restart: unless-stopped
+    depends_on:
+      db: {condition: service_healthy}
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: woodbase
+      WORDPRESS_DB_USER: woodbase
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      WOODBASE_PUBLIC_ORIGIN: https://${WOODBASE_DOMAIN:?Set approved hostname}
+      WB_ENVIRONMENT: ${WB_ENVIRONMENT:-production}
+      WB_STORAGE_BYTES: ${WB_STORAGE_BYTES:-5368709120}
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_HOME', getenv('WOODBASE_PUBLIC_ORIGIN'));
+        define('WP_SITEURL', getenv('WOODBASE_PUBLIC_ORIGIN'));
+        define('WP_ENVIRONMENT_TYPE', getenv('WB_ENVIRONMENT'));
+        define('FORCE_SSL_ADMIN', true);
+        define('DISALLOW_FILE_EDIT', true);
+        define('DISALLOW_FILE_MODS', true);
+        define('AUTOMATIC_UPDATER_DISABLED', true);
+        define('DISABLE_WP_CRON', true);
+        define('WP_DEBUG_DISPLAY', false);
+        define('WOODBASE_PRIVATE_DIR', '/var/woodbase-private');
+        define('WOODBASE_FRONTEND_ORIGIN', getenv('WOODBASE_PUBLIC_ORIGIN'));
+        define('WOODBASE_TRUSTED_PROXIES', []);
+        define('WOODBASE_STORAGE_LIMITS', ['total_bytes' => (int)getenv('WB_STORAGE_BYTES')]);
+        define('WOODBASE_COMPLETED_RETENTION_DAYS', 0);
+    volumes:
+      - wp:/var/www/html
+      - private:/var/woodbase-private
+      - ../plugin:/var/www/html/wp-content/plugins/woodbase:ro
+      - ../php-uploads.ini:/usr/local/etc/php/conf.d/woodbase-uploads.ini:ro
+      - ${WOOCOMMERCE_PLUGIN_DIR:?Provide verified extracted release}:/var/www/html/wp-content/plugins/woocommerce:ro
+      - ${WP_CLI_PHAR:?Provide verified official WP-CLI}:/opt/wp-cli.phar:ro
+  web:
+    logging: *bounded_logs
+    image: nginx:1.28-alpine
+    restart: unless-stopped
+    depends_on: [wordpress]
+    ports: ["80:80", "443:443"]
+    environment:
+      WOODBASE_DOMAIN: ${WOODBASE_DOMAIN}
+      NGINX_ENVSUBST_FILTER: ^WOODBASE_DOMAIN$
+    volumes:
+      - wp:/var/www/html:ro
+      - ${VITE_DIST_DIR:?Provide approved static build}:/srv/vite:ro
+      - ${TLS_DIR:?Provide valid fullchain.pem and privkey.pem}:/etc/woodbase-tls:ro
+      - acme:/var/www/acme
+      - ./nginx/site.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./production-access.conf:/etc/nginx/woodbase/access.conf:ro
+      - ./production-auth.conf:/etc/nginx/woodbase/auth-forward.conf:ro
+volumes:
+  db:
+  wp:
+  private:
+  acme:

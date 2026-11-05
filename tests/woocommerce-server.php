@@ -26,6 +26,8 @@ foreach($orders as $order)foreach($order->get_items() as $item) {
  $raw=$item->get_meta('_woodbase_configuration');if(!$raw)continue;
  $c=json_decode($raw,true);if(!$c['artwork']['fileId'])continue;
  check($order->get_customer_id()===0,'Expected guest order');
+ $asset=wb_state()->asset($c['artwork']['fileId']);check($asset && (int)$asset['hold']===1 && $asset['state']==='order','Order artwork must be protected in lifecycle metadata');
+ $ref=(int)$wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}wb_refs WHERE asset=%s AND kind='order' AND object_id=%d AND ref_key=%s",$c['artwork']['fileId'],$order->get_id(),hash('sha256','order:'.$order->get_id())));check($ref>0,'Lifecycle must reference actual order ID');
  check($c['inscription']==='ТЕСТ WoodBase','Snapshot inscription missing');
  $path=WOODBASE_PRIVATE_DIR.'/'.$c['artwork']['fileId'].'.png';
  check(is_file($path),'Private production artwork missing');

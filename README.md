@@ -77,3 +77,5 @@ npm run dev
 ## Локальный прототип WooCommerce
 
 Интеграция одного тестового альбома сохраняет текущий фронтенд. По умолчанию работает demo с локальными черновиками, без настоящего оформления. Для локального WordPress/WooCommerce и переключения на серверную корзину см. [инструкцию](integrations/woocommerce/README.md), [аудит](docs/woocommerce-audit.md), [результаты проверки](docs/woocommerce-verification.md) и [план Ozon](docs/ozon-integration-plan.md). Production/Vercel и коммерческие аккаунты не настроены; Checkout Blocks и Ozon требуют дальнейшей проверки.
+
+Усиление безопасности и эксплуатация: [отчёт](docs/woocommerce-hardening-report.md), [план Timeweb](docs/production-deployment-plan.md), [совместимость Ozon](docs/ozon-compatibility-review.md).

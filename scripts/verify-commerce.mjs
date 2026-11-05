@@ -23,6 +23,7 @@ try {
  await page.waitForFunction(()=>!document.querySelector('#add-cart').disabled);
  assert.match(await page.locator('#cart-status').textContent(),/сохранён в тестовой корзине/);
  const api=page.request;
+ assert.equal((await api.get('http://localhost:8088/wp-content/plugins/woocommerce/assets/js/frontend/checkout.min.js')).status(),200,'Woo checkout enhancement script must be publicly readable');
  const product=await (await api.get(origin+'/wp-json/woodbase/v1/product')).json();assert.match(product.description,/ТЕСТОВЫЙ/);
  let response=await api.get(origin+'/wp-json/wc/store/v1/cart');let cart=await response.json();
  const token=response.headers()['cart-token'];const headers={'Cart-Token':token};
@@ -31,7 +32,7 @@ try {
  assert.ok(cart.items[0].item_data.some(x=>x.value==='ТЕСТ WoodBase'));
  assert.equal((await api.post(origin+'/wp-json/wc/store/v1/cart/add-item',{headers,data:addBody})).status(),409,'Replay must not increment quantity');
  const invalid=structuredClone(addBody);invalid.extensions.woodbase.requestId=crypto.randomUUID();invalid.extensions.woodbase.configuration.options.wood='forged';
- assert.equal((await api.post(origin+'/wp-json/wc/store/v1/cart/add-item',{headers,data:invalid})).status(),409);
+ assert.equal((await api.post(origin+'/wp-json/wc/store/v1/cart/add-item',{headers,data:invalid})).status(),400);
  const forged=structuredClone(addBody);forged.extensions.woodbase.requestId=crypto.randomUUID();forged.price=1;forged.extensions.woodbase.configuration.price=1;
  response=await api.post(origin+'/wp-json/wc/store/v1/cart/add-item',{headers,data:forged});assert.equal(response.status(),201);
  cart=await response.json();assert.ok(cart.items.every(x=>x.prices.price==='354000'));
@@ -46,7 +47,7 @@ try {
  const thief=await browser.newContext();const thiefApi=thief.request;
  const thiefCart=await thiefApi.get(origin+'/wp-json/wc/store/v1/cart');
  const stolen=structuredClone(addBody);stolen.extensions.woodbase.requestId=crypto.randomUUID();
- assert.equal((await thiefApi.post(origin+'/wp-json/wc/store/v1/cart/add-item',{headers:{'Cart-Token':thiefCart.headers()['cart-token']},data:stolen})).status(),409);
+ assert.equal((await thiefApi.post(origin+'/wp-json/wc/store/v1/cart/add-item',{headers:{'Cart-Token':thiefCart.headers()['cart-token']},data:stolen})).status(),403);
  await thief.close();
  await page.reload();await page.waitForFunction(()=>document.querySelector('.commerce-mode')?.textContent.startsWith('Тестовый WooCommerce'));
  await page.evaluate(()=>document.querySelector('#skip-intro')?.click());

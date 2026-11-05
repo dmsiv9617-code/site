@@ -23,12 +23,12 @@ test('Store API captures rotating cart token, sends configuration and preserves 
  const body=JSON.parse(calls[1].options.body);
  assert.equal(body.id,42);assert.equal(body.extensions.woodbase.configuration.productId,42);
  assert.equal(body.extensions.woodbase.requestId,'request-1');
- await assert.rejects(client.quantity('key',2),/Unavailable/);
+ await assert.rejects(client.quantity('key',2),/Состояние корзины/);
  assert.equal(client.token,'token-3');
 });
 test('failed live requests never silently fall back to demo',async()=>{
  const client=new StoreCart('https://shop.example',async()=>{throw new Error('offline');});
- await assert.rejects(client.get(),/offline/);
+ await assert.rejects(client.get(),/Сервис временно недоступен/);
 });
 test('default transport calls fetch with the browser global receiver',async()=>{
  const previous=globalThis.fetch;

@@ -95,3 +95,36 @@ python3 scripts/verify-fresh-woocommerce.py
 Первый тест подтверждает отдельное сохранение оригиналов 600/1200 px с одинаковым preview. Второй использует только новый проект `woodbase-review-fresh`, отказывается переиспользовать существующие контейнеры/volumes с таким именем и удаляет только созданные им ресурсы. Рабочий проект `woodbase-local` и его заказы остаются на месте. При сбое диагностика без значений локальных паролей сохраняется в `work/fresh-install-diagnostic.log`. В контрольном запуске новая MariaDB не смогла создать системную БД из-за нехватки места Docker; этот тест **не пройден**, повторить после увеличения места. Ошибку не следует устранять удалением рабочего private/db volume.
 
 Отчёт текущего контроля: `docs/woocommerce-control-review.md` (путь от корня репозитория). Production-план очистки не реализован: PHP удаляет multipart temp-файл после запроса, а приватные PNG, в том числе непривязанные к заказу, сохраняются без автоматического TTL. До реальных клиентов согласовать retention, ссылки на заказы/корзины, безопасную очистку, резервирование и общий rate limiting.
+
+## Hardening 0.2
+
+Жизненный цикл и квоты теперь хранятся в отдельных InnoDB tables, а не в `wb_file_*`/`wb_quota_*`/`wb_req_*` options. Существующие файлы мигрируют консервативно с защитой от удаления; новые временные uploads очищаются по TTL и связям. Заказы, pending-order pins и legacy holds автоматически не удаляются. Возраст сам по себе не разрешает удаление производственного PNG.
+
+Детальная политика, результаты и остающиеся проверки — `docs/woocommerce-hardening-report.md`; RF/Timeweb staging/production — `docs/production-deployment-plan.md`; Ozon — `docs/ozon-compatibility-review.md`.
+
+```sh
+# Existing WP + local Vite live are required for HTTP/browser scenarios:
+npm run test:hardening:server
+npm run test:commerce
+node scripts/verify-order-admin.mjs
+node scripts/verify-guest-reopen.mjs
+node scripts/verify-large-upload.mjs
+# Runs rate-limit stress on the local stack; allow the 60-sec window to expire afterwards:
+npm run test:hardening:http
+# Separate local TLS/Nginx process; no public DNS or main Nginx replacement:
+python3 scripts/verify-nginx-template.py
+# Creates a real signed/encrypted backup and a separate temporary DB/files; briefly stops ONLY local PHP:
+npm run test:backup:local
+```
+
+`test:backup:local` requires GnuPG/Chromium and at least 700 MiB free, a completed `test:commerce` fixture and loopback port8088. It never overwrites source DB, creates a generated `woodbase_restore_test_*` schema with temporary grants, restores and validates order/file hashes and authorized HTTP download, then removes only its copies/grants/test key and temporary local proxy route. This is not an independent-server disaster-recovery test. Do not run this local test against commercial accounts or production services.
+
+CLI maintenance (official phar is prepared by setup, only primary-source download):
+
+```sh
+docker compose -f integrations/woocommerce/compose.yaml --env-file integrations/woocommerce/.env exec -T -u www-data wordpress php /opt/woodbase-downloads/wp-cli.phar --path=/var/www/html woodbase cleanup --dry-run --batch-size=250
+```
+
+Development WP-Cron runs every5min; production should invoke all due WP events via system cron. The private `.locks` directory has at most256 fixed lock files, never one persistent lock file per upload. Do not delete active lock files manually. Parent/locks permissions stay private and are preserved when CLI runs as root. DB and OS locks together prevent deletion races/reconnect hazards.
+
+`php-uploads.ini` aligns PHP limits with application5MiB; vendor/public source assets are normalized to0755/0644 for both PHP/Nginx. This does **not** change private PNG0600/directory0700. Test helpers/extracted vendor code live under ignored work; no customer uploads/DB/credentials are committed.

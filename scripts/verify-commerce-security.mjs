@@ -14,9 +14,9 @@ try{
  const cart=await (await api.get(base+'/wp-json/wc/store/v1/cart',{headers})).json();assert.equal(cart.items.length,1);assert.equal(cart.items[0].quantity,1);
  for(const patch of [{options:{...configuration.options,extras:['box']}},{inscription:'<script>x</script>'},{artwork:{...configuration.artwork,rotation:999}},{version:2}]){
   const bad=structuredClone(data);bad.extensions.woodbase.requestId=crypto.randomUUID();Object.assign(bad.extensions.woodbase.configuration,patch);
-  assert.equal((await api.post(base+'/wp-json/wc/store/v1/cart/add-item',{headers,data:bad})).status(),409);
+  assert.equal((await api.post(base+'/wp-json/wc/store/v1/cart/add-item',{headers,data:bad})).status(),400);
  }
- const oversized=await api.post(base+'/wp-json/woodbase/v1/artwork',{headers:{'X-Woodbase-Nonce':session.nonce},multipart:{file:{name:'large.png',mimeType:'image/png',buffer:Buffer.alloc(5*1024*1024+1)}}});assert.equal(oversized.status(),400);
+ const oversized=await api.post(base+'/wp-json/woodbase/v1/artwork',{headers:{'X-Woodbase-Nonce':session.nonce},multipart:{file:{name:'large.png',mimeType:'image/png',buffer:Buffer.alloc(5*1024*1024+1)}}});assert.equal(oversized.status(),413);
  const guest=await browser.newContext();
  const guestSession=await (await guest.request.get(base+'/wp-json/woodbase/v1/session')).json();
  const guestCart=await (await guest.request.get(base+'/wp-json/wc/store/v1/cart')).json();

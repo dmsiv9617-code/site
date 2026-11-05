@@ -9,6 +9,10 @@ values=dict(line.split('=',1) for line in (local/'.env').read_text().splitlines(
 env=os.environ.copy()
 for key in ['DOCKER_HOST','DOCKER_CONTEXT','DOCKER_TLS','DOCKER_TLS_VERIFY','DOCKER_CERT_PATH']:env.pop(key,None)
 env['WB_ADMIN_PASSWORD']=values['WP_ADMIN_PASSWORD']
+# The VFS daemon filesystem is distinct from /workspace. Probe the running source stack.
+probe=subprocess.check_output(['docker','--host=unix:///var/run/docker.sock','exec','woodbase-local-wordpress-1','df','-Pk','/var/www/html'],env=env,text=True)
+free=int(probe.strip().splitlines()[-1].split()[3])*1024
+if free<8*1024**3:raise SystemExit('BLOCKED: clean install needs at least 8 GiB additional free Docker space; no working volumes deleted')
 project='woodbase-review-fresh'
 cmd=['docker','--host=unix:///var/run/docker.sock','compose','-p',project,'-f',str(local/'compose.yaml'),'--env-file',str(local/'.env')]
 existing=subprocess.run(cmd+['ps','-aq'],env=env,text=True,capture_output=True,check=True)
