@@ -10,6 +10,8 @@
     "export:html": "node scripts/export-html.mjs",
     "test": "node --test tests/*.test.mjs",
     "test:commerce": "node scripts/verify-commerce.mjs",
+    "test:constructor:ux": "node scripts/verify-constructor-ux.mjs",
+    "test:constructor:motion": "node scripts/verify-constructor-motion.mjs",
     "test:hardening:server": "python3 scripts/verify-hardening-server.py",
     "test:hardening:http": "node scripts/verify-hardening-http.mjs",
     "test:backup:local": "python3 scripts/verify-backup-rehearsal.py"

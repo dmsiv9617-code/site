@@ -2,6 +2,7 @@ import {commerceError} from './commerce-errors.js';
 // Browser contract: server validates again and computes all prices.
 export function configurationFromState(s, productId, fileId = null) {
  if(s.model!==5 || !Number.isSafeInteger(productId) || productId<1) throw new Error('Для тестового заказа выберите «Счастливые моменты»');
+ if(s.artworkRequired&&!s.image)throw new Error('Загрузите исходный рисунок снова перед добавлением в заказ.');
  if(s.image && !fileId) throw new Error('Сначала загрузите оригинал рисунка.');
  if(!['bolts','woven'].includes(s.binding)||!['black','brown'].includes(s.leather)||!Number.isInteger(s.color)||s.color<0||s.color>3||s.motif!==5) throw new Error('Выбранная опция недоступна.');
  if(typeof s.inscription!=='string'||[...s.inscription].length>45) throw new Error('Проверьте надпись: не более 45 символов.');

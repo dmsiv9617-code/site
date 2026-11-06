@@ -1,4 +1,5 @@
 import {setupCommerce} from './commerce-ui.js';
+import {createDraftStore,makeDraft,cartMetadata} from './constructor-draft.js';
 import {createAlbumPreview} from './album-preview.js';
 import {variantFor, leatherName} from './album-variants.js';
 import {gsap} from 'gsap';
@@ -31,17 +32,22 @@ const colors = [{ id: 'natural', name: 'Натуральный', value: '#dec08b
 const bindings = [{ id: 'bolts', name: 'Дизайнерские болты', price: 0 }, { id: 'woven', name: 'Ручное плетение', price: 0 }];
 const motifs = models.map(m => m.name);
 const extras = [{ id: 'box', name: 'Подарочная упаковка', price: null }, { id: 'metric', name: 'Держатель для метрики', price: null }, { id: 'corners', name: 'Уголки для фотографий', price: null }, { id: 'markers', name: 'Золотой и серебряный маркеры', price: null }, { id: 'stickers', name: 'Декоративные наклейки', price: null }];
-let state = { model: 3, color: 1, motif: 3, binding: 'bolts', leather: 'black', inscription: 'История нашей семьи', image: null, extras: [], page: 0, imageScale: 1, imageX: 0, imageY: 0, imageRotation: 0, threshold: 140, imageMode: 'engrave' };
+const initialState = () => ({ model: 3, color: 1, motif: 3, binding: 'bolts', leather: 'black', inscription: 'История нашей семьи', image: null, extras: [], page: 0, imageScale: 1, imageX: 0, imageY: 0, imageRotation: 0, threshold: 140, imageMode: 'engrave', artworkRequired:false });
+let state=initialState();
+let draftReady=false;
 let cart;
 try { cart = JSON.parse(localStorage.getItem('sloy-cart') || '[]'); if (!Array.isArray(cart)) cart = []; } catch { cart = []; }
 const money = n => Number.isFinite(n) ? new Intl.NumberFormat('ru-RU').format(n) + ' ₽' : 'По запросу';
 const escape = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 let commerceProduct = null;
 let originalArtwork = null;
+let artworkRevision=0;
 const total = () => commerceProduct && state.model === 5 ? Number(commerceProduct.price) : albumBasePrice;
 const hasOptionalExtras = items => items.some(item => item.extras.some(name => !extras.some(extra => includedExtras.has(extra.id) && extra.name === name)));
 
-cart = cart.filter(item => item && typeof item === 'object' && Array.isArray(item.extras)).map(item => ({ ...item, price: albumBasePrice }));
+cart = cart.filter(item => item && typeof item === 'object' && Array.isArray(item.extras)).map(item => cartMetadata({ ...item, price: albumBasePrice }));
+// Remove image payloads left by older demo carts without changing the cart contents.
+try {if(localStorage.getItem('sloy-cart')!==null)localStorage.setItem('sloy-cart',JSON.stringify(cart));} catch {}
 const workshopTelegram = ''; // Set the public workshop username when supplied; never a bot token.
 const cartTotal = () => cart.every(i => Number.isFinite(i.price)) ? cart.reduce((sum, i) => sum + i.price, 0) : null;
 const leaf = `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M8 25C3 6 21 5 26 4c-1 15-6 23-18 21ZM8 25 22 9M13 19l-1-7m5 2 7-1"/></svg>`;
@@ -181,6 +187,7 @@ document.addEventListener('pointerdown',event=>{if(composition.open&&!compositio
 composition.addEventListener('keydown',event=>{if(event.key==='Escape'&&composition.open){event.preventDefault();composition.open=false;composition.querySelector('summary').focus();}});
 const stepActions=document.createElement('div');stepActions.className='step-actions';stepActions.innerHTML='<button id="step-back" class="text-link" type="button">← Назад</button><button id="step-next" class="button" type="button">Далее</button>';optionsNode.insertBefore(stepActions,document.querySelector('#add-cart'));
 document.querySelector('#add-cart').textContent='Добавить в заказ →';
+optionsNode.insertAdjacentHTML('beforeend','<div class="draft-actions"><p id="draft-status" role="status"></p><button id="reset-draft" type="button" class="text-link">Сбросить проект</button><small>Сброс не затрагивает корзину.</small></div>');
 document.querySelector('.price-row > span').textContent='Стоимость альбома';
 function setStep(id, focus=false) {
  if(!stepPanels[id])id='binding';
@@ -194,6 +201,7 @@ function setStep(id, focus=false) {
  document.querySelector('#add-cart').hidden=index!==stepDefinitions.length-1;
  document.querySelector('#step-position').textContent=`ШАГ ${index+1} ИЗ ${stepDefinitions.length}`;
  if(focus) document.querySelector('[data-step="'+id+'"]').focus();
+ persistUnfinishedProject();
 }
 for(const tab of document.querySelectorAll('[data-step]')){
  tab.onclick=()=>setStep(tab.dataset.step);
@@ -220,7 +228,7 @@ document.querySelector('#studio-device').onclick=()=>document.querySelector('#st
 function syncStudio(){
  document.querySelectorAll('[data-studio-leather]').forEach(el=>el.setAttribute('aria-pressed',el.dataset.studioLeather===state.leather));
  document.querySelectorAll('[data-studio-binding]').forEach(el=>el.setAttribute('aria-pressed',el.dataset.studioBinding===state.binding));
- document.querySelector('#studio-drawing').textContent='Рисунок: '+(state.image?'ваш файл':models[state.motif].name);
+ document.querySelector('#studio-drawing').textContent='Рисунок: '+(state.artworkRequired&&!state.image?'загрузите оригинал снова':state.image?'ваш файл':models[state.motif].name);
  document.querySelector('#studio-model-name').textContent=models[state.model].name;
  document.querySelector('#studio-preset-label').textContent=state.model===3&&state.motif===3&&state.color===1&&state.leather==='black'&&state.binding==='bolts'&&!state.image&&state.inscription===models[3].inscription?'Преднастроенный вариант':'Ваш вариант';
  document.querySelectorAll('[data-motif]').forEach(el=>{
@@ -282,8 +290,9 @@ const albumPreview = createAlbumPreview(document.querySelector('#live-album'));
 function renderPreview() {
   const model = models[state.model];
   const pages = ['Обложка', 'Открытый альбом', 'Начало перелистывания', 'Разворот'];
-  const variant = variantFor(state, models);
-  const transformedArt = `<div class="cover-art" style="transform:translate(${state.imageX}%,${state.imageY}%) rotate(${state.imageRotation}deg) scale(${state.imageScale})">${state.image ? `<img src="${state.image}" alt="Ваш рисунок на обложке" id="uploaded-art">` : coverDrawing(state.motif).replace('>Семья<','>'+escape(state.inscription)+'<')}</div>`;
+  const needsOriginal=state.artworkRequired&&!state.image;
+  const variant = needsOriginal?null:variantFor(state, models);
+  const transformedArt = `<div class="cover-art" style="transform:translate(${state.imageX}%,${state.imageY}%) rotate(${state.imageRotation}deg) scale(${state.imageScale})">${needsOriginal?'<span class="missing-artwork">Загрузите оригинал рисунка снова</span>':state.image ? `<img src="${state.image}" alt="Ваш рисунок на обложке" id="uploaded-art">` : coverDrawing(state.motif).replace('>Семья<','>'+escape(state.inscription)+'<')}</div>`;
   if (state.page === 0 && variant) {
     albumPreview.show(variant, model.name + ' — ' + colors[state.color].name + ', ' + leatherName(state.leather) + ' кожа, ' + bindings.find(b=>b.id===state.binding).name);
   } else {
@@ -308,9 +317,10 @@ function renderPreview() {
   document.querySelector('#remove-image').hidden = !state.image;
   renderUploadedArt();
   syncStudio();
+  persistUnfinishedProject();
 }
 function chooseDesign(i, preset = false) {
- state.model = i; state.motif = i; state.inscription = models[i].inscription; state.image = null; state.page = 0;
+ state.model = i; state.motif = i; state.inscription = models[i].inscription; state.image = null; state.artworkRequired=false; originalArtwork=null; artworkRevision++; document.querySelector('#upload').value=''; document.querySelector('#upload-status').textContent=''; state.page = 0;
  if (preset) { state.color = models[i].color; state.binding = models[i].binding; }
  syncControls(); renderPreview(); if(preset) setStep('binding');
 }
@@ -375,17 +385,18 @@ function changeAlbumPage(page) {
 document.querySelector('#toggle-album').onclick = () => changeAlbumPage(state.page === 0 ? 1 : 0);
 document.querySelector('#prev-page').onclick = () => changeAlbumPage(Math.max(0,state.page - 1));
 document.querySelector('#next-page').onclick = () => changeAlbumPage(Math.min(3,state.page + 1));
-document.querySelector('#remove-image').onclick = () => { state.image = null; document.querySelector('#upload').value = ''; document.querySelector('#upload-status').textContent = ''; syncArtworkUI(); renderPreview(); };
+document.querySelector('#remove-image').onclick = () => { state.image = null; state.artworkRequired=false; originalArtwork=null; artworkRevision++; document.querySelector('#upload').value = ''; document.querySelector('#upload-status').textContent = ''; syncArtworkUI(); renderPreview(); };
 function syncArtworkUI(){
  const has=!!state.image;
  const thumb=document.querySelector('#upload-thumb');if(!thumb)return;
  thumb.hidden=!has;
  const wrap=document.querySelector('.studio-custom-art');if(wrap)wrap.classList.toggle('has-art',has);
  const title=wrap?.querySelector('.studio-upload-title');if(title)title.textContent=has?'Заменить рисунок':'Загрузите свой рисунок';
- const note=wrap?.querySelector('.studio-upload-note');if(note)note.textContent=has?'PNG, JPG, WebP до 5 МБ · хранится только в вашем браузере':'Перетащите файл сюда или нажмите · PNG, JPG, WebP до 5 МБ';
+ const note=wrap?.querySelector('.studio-upload-note');if(note)note.textContent=has?'PNG, JPG, WebP до 5 МБ · после обновления нужен оригинал':'Перетащите файл сюда или нажмите · PNG, JPG, WebP до 5 МБ';
  document.querySelector('#live-album')?.classList.toggle('art-draggable',has);
  document.querySelector('.art-tools').hidden=!has;
- if(has){const img=document.querySelector('#upload-thumb-img');if(img&&img.src!==state.image)img.src=state.image;}
+ const thumbnail=document.querySelector('#upload-thumb-img');
+ if(has){if(thumbnail&&thumbnail.src!==state.image)thumbnail.src=state.image;}else thumbnail?.removeAttribute('src');
  document.querySelectorAll('[data-image-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.imageMode===state.imageMode)));
  const thresholdRow=document.querySelector('.art-row-threshold');if(thresholdRow)thresholdRow.hidden=state.imageMode!=='engrave';
 }
@@ -409,19 +420,21 @@ document.querySelector('#inscription').addEventListener('input',()=>{const input
   const input=document.querySelector('#upload');const dt=new DataTransfer();dt.items.add(file);input.files=dt.files;input.dispatchEvent(new Event('change',{bubbles:true}));});
 })();
 document.querySelector('#upload').onchange = async e => {
+  const revision=++artworkRevision;
   const file = e.target.files[0]; if (!file) return;
   const status = document.querySelector('#upload-status');
   if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) { status.textContent = 'Выберите PNG, JPG или WebP размером до 5 МБ.'; return; }
   try {
     const bitmap = await createImageBitmap(file);
+    if(revision!==artworkRevision){bitmap.close();return;}
     const canvas = document.createElement('canvas'); const scale = Math.min(1, 600 / Math.max(bitmap.width, bitmap.height)); canvas.width = Math.max(1, Math.round(bitmap.width * scale)); canvas.height = Math.max(1, Math.round(bitmap.height * scale)); canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height); bitmap.close();
-    state.image = canvas.toDataURL('image/png'); originalArtwork = {file, preview: state.image}; state.page = 0; status.textContent = 'Рисунок загружен. Он хранится только в вашем браузере.'; syncArtworkUI(); renderPreview();
-  } catch { status.textContent = 'Не удалось открыть изображение. Попробуйте другой файл.'; }
+    state.image = canvas.toDataURL('image/png'); state.artworkRequired=false; originalArtwork = {file, preview: state.image}; state.page = 0; status.textContent = 'Рисунок загружен. После обновления страницы потребуется повторно загрузить оригинал.'; syncArtworkUI(); renderPreview();
+  } catch { if(revision===artworkRevision)status.textContent = 'Не удалось открыть изображение. Попробуйте другой файл.'; }
 };
-function saveCart() { document.querySelector('#cart-count').textContent = cart.length; try { localStorage.setItem('sloy-cart', JSON.stringify(cart)); } catch { document.querySelector('#cart-status').textContent = 'Корзина доступна до закрытия страницы: хранилище браузера заполнено.'; } }
-document.querySelector('#add-cart').onclick = () => { cart.push({ model: models[state.model].name, size: models[state.model].size, color: colors[state.color].name, leather: leatherName(state.leather), preview: variantFor(state, models), inscription: state.inscription, motif: motifs[state.motif], image: state.image, extras: extras.filter(e => state.extras.includes(e.id)).map(e => e.name), price: total(), binding: bindings.find(b => b.id === state.binding).name, artwork: { scale: state.imageScale, x: state.imageX, y: state.imageY, rotation: state.imageRotation, mode: state.imageMode, threshold: state.threshold }, configuration: structuredClone(state) }); document.querySelector('#cart-status').textContent = 'Альбом добавлен в корзину'; document.querySelector('#mascot-success').hidden = false; saveCart(); };
+function saveCart() { document.querySelector('#cart-count').textContent = cart.length; try { localStorage.setItem('sloy-cart', JSON.stringify(cart.map(cartMetadata))); } catch { document.querySelector('#cart-status').textContent = 'Корзина доступна до закрытия страницы: хранилище браузера заполнено.'; } }
+document.querySelector('#add-cart').onclick = () => { if(state.artworkRequired&&!state.image||state.image&&originalArtwork?.preview!==state.image){document.querySelector('#cart-status').textContent='Загрузите исходный рисунок снова перед добавлением. Уменьшенный эскиз не заменяет оригинал.';return;} cart.push({ model: models[state.model].name, size: models[state.model].size, color: colors[state.color].name, leather: leatherName(state.leather), preview: variantFor(state, models), inscription: state.inscription, motif: motifs[state.motif], image: state.image, extras: extras.filter(e => state.extras.includes(e.id)).map(e => e.name), price: total(), binding: bindings.find(b => b.id === state.binding).name, artwork: { scale: state.imageScale, x: state.imageX, y: state.imageY, rotation: state.imageRotation, mode: state.imageMode, threshold: state.threshold }, configuration: structuredClone(state) }); document.querySelector('#cart-status').textContent = 'Альбом добавлен в корзину'; document.querySelector('#mascot-success').hidden = false; saveCart(); };
 function renderCart() {
-  document.querySelector('#cart-items').innerHTML = cart.length ? cart.map((item, i) => { const seen = new Set([escape(item.model)]); const lines = [`${escape(item.color)} · ${escape(item.size)}`, item.leather ? escape(item.leather) + ' кожа' : '', escape(item.binding || 'Переплёт нужно уточнить'), escape(item.inscription), item.image ? 'Свой рисунок' : escape(item.motif), item.extras.length ? item.extras.map(escape).join(', ') : ''].filter(line => line && !seen.has(line) && seen.add(line)); return `<div class="cart-item"><div><h3>${escape(item.model)}</h3><p>${lines.join('<br>')}</p></div><div><strong>${money(item.price)}</strong><button data-remove="${i}">Удалить</button></div></div>`; }).join('') + `<div class="price-row"><span>Стоимость альбомов</span><strong>${money(cartTotal())}</strong></div>${hasOptionalExtras(cart) ? '<p class="control-hint">Дополнения оплачиваются отдельно; их стоимость уточним при согласовании.</p>' : ''}` : `<div class="empty-cart"><img class="mascot" src="/scroll-assets/d315c6f4af2807c4bc44.webp" alt=""><h3>Давайте начнём вашу историю?</h3><p>Выберите обложку и добавьте что-то своё.</p><button id="empty-configure" class="button">Создать альбом →</button></div>`;
+  document.querySelector('#cart-items').innerHTML = cart.length ? cart.map((item, i) => { const seen = new Set([escape(item.model)]); const lines = [`${escape(item.color)} · ${escape(item.size)}`, item.leather ? escape(item.leather) + ' кожа' : '', escape(item.binding || 'Переплёт нужно уточнить'), escape(item.inscription), item.image ? 'Свой рисунок' : item.artworkRequired?'Свой рисунок: оригинал нужно приложить заново':escape(item.motif), item.extras.length ? item.extras.map(escape).join(', ') : ''].filter(line => line && !seen.has(line) && seen.add(line)); return `<div class="cart-item"><div><h3>${escape(item.model)}</h3><p>${lines.join('<br>')}</p></div><div><strong>${money(item.price)}</strong><button data-remove="${i}">Удалить</button></div></div>`; }).join('') + `<div class="price-row"><span>Стоимость альбомов</span><strong>${money(cartTotal())}</strong></div>${hasOptionalExtras(cart) ? '<p class="control-hint">Дополнения оплачиваются отдельно; их стоимость уточним при согласовании.</p>' : ''}` : `<div class="empty-cart"><img class="mascot" src="/scroll-assets/d315c6f4af2807c4bc44.webp" alt=""><h3>Давайте начнём вашу историю?</h3><p>Выберите обложку и добавьте что-то своё.</p><button id="empty-configure" class="button">Создать альбом →</button></div>`;
   const emptyButton = document.querySelector('#empty-configure'); if(emptyButton) emptyButton.onclick = () => { document.querySelector('#cart').close(); setStep('binding'); location.hash = 'constructor'; showRoute(); };
   document.querySelector('#export-order').disabled = !cart.length; document.querySelector('#telegram-request').disabled = !cart.length; document.querySelector('#copy-request').disabled = !cart.length;
   document.querySelectorAll('[data-remove]').forEach(el => el.onclick = () => { cart.splice(+el.dataset.remove, 1); saveCart(); renderCart(); });
@@ -433,7 +446,7 @@ document.querySelector('#export-order').onclick = () => { const url = URL.create
 for (const [id,key] of [['image-scale','imageScale'],['image-x','imageX'],['image-y','imageY'],['image-rotation','imageRotation'],['image-threshold','threshold']]) document.querySelector('#'+id).oninput = e => { state[key] = +e.target.value; renderPreview(); };
 document.querySelector('#telegram-request').onclick = () => { const text = requestText(); const base = workshopTelegram ? `https://t.me/${workshopTelegram}?text=` : 'https://t.me/share/url?url=&text='; window.open(base + encodeURIComponent(text),'_blank','noopener,noreferrer'); document.querySelector('#request-status').textContent = workshopTelegram ? 'Проверьте текст в Telegram и подтвердите отправку. Файл проекта приложите отдельно.' : 'Выберите чат мастерской в Telegram. Публичный адрес получателя ещё не настроен; рисунок приложите отдельно.'; };
 document.querySelector('#copy-request').onclick = async () => { try { await navigator.clipboard.writeText(requestText()); document.querySelector('#request-status').textContent='Текст скопирован. Вставьте его в чат мастерской и приложите скачанный файл запроса.'; } catch { document.querySelector('#request-status').textContent='Копирование недоступно. Используйте кнопку Telegram или скачайте запрос.'; } };
-function requestText() { const customer = document.querySelector('#customer-name').value.trim(); const contact=document.querySelector('#customer-contact').value.trim(); const comment=document.querySelector('#customer-comment').value.trim(); return ['Здравствуйте! Хочу согласовать альбом WoodBase.', ...cart.map((item,i)=>`${i+1}. ${item.model} — ${item.size}\nЦвет: ${item.color}\nКожа: ${item.leather||'Уточнить'}\nПереплёт: ${item.binding||'Уточнить'}\nНадпись: ${item.inscription||'Без надписи'}\nРисунок: ${item.image?'Свой, приложу проект':item.motif}\nДополнения: ${item.extras.join(', ')||'Без дополнений'}`), `Стоимость альбомов: ${money(cartTotal())}. Базовый комплект включён.`, hasOptionalExtras(cart) ? 'Стоимость дополнений: по согласованию.' : '', 'Срок изготовления: по согласованию.', customer ? `Имя: ${customer}` : '', contact ? `Связь: ${contact}` : '', comment ? `Пожелания: ${comment}` : '', cart.some(i=>i.image) ? 'Загруженный рисунок передам в отдельном файле проекта.' : ''].filter(Boolean).join('\n\n'); }
+function requestText() { const customer = document.querySelector('#customer-name').value.trim(); const contact=document.querySelector('#customer-contact').value.trim(); const comment=document.querySelector('#customer-comment').value.trim(); return ['Здравствуйте! Хочу согласовать альбом WoodBase.', ...cart.map((item,i)=>`${i+1}. ${item.model} — ${item.size}\nЦвет: ${item.color}\nКожа: ${item.leather||'Уточнить'}\nПереплёт: ${item.binding||'Уточнить'}\nНадпись: ${item.inscription||'Без надписи'}\nРисунок: ${item.image||item.artworkRequired?'Свой, приложу оригинал отдельно':item.motif}\nДополнения: ${item.extras.join(', ')||'Без дополнений'}`), `Стоимость альбомов: ${money(cartTotal())}. Базовый комплект включён.`, hasOptionalExtras(cart) ? 'Стоимость дополнений: по согласованию.' : '', 'Срок изготовления: по согласованию.', customer ? `Имя: ${customer}` : '', contact ? `Связь: ${contact}` : '', comment ? `Пожелания: ${comment}` : '', cart.some(i=>i.image||i.artworkRequired) ? 'Загруженный рисунок передам в отдельном файле проекта.' : ''].filter(Boolean).join('\n\n'); }
 document.querySelector('#image-mode').onchange = e => { state.imageMode = e.target.value; syncArtworkUI(); renderPreview(); };
 document.querySelectorAll('[data-image-mode]').forEach(el=>el.onclick=()=>{const select=document.querySelector('#image-mode');select.value=el.dataset.imageMode;select.dispatchEvent(new Event('change',{bubbles:true}));});
 document.querySelector('#reset-art').onclick = () => { Object.assign(state,{ imageScale:1,imageX:0,imageY:0,imageRotation:0 }); syncControls(); renderPreview(); };
@@ -447,13 +460,32 @@ function validateProject(data) {
  return {model:c.model,color:c.color,leather:c.leather,motif:c.motif,binding:c.binding,inscription:c.inscription,image:c.image,extras:[...new Set(c.extras)],page:0,imageScale:c.imageScale,imageX:c.imageX,imageY:c.imageY,imageRotation:c.imageRotation,threshold:c.threshold,imageMode:c.imageMode};
 }
 const project = () => ({ version:1, brand:'WoodBase', configuration:structuredClone(state) });
-function restoreProject(data){state=validateProject(data);syncControls();renderPreview();projectStatus.textContent='Проект восстановлен.';}
+function restoreProject(data){const restored=validateProject(data);artworkRevision++;state=restored;state.artworkRequired=!!state.image||!!data.artworkRequired;originalArtwork=null;syncControls();renderPreview();projectStatus.textContent='Проект восстановлен. Для заказа со своим рисунком загрузите оригинал снова.';}
 function downloadJSON(data,name){const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-document.querySelector('#save-project').onclick=()=>{try{localStorage.setItem('woodbase-project',JSON.stringify(project()));projectStatus.textContent='Проект сохранён в этом браузере. Для передачи близким скачайте файл проекта.';}catch{projectStatus.textContent='Не удалось сохранить в браузере. Скачайте проект файлом.';}};
-document.querySelector('#load-project').onclick=()=>{try{const saved=localStorage.getItem('woodbase-project');if(!saved)throw new Error('В этом браузере ещё нет сохранённого проекта.');restoreProject(JSON.parse(saved));}catch(e){projectStatus.textContent=e.message;}};
+document.querySelector('#save-project').onclick=()=>{try{localStorage.setItem('woodbase-project',JSON.stringify(makeDraft(state,activeStep)));projectStatus.textContent='Параметры проекта сохранены в этом браузере. Для передачи близким скачайте файл проекта.';}catch{projectStatus.textContent='Не удалось сохранить в браузере. Скачайте проект файлом.';}};
+document.querySelector('#load-project').onclick=()=>{try{const saved=localStorage.getItem('woodbase-project');if(!saved)throw new Error('В этом браузере ещё нет сохранённого проекта.');const d=JSON.parse(saved);if(d.configuration.image===undefined)d.configuration.image=null;restoreProject(d);}catch(e){projectStatus.textContent=e.message;}};
 document.querySelector('#download-project').onclick=()=>downloadJSON(project(),'WoodBase-project.json');
 document.querySelector('#import-project').onchange=async e=>{try{const file=e.target.files[0];if(!file)return;if(file.size>5*1024*1024)throw new Error('Файл проекта слишком большой.');restoreProject(JSON.parse(await file.text()));}catch{projectStatus.textContent='Не удалось открыть проект. Выберите файл, скачанный из конструктора WoodBase.';}finally{e.target.value='';}};
-syncControls();renderPreview();
+let browserStorage;try{browserStorage=localStorage;}catch{}
+const draftStore=createDraftStore(browserStorage);
+const recoveredDraft=draftStore.load();
+function persistUnfinishedProject(){
+ if(!draftReady)return;
+ const saved=draftStore.save(state,activeStep);
+ const warning=state.artworkRequired&&!state.image?' Загрузите исходный рисунок снова — файл и его превью не сохраняются.':'';
+ document.querySelector('#draft-status').textContent=(saved?'Параметры проекта сохранены в этом браузере.':'Не удалось сохранить проект в браузере. Настройки доступны только до обновления страницы.')+warning;
+}
+if(recoveredDraft.draft)state={...initialState(),...recoveredDraft.draft.configuration,image:null,artworkRequired:recoveredDraft.draft.artworkRequired};
+syncControls();renderPreview();setStep(recoveredDraft.draft?.step||'binding');
+draftReady=true;
+if(recoveredDraft.status==='unavailable')document.querySelector('#draft-status').textContent='Хранилище браузера недоступно. Настройки не сохранятся после обновления.';
+else if(recoveredDraft.status==='invalid')document.querySelector('#draft-status').textContent='Сохранённый проект повреждён или устарел. Можно собрать новый.';
+else if(recoveredDraft.draft)document.querySelector('#draft-status').textContent=(recoveredDraft.persisted===false?'Параметры восстановлены, но записывать изменения в хранилище не удалось.':'Параметры проекта восстановлены.')+(state.artworkRequired?' Загрузите исходный рисунок снова — файл и его превью не сохраняются.':'');
+else document.querySelector('#draft-status').textContent='Параметры сохраняются в этом браузере. Файлы и их превью не сохраняются.';
+document.querySelector('#reset-draft').onclick=()=>{
+ draftReady=false;const cleared=draftStore.clear();state=initialState();originalArtwork=null;artworkRevision++;document.querySelector('#upload').value='';document.querySelector('#upload-status').textContent='';document.querySelector('#cart-status').textContent='';document.querySelector('#mascot-success').hidden=true;syncControls();renderPreview();setStep('binding');draftReady=true;
+ document.querySelector('#draft-status').textContent=cleared?'Незавершённый проект сброшен. Корзина сохранена.':'Проект сброшен на странице, но очистить хранилище не удалось.';
+};
 
 // Motion is progressive: content remains visible without JavaScript or animation support.
 const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');

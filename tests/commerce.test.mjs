@@ -35,3 +35,7 @@ test('default transport calls fetch with the browser global receiver',async()=>{
  globalThis.fetch=async function(){assert.equal(this,globalThis);return new Response('{"items":[]}');};
  try{await new StoreCart('https://shop.example').get();}finally{globalThis.fetch=previous;}
 });
+
+test('restored custom artwork cannot become a standard album without its original',()=>{
+ assert.throws(()=>configurationFromState({...state,artworkRequired:true,image:null},42),/исходный рисунок/);
+});
