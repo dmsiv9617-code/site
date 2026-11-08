@@ -1,0 +1,66 @@
+# Compose >=2.24.4. Standalone staging entrypoint; do not combine with production.
+name: woodbase-adminvps-staging
+services:
+  db:
+    extends: {file: compose.yaml, service: db}
+    mem_limit: 1g
+    cpus: 0.6
+    pids_limit: 200
+    security_opt: [no-new-privileges:true]
+    networks: [data]
+    volumes:
+      - ./adminvps/mariadb.cnf:/etc/mysql/conf.d/woodbase.cnf:ro
+  wordpress:
+    extends: {file: compose.yaml, service: wordpress}
+    mem_limit: 1g
+    cpus: 1.0
+    pids_limit: 150
+    security_opt: [no-new-privileges:true]
+    networks: [data, edge]
+    environment:
+      WB_ENVIRONMENT: staging
+      WOODBASE_PUBLIC_ORIGIN: https://localhost:8443
+      WB_STORAGE_BYTES: 1073741824
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_HOME', 'https://localhost:8443');
+        define('WP_SITEURL', 'https://localhost:8443');
+        define('WP_ENVIRONMENT_TYPE', 'staging');
+        define('FORCE_SSL_ADMIN', true);
+        define('DISALLOW_FILE_EDIT', true);
+        define('DISALLOW_FILE_MODS', true);
+        define('AUTOMATIC_UPDATER_DISABLED', true);
+        define('DISABLE_WP_CRON', true);
+        define('WP_DEBUG_DISPLAY', false);
+        define('WP_HTTP_BLOCK_EXTERNAL', true);
+        define('WOODBASE_PRIVATE_DIR', '/var/woodbase-private');
+        define('WOODBASE_FRONTEND_ORIGIN', 'https://localhost:8443');
+        define('WOODBASE_TRUSTED_PROXIES', []);
+        define('WOODBASE_STORAGE_LIMITS', ['total_bytes' => 1073741824]);
+        define('WOODBASE_COMPLETED_RETENTION_DAYS', 0);
+    volumes:
+      - ./adminvps/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-woodbase.conf:ro
+      - ./adminvps/staging-guard.php:/var/www/html/wp-content/mu-plugins/woodbase-staging.php:ro
+      - ./adminvps/bootstrap.php:/opt/woodbase-staging-bootstrap.php:ro
+      - ../../../public/collection-assets/moments-three-quarter.webp:/opt/woodbase-moments.webp:ro
+  web:
+    extends: {file: compose.yaml, service: web}
+    mem_limit: 256m
+    cpus: 0.3
+    pids_limit: 100
+    security_opt: [no-new-privileges:true]
+    networks: [edge]
+    ports: !override ["127.0.0.1:8443:443"]
+    environment:
+      WOODBASE_DOMAIN: localhost
+    volumes:
+      - ./staging-access.conf:/etc/nginx/woodbase/access.conf:ro
+      - ./staging-auth.conf:/etc/nginx/woodbase/auth-forward.conf:ro
+      - ${STAGING_AUTH_FILE:?Provide staging htpasswd}:/run/secrets/staging.htpasswd:ro
+networks:
+  data: {internal: true}
+  edge: {}
+volumes:
+  db:
+  wp:
+  private:
+  acme:

@@ -36,7 +36,7 @@ with tempfile.TemporaryDirectory(prefix='woodbase-backup-',dir=scratch_root) as 
   dump='''umask 077; f=$(mktemp); trap 'rm -f "$f"' EXIT; printf '[client]\nuser=root\npassword=%s\n' "$MARIADB_ROOT_PASSWORD" > "$f"; mariadb-dump --defaults-extra-file="$f" --single-transaction --routines --events woodbase'''
   with (root/'database.sql').open('wb') as out:run('exec','-T','db','sh','-c',dump,stdout=out)
   for name,path in [('wordpress','/var/www/html'),('private','/var/woodbase-private')]:
-   with (root/(name+'.tar')).open('wb') as out:run('run','--rm','--no-deps','-T','--entrypoint','tar','wordpress',*(['--exclude=./wp-content/plugins/woodbase','--exclude=./wp-content/plugins/woocommerce'] if name=='wordpress' else []),'-C',path,'-cf','-','.',stdout=out)
+   with (root/(name+'.tar')).open('wb') as out:run('run','--rm','--no-deps','-T','--entrypoint','tar','wordpress',*(['--exclude=./wp-content/plugins/woodbase','--exclude=./wp-content/plugins/woocommerce','--exclude=./wp-content/mu-plugins/woodbase-staging.php'] if name=='wordpress' else []),'-C',path,'-cf','-','.',stdout=out)
  finally:
   if stopped:run('start','wordpress')
  name=a.project+'-'+datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'.tar.gpg';partial=dest/(name+'.partial')

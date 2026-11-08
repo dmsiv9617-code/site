@@ -1,0 +1,4 @@
+[mariadb]
+innodb_buffer_pool_size=256M
+max_connections=30
+performance_schema=OFF

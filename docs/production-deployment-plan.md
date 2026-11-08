@@ -119,3 +119,7 @@ python3 integrations/woocommerce/ops/restore.py --archive /secure-backups/backup
 Staging Basic credentials завершаются на edge и очищаются перед WP FastCGI (`staging-auth.conf`), иначе WordPress может принять их за application password и отказать guest REST. Production сохраняет Authorization через `production-auth.conf`. Nginx access log не содержит query args, Referer, Authorization, Cart-Token или request body; ограниченная Docker log rotation остаётся обязательной. Локальная проверка подтвердила 401 anonymous/200 Basic на staging gate без передачи credentials в WP. Это не полная проверка внешнего staging.
 
 Файл htpasswd должен читаться worker Nginx, например `0640 root:nginx`, с доступными родительскими каталогами. Restore требует подготовить ту же версию WoodBase: SHA256 PHP-файлов проверяется по подписанному manifest; приложение автоматически не перезаписывается.
+
+## Изолированный staging AdminVPS
+
+Для Ubuntu24.04 / 2vCPU / 4GiB / 60GiB подготовлен отдельный [план AdminVPS](adminvps-staging-deployment.md) и standalone `ops/adminvps-staging.yaml`. Доступ только через SSH-туннель к loopback8443; не использовать production publish80/443 для этого сценария. Это дополнение не означает выполненного развёртывания.
