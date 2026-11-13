@@ -11,6 +11,7 @@ import './benefits.css';
 import './studio.css';
 import './workshop-teaser.css';
 import {setupHeaderCollection} from './header-collection.js';
+import {catalogProgress, catalogScrollTop} from './catalog-scroll.js';
 const inlineImages = {"catalog/family-history.png":"/scroll-assets/ebc213ef22f495b9091d.webp","concept/album-open.png":"/scroll-assets/1cb52a5d921355f655d6.webp","concept/album-turn.png":"/scroll-assets/7d390838829d03dbd7aa.webp","concept/hero-scene.png":"/scroll-assets/144c86df5f17442a511d.webp","concept/details-source.png":"/scroll-assets/3f8fee0316aa7fd2cb44.webp","hero.png":"/scroll-assets/653cf8fe0931c6345787.webp","family.png":"/scroll-assets/27c5ffc5b5ecba4c06b9.webp","wood-grain.svg":"/scroll-assets/c5e6c8488a06179ed746.svg","in-hands.png":"/scroll-assets/b7a3500becccb277ee85.webp","brand/logo.png":"/scroll-assets/b02e7f90d14ea4f664b9.webp","brand/mascot-greeting.png":"/scroll-assets/d315c6f4af2807c4bc44.webp","brand/mascot-helper.png":"/scroll-assets/4f9f849127af2e4c3ec0.webp","brand/mascot-joy.png":"/scroll-assets/11c6ebaeca016a6260ca.webp"};
 for (const [name, value] of Object.entries(inlineImages)) document.documentElement.style.setProperty('--asset-' + name.replaceAll('.', '-').replaceAll('/', '-'), 'url("' + value + '")');
 
@@ -110,6 +111,7 @@ homePage.insertAdjacentHTML('afterend', `<main id="workshop-page" hidden>
 <section class="workshop-team section"><div><div class="eyebrow">ЛЮДИ WOODBASE</div><h2>От вашей идеи<br><em>до последней детали.</em></h2><p class="workshop-team-note">Здесь познакомим вас с командой и покажем жизнь мастерской. Личные истории и фотографии добавим чуть позже.</p></div><div class="workshop-process"><article><span>01</span><div><h3>Обсуждаем вашу задумку</h3><p>Выбираем обложку, цвет, переплёт и дополнения. Согласуем макет и стоимость.</p></div></article><article><span>02</span><div><h3>Переносим рисунок на дерево</h3><p>Готовим дизайн для лазерной гравировки, чтобы он подходил для выбранной обложки.</p></div></article><article><span>03</span><div><h3>Собираем ваш альбом</h3><p>Соединяем детали и страницы. Условия изготовления и доставки обсуждаем с вами отдельно.</p></div></article></div></section>
 <section class="workshop-invitation section"><img src="/scroll-assets/4f9f849127af2e4c3ec0.webp" alt="" loading="lazy"><div><div class="eyebrow">ДЯТЕЛ ПОДСКАЖЕТ ПЕРВЫЙ ШАГ</div><h2>А какая история<br><em>будет у вас?</em></h2><p>Начните с любимой обложки. Остальное соберём по-вашему.</p><a class="button" href="#constructor">Перейти к конструктору →</a></div></section></main>`);
 const homeTitle = document.title;
+let scrollToCatalog = null;
 function showRoute() {
  const workshop = location.hash === '#workshop';
  homePage.hidden = workshop;
@@ -123,7 +125,8 @@ function showRoute() {
  } else {
   if(!location.hash || location.hash === '#') window.scrollTo({top:0,behavior:'instant'});
   const target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
-  if(target) target.scrollIntoView({behavior:'instant',block:'start'});
+  if(target?.id === 'catalog' && scrollToCatalog) scrollToCatalog();
+  else if(target) target.scrollIntoView({behavior:'instant',block:'start'});
  }
 }
 window.addEventListener('hashchange',showRoute);
@@ -627,12 +630,8 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   // Длина фейда появления: первые 60% вьюпорта законного окна. Пока сцена
   // проявляется, альбомы неподвижны — первый альбом держится, пока фон не
   // станет полностью ярким; карусель стартует с нуля сразу после фейда.
-  function fadeLen(rect) {
-    return Math.min(innerHeight * .6, Math.max(1, rect.height - innerHeight) * .5);
-  }
   function carouselProgress(rect) {
-    const total = Math.max(1, rect.height - innerHeight), fade = fadeLen(rect);
-    return Math.max(0, Math.min(1, (-rect.top - fade) / Math.max(1, total - fade)));
+    return catalogProgress(rect, innerHeight);
   }
   function update() {
     pending = false;
@@ -671,9 +670,12 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   function schedule() { if (!pending) {pending=true; requestAnimationFrame(update);} }
   function go(index) {
     const rect=section.getBoundingClientRect();
-    const top=scrollY+rect.top, fade=fadeLen(rect);
-    scrollTo({top:top+fade+Math.max(0,Math.min(items.length-1,index))/(items.length-1)*(rect.height-innerHeight-fade),behavior:reduce.matches?'instant':'smooth'});
+    scrollTo({top:catalogScrollTop(rect,scrollY,innerHeight,index,items.length),behavior:reduce.matches?'instant':'smooth'});
   }
+  scrollToCatalog = () => {
+    scrollTo({top:catalogScrollTop(section.getBoundingClientRect(),scrollY,innerHeight,0,items.length),behavior:'instant'});
+    schedule();
+  };
   prev.onclick=()=>go(active-1); next.onclick=()=>go(active+1);
   covers.forEach((cover,i)=>{cover.onclick=()=>{
     if(items[i].custom){location.hash='constructor';document.querySelector('#constructor').scrollIntoView({behavior:reduce.matches?'instant':'smooth'});return;}
@@ -754,6 +756,17 @@ document.querySelector('#add-cart').addEventListener('click', () => {
 })();
 
 setupHeaderCollection({models,openProduct,escape,money});
+
+// Intercept repeated links as well: an unchanged hash emits no hashchange event.
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[href="#catalog"]');
+  if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  event.preventDefault();
+  if (location.hash !== '#catalog') history.pushState(null, '', '#catalog');
+  showRoute();
+});
+// The sequence changes document geometry after the initial route is read.
+requestAnimationFrame(() => { if (location.hash === '#catalog') showRoute(); });
 
 // Reveal each advantage once; fail open when motion or observation is unavailable.
 (() => {
