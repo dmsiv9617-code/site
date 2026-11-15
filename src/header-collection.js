@@ -14,7 +14,7 @@ export function setupHeaderCollection({models,openProduct,escape,money}) {
  document.querySelector('.hero-invitation')?.setAttribute('aria-label','Давай сохраним их в альбоме? Перейти в конструктор');
  document.querySelectorAll('.green-scroll-hint,.green-scroll-skip').forEach(el=>el.hidden=true);
  document.querySelector('#home-page .closing').insertAdjacentHTML('beforebegin',`
-  <section id="cartoons" class="section new-story-section"><span class="eyebrow">МИР ВУДИ</span><h2>Мультики</h2><p>Здесь будут появляться мультфильмы с Вуди. Первый выпуск ещё впереди.</p></section>
+  <section id="cartoons" class="section new-story-section"><span class="eyebrow">МИР ВУДИ</span><h2>Вудбейзер</h2><p>Маленькие истории и большие приключения Вуди. Первая серия уже ждёт вас.</p><a class="text-link" href="/woodbaser/">Смотреть мультсериал →</a></section>
   <section id="reviews" class="section new-story-section"><span class="eyebrow">ВАШИ ИСТОРИИ</span><h2>Отзывы</h2><p>Скоро здесь появятся отзывы и фотографии альбомов от наших покупателей.</p></section>
   <section id="delivery" class="section new-story-section"><span class="eyebrow">ИЗ МАСТЕРСКОЙ К ВАМ</span><h2>Доставка</h2><p>Способ, стоимость и сроки доставки согласуем при оформлении заказа. До изготовления мастерская подтвердит комплектацию и итоговую стоимость.</p><a class="text-link" href="#constructor">Собрать свой альбом →</a></section>`);
  const dialog=document.createElement('dialog');dialog.id='favorites-dialog';dialog.setAttribute('aria-labelledby','favorites-title');document.body.append(dialog);
