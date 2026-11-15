@@ -35,45 +35,46 @@
 @media(max-width:900px){.woodbaser-intro{gap:24px}.woodbaser-intro h2{font-size:58px}.woodbaser-intro .woodbaser-lead{font-size:26px;padding-left:24px}.woodbaser-premiere{gap:30px}.woodbaser-folio>span{font-size:60px}.woodbaser-folio>small{font-size:23px}.woodbaser-feature-copy h3{font-size:40px}.woodbaser-feature-copy>p{font-size:16px}.woodbaser-watch{font-size:16px;padding:15px 24px}}
 @media(max-width:700px){#cartoons.woodbaser-section{padding:40px 6% 60px;scroll-margin-top:155px}.woodbaser-intro{display:block;margin-bottom:30px}.woodbaser-intro h2{font-size:clamp(42px,10.5vw,65px);letter-spacing:-2px;margin-bottom:18px}.woodbaser-intro .woodbaser-lead{font-size:25px;border:0;padding:0;margin-bottom:18px}.woodbaser-lead br{display:none}.woodbaser-intro .woodbaser-description{font-size:14px;line-height:1.6}.woodbaser-premiere{grid-template-columns:1fr;gap:26px}.woodbaser-feature-cover{max-width:310px;justify-self:center}.woodbaser-feature-copy{padding:0}.woodbaser-folio{margin-bottom:20px;gap:15px}.woodbaser-folio>small{font-size:23px}.woodbaser-folio>span{font-size:57px}.woodbaser-feature-copy h3{font-size:38px;margin-bottom:20px}.woodbaser-feature-copy>p{font-size:16px;margin-bottom:24px}.woodbaser-watch{width:100%}.woodbaser-cover{border-radius:16px}.woodbaser-episodes{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 18px}.woodbaser-archive{margin-top:35px;padding-top:25px}.woodbaser-archive-heading h3{font-size:27px}.woodbaser-small-caption{display:block;padding-top:12px}.woodbaser-small-number{font-size:25px}.woodbaser-small-caption h4{font-size:15px;margin-top:6px}.woodbaser-small-cover .woodbaser-play{width:40px;height:40px;bottom:10px;right:10px}.woodbaser-small-cover .woodbaser-play svg{width:22px;height:22px}.woodbaser-screen .woodbaser-video{height:67svh}.woodbaser-player-heading{padding:15px 18px}#woodbaser-player{border-radius:16px}}
 @media(prefers-reduced-motion:reduce){.woodbaser-cover img,.woodbaser-watch{transition:none}.woodbaser-cover:hover img{transform:none}}
-/* Desktop: introductory copy and episode details share the left half;
-   the full portrait cover occupies the right half of the first viewport. */
+/* Desktop: one introduction, with a quiet episode caption and margin folio. */
 @media(min-width:701px){
  #cartoons.woodbaser-section{display:block;padding-top:30px;scroll-margin-top:100px}
- .woodbaser-intro{display:block;grid-column:1;grid-row:1;margin:0;align-self:start}
- .woodbaser-intro h2{font-size:clamp(45px,5.1vw,68px);letter-spacing:-2.5px;margin-bottom:16px}
- .woodbaser-intro .woodbaser-lead{font-size:clamp(23px,2.3vw,30px);border:0;padding:0;margin:0 0 16px}
- .woodbaser-intro .woodbaser-description{font-size:15px;line-height:1.55;max-width:450px}
  .woodbaser-premiere{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:56px;align-items:center}
  .woodbaser-story{display:block;min-width:0}
- .woodbaser-feature-copy{width:100%;padding:20px 0 0;margin-top:26px;border-top:1px solid var(--wb-accent)}
+ .woodbaser-intro{display:block;margin:0}
+ .woodbaser-intro h2{font-size:clamp(48px,5.7vw,76px);letter-spacing:-2.5px;margin-bottom:28px}
+ .woodbaser-intro .woodbaser-lead{font-size:clamp(26px,2.65vw,36px);line-height:1.23;border:0;padding:0;margin:0 0 24px}
+ .woodbaser-intro .woodbaser-description{font-size:16px;line-height:1.6;max-width:510px}
+ .woodbaser-feature-copy{display:grid;grid-template-columns:48px minmax(0,1fr);column-gap:18px;row-gap:8px;width:100%;padding:0;margin-top:48px;border:0}
+ .woodbaser-folio{grid-column:1;grid-row:1/span 2;align-items:start;align-self:start;margin:0}
+ .woodbaser-folio>small,.woodbaser-folio>i{display:none}
+ .woodbaser-folio>span{font-size:42px;line-height:1;letter-spacing:-1.5px}
+ .woodbaser-feature-copy h3{grid-column:2;grid-row:1;max-width:none;font-size:clamp(24px,2.2vw,30px);line-height:1.2;letter-spacing:-.7px;margin:0}
+ .woodbaser-feature-copy>p{grid-column:2;grid-row:2;font-size:15px;line-height:1.6;margin:0;max-width:450px}
+ .woodbaser-watch{grid-column:1/-1;grid-row:3;justify-self:start;margin-top:22px;font-size:16px;min-height:54px;padding:14px 27px}
  .woodbaser-feature-cover{justify-self:center;align-self:center;width:min(100%,360px,calc((100svh - 180px)*.5625));max-width:none}
- .woodbaser-folio{margin-bottom:14px;gap:14px}
- .woodbaser-folio>small{font-size:23px}
- .woodbaser-folio>span{font-size:52px;letter-spacing:-2px}
- .woodbaser-feature-copy h3{max-width:340px;font-size:clamp(33px,3.2vw,44px);line-height:1.08;letter-spacing:-1.2px;margin-bottom:16px}
- .woodbaser-feature-copy>p{font-size:15px;line-height:1.55;margin-bottom:22px;max-width:420px}
- .woodbaser-watch{font-size:16px;min-height:52px;padding:14px 27px}
- .woodbaser-archive{grid-column:1/-1;grid-row:3;margin-top:35px;padding-top:25px}
+ .woodbaser-archive{margin-top:35px;padding-top:25px}
+ .woodbaser-episodes{grid-template-columns:repeat(3,minmax(0,280px))}
 }
 @media(min-width:701px) and (max-width:950px){
  .woodbaser-premiere{column-gap:28px}
- .woodbaser-intro h2{font-size:45px;letter-spacing:-2px}
- .woodbaser-intro .woodbaser-lead{font-size:24px}
+ .woodbaser-intro h2{font-size:45px;letter-spacing:-2px;margin-bottom:20px}
+ .woodbaser-intro .woodbaser-lead{font-size:26px;margin-bottom:18px}
  .woodbaser-intro .woodbaser-description{font-size:14px}
- .woodbaser-feature-copy h3{font-size:34px}
+ .woodbaser-feature-copy{grid-template-columns:36px minmax(0,1fr);column-gap:12px;margin-top:30px}
+ .woodbaser-folio>span{font-size:34px}
+ .woodbaser-feature-copy h3{font-size:23px}
  .woodbaser-feature-copy>p{font-size:14px}
 }
 @media(min-width:951px) and (max-height:780px){
- #cartoons.woodbaser-section{padding-top:22px}.woodbaser-premiere{column-gap:40px}
- .woodbaser-intro h2{font-size:54px;margin-bottom:12px}
- .woodbaser-intro .woodbaser-lead{font-size:25px;margin-bottom:12px}
- .woodbaser-intro .woodbaser-description{font-size:14px}
- .woodbaser-feature-copy{margin-top:16px;padding-top:14px}
- .woodbaser-folio{margin-bottom:10px}
- .woodbaser-folio>span{font-size:42px}
- .woodbaser-feature-copy h3{font-size:36px;margin-bottom:12px}
- .woodbaser-feature-copy>p{font-size:14px;margin-bottom:16px}
+ #cartoons.woodbaser-section{padding-top:22px}
+ .woodbaser-premiere{column-gap:40px}
+ .woodbaser-intro h2{font-size:58px;margin-bottom:18px}
+ .woodbaser-intro .woodbaser-lead{font-size:29px;margin-bottom:18px}
+ .woodbaser-intro .woodbaser-description{font-size:15px}
+ .woodbaser-feature-copy{margin-top:30px}
+ .woodbaser-folio>span{font-size:36px}
+ .woodbaser-feature-copy h3{font-size:26px}
+ .woodbaser-feature-copy>p{font-size:14px}
+ .woodbaser-watch{margin-top:16px}
 }
-
 @media(max-width:700px){.woodbaser-story{display:contents}.woodbaser-premiere>.woodbaser-story>.woodbaser-intro{grid-row:1;margin-bottom:4px}.woodbaser-feature-cover{grid-row:2}.woodbaser-feature-copy{grid-row:3}}
-@media(min-width:701px){.woodbaser-episodes{grid-template-columns:repeat(3,minmax(0,280px))}}
