@@ -3,15 +3,23 @@ import {resolveVideo} from './woodbaser-source.js';
 const poster='/woodbaser/meet-woody-cover.webp';
 const playIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 11 7-11 7Z" fill="currentColor" stroke="none"/></svg>';
 const closeIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>';
-// Add completed episodes here; the latest gets the large cover, earlier ones form the archive.
-const episodes=[{id:'01',title:'Знакомьтесь, Вуди',description:'Лесная тропинка, неожиданная встреча и начало новой истории.',publicLink:'https://disk.yandex.ru/i/DzCimnlpvVKhjA',poster}];
-const latest=episodes.at(-1);
-const previous=episodes.slice(0,-1).reverse();
+// Keep the opening episode featured; add subsequent episodes to the collection below.
+const episodes=[
+ {id:'01',title:'Знакомьтесь, Вуди',description:'Лесная тропинка, неожиданная встреча и начало новой истории.',publicLink:'https://disk.yandex.ru/i/DzCimnlpvVKhjA',poster},
+ {id:'02',title:'Серия 02',description:'Новая встреча с Вуди в берёзовом лесу.',publicLink:'https://disk.yandex.ru/i/MRr1CdmhFyZpFg',poster:'/woodbaser/episode-02-cover.webp'}
+];
+const featured=episodes[0];
+const previous=episodes.slice(1);
 const cover=(episode,className)=>`<button type="button" class="${className}" data-watch-woodbaser data-woodbaser-episode="${episode.id}" aria-label="Смотреть: ${episode.title}"><img src="${episode.poster}" alt="Обложка мультфильма «${episode.title}»" width="900" height="1600" loading="lazy" decoding="async"><span class="woodbaser-play" aria-hidden="true">${playIcon}</span></button>`;
 export const woodbaserSection=`<section id="cartoons" class="section woodbaser-section" aria-labelledby="woodbaser-title">
- <div class="woodbaser-intro"><h2 id="woodbaser-title">Вудбейзер</h2><p class="woodbaser-lead">У каждого дня — <br>свой сюжет</p><p class="woodbaser-description">Короткие истории про Вуди, его друзей и ситуации, в которых легко узнать себя</p></div>
- <article class="woodbaser-premiere" aria-labelledby="woodbaser-latest-title"><div class="woodbaser-feature-cover">${cover(latest,'woodbaser-cover')}</div><div class="woodbaser-feature-copy"><div class="woodbaser-folio" aria-label="История ${latest.id}"><small>История</small><span>${latest.id}</span><i aria-hidden="true"></i></div><h3 id="woodbaser-latest-title">${latest.title}</h3><p>${latest.description}</p><button type="button" class="woodbaser-watch" data-watch-woodbaser data-woodbaser-episode="${latest.id}"><span aria-hidden="true">${playIcon}</span>Смотреть серию</button></div></article>
- ${previous.length?`<div class="woodbaser-archive"><div class="woodbaser-archive-heading"><h3>Другие истории</h3><span aria-hidden="true"></span></div><div class="woodbaser-episodes">${previous.map(episode=>`<article>${cover(episode,'woodbaser-cover woodbaser-small-cover')}<div class="woodbaser-small-caption"><span class="woodbaser-small-number" aria-label="История ${episode.id}">${episode.id}</span><h4>${episode.title}</h4></div></article>`).join('')}</div></div>`:''}
+ <article class="woodbaser-premiere" aria-labelledby="woodbaser-featured-title">
+  <div class="woodbaser-story">
+   <div class="woodbaser-intro"><h2 id="woodbaser-title">Вудбейзер</h2><p class="woodbaser-lead">У каждого дня — <br>свой сюжет</p><p class="woodbaser-description">Короткие истории про Вуди, его друзей и ситуации, в которых легко узнать себя</p></div>
+   <div class="woodbaser-feature-copy"><div class="woodbaser-folio" aria-label="История ${featured.id}"><small>История</small><span>${featured.id}</span><i aria-hidden="true"></i></div><h3 id="woodbaser-featured-title">${featured.title}</h3><p>${featured.description}</p><button type="button" class="woodbaser-watch" data-watch-woodbaser data-woodbaser-episode="${featured.id}"><span aria-hidden="true">${playIcon}</span>Смотреть серию</button></div>
+  </div>
+  <div class="woodbaser-feature-cover">${cover(featured,'woodbaser-cover')}</div>
+ </article>
+ ${previous.length?`<div class="woodbaser-archive"><div class="woodbaser-archive-heading"><h3>Другие истории</h3></div><div class="woodbaser-episodes">${previous.map(episode=>`<article>${cover(episode,'woodbaser-cover woodbaser-small-cover')}<div class="woodbaser-small-caption"><span class="woodbaser-small-number" aria-label="История ${episode.id}">${episode.id}</span><h4>${episode.title}</h4></div></article>`).join('')}</div></div>`:''}
 </section>`;
 export function setupWoodbaser(){
  const section=document.querySelector('#cartoons');
@@ -19,7 +27,7 @@ export function setupWoodbaser(){
  dialog.innerHTML=`<div class="woodbaser-player-heading"><span id="woodbaser-player-title">Вудбейзер</span></div><div class="woodbaser-screen"><video class="woodbaser-video" controls playsinline preload="none" poster="${poster}" aria-label="Вудбейзер"></video><button type="button" class="woodbaser-close" aria-label="Закрыть видео" autofocus>${closeIcon}</button></div><div class="woodbaser-player-actions"><button type="button" class="woodbaser-expand" hidden>На весь экран ⛶</button><button type="button" class="woodbaser-retry" hidden>Попробовать ещё раз</button></div><p class="woodbaser-status" role="status" aria-live="polite"></p><a class="woodbaser-source" href="https://disk.yandex.ru/i/DzCimnlpvVKhjA" target="_blank" rel="noopener noreferrer" hidden>Открыть видео на Диске ↗</a>`;
  document.body.append(dialog);
  const video=dialog.querySelector('video'),screen=dialog.querySelector('.woodbaser-screen'),close=dialog.querySelector('.woodbaser-close'),expand=dialog.querySelector('.woodbaser-expand'),retry=dialog.querySelector('.woodbaser-retry'),status=dialog.querySelector('.woodbaser-status'),source=dialog.querySelector('.woodbaser-source');
- let controller,revision=0,opener,priorOverflow,activeEpisode=latest;
+ let controller,revision=0,opener,priorOverflow,activeEpisode=featured;
  function fail(message){status.textContent=message;retry.hidden=false;source.hidden=false;expand.hidden=true;}
  async function load(){
   controller?.abort();controller=new AbortController();const current=++revision;const timer=setTimeout(()=>controller.abort(),20000);
@@ -36,7 +44,7 @@ export function setupWoodbaser(){
   finally{clearTimeout(timer);if(current===revision)screen.removeAttribute('aria-busy');}
  }
  section.querySelectorAll('[data-watch-woodbaser]').forEach(button=>button.addEventListener('click',()=>{
-  activeEpisode=episodes.find(episode=>episode.id===button.dataset.woodbaserEpisode)??latest;
+  activeEpisode=episodes.find(episode=>episode.id===button.dataset.woodbaserEpisode)??featured;
   dialog.querySelector('#woodbaser-player-title').textContent=activeEpisode.title;video.setAttribute('aria-label',activeEpisode.title);video.poster=activeEpisode.poster;source.href=activeEpisode.publicLink;
   opener=button;priorOverflow=document.body.style.overflow;document.body.style.overflow='hidden';dialog.showModal();close.focus();void load();
  }));
