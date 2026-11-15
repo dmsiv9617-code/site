@@ -1,3 +1,4 @@
+import {woodbaserSection,setupWoodbaser} from './woodbaser.js';
 import {createFavorites} from './favorites.js';
 
 export function setupHeaderCollection({models,openProduct,escape,money}) {
@@ -9,15 +10,16 @@ export function setupHeaderCollection({models,openProduct,escape,money}) {
  const actions=document.createElement('div');actions.className='header-actions';cart.before(actions);
  actions.innerHTML=`<button class="header-favorites" type="button" aria-label="Открыть избранное">${heart}<span class="favorites-count" hidden></span></button>`;actions.append(cart);
  const nav=header.querySelector('nav');
- nav.querySelector('a[href="#catalog"]').insertAdjacentHTML('afterend','<a href="/woodbaser/">Вудбейзер</a>');
+ nav.querySelector('a[href="#catalog"]').insertAdjacentHTML('afterend','<a href="#cartoons">Вудбейзер</a>');
  nav.insertAdjacentHTML('beforeend','<a href="#reviews">Отзывы</a><a href="#delivery">Доставка</a>');
  document.querySelector('.hero-invitation-label')?.remove();document.querySelector('.hero-invitation-arrow')?.remove();
  document.querySelector('.hero-invitation')?.setAttribute('aria-label','Давай сохраним их в альбоме? Перейти в конструктор');
  document.querySelectorAll('.green-scroll-hint,.green-scroll-skip').forEach(el=>el.hidden=true);
  document.querySelector('#home-page .closing').insertAdjacentHTML('beforebegin',`
-  <section id="cartoons" class="section new-story-section"><span class="eyebrow">МИР ВУДИ</span><h2>Вудбейзер</h2><p>Маленькие истории и большие приключения Вуди. Первая серия уже ждёт вас.</p><a class="text-link" href="/woodbaser/">Смотреть мультсериал →</a></section>
+  ${woodbaserSection}
   <section id="reviews" class="section new-story-section"><span class="eyebrow">ВАШИ ИСТОРИИ</span><h2>Отзывы</h2><p>Скоро здесь появятся отзывы и фотографии альбомов от наших покупателей.</p></section>
   <section id="delivery" class="section new-story-section"><span class="eyebrow">ИЗ МАСТЕРСКОЙ К ВАМ</span><h2>Доставка</h2><p>Способ, стоимость и сроки доставки согласуем при оформлении заказа. До изготовления мастерская подтвердит комплектацию и итоговую стоимость.</p><a class="text-link" href="#constructor">Собрать свой альбом →</a></section>`);
+ setupWoodbaser();
  const dialog=document.createElement('dialog');dialog.id='favorites-dialog';dialog.setAttribute('aria-labelledby','favorites-title');document.body.append(dialog);
  function button(id,extra='') {return `<button type="button" class="album-favorite ${extra}" data-favorite="${id}" aria-pressed="${favorites.has(id)}" aria-label="${favorites.has(id)?'Убрать из избранного':'В избранное'}: ${escape(models[id].name)}">${heart}</button>`;}
  function renderList() {

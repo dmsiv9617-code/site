@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {resolveVideo} from '../public/woodbaser/video-source.js';
+import {resolveVideo} from '../src/woodbaser-source.js';
 const link='https://disk.yandex.ru/i/DzCimnlpvVKhjA';
 test('each viewing obtains a fresh media address from the permanent public link',async()=>{
  const requests=[];
