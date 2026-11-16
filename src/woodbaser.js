@@ -6,7 +6,12 @@ const closeIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12
 // Keep the opening episode featured; add subsequent episodes to the collection below.
 const episodes=[
  {id:'01',title:'Знакомьтесь, Вуди',description:'Первая встреча с Вуди в берёзовом лесу',publicLink:'https://disk.yandex.ru/i/MRr1CdmhFyZpFg',poster},
- {id:'02',title:'Знакомство с Пандой',description:'Лесная тропинка, неожиданная встреча и начало новой истории',publicLink:'https://disk.yandex.ru/i/DzCimnlpvVKhjA',poster:'/woodbaser/meet-woody-cover.webp'}
+ {id:'02',title:'Знакомство с Пандой',description:'Лесная тропинка, неожиданная встреча и начало новой истории',publicLink:'https://disk.yandex.ru/i/DzCimnlpvVKhjA',poster:'/woodbaser/meet-woody-cover.webp'},
+ {"id": "03", "title": "Панда и мёд", "description": "Лесное угощение с неожиданными последствиями", "publicLink": "https://disk.yandex.ru/d/rWsrOMMdmLKkCg", "publicPath": "/Панда и мед.mp4", "poster": "/woodbaser/episode-03-cover.webp"},
+ {"id": "04", "title": "Ещё пять минут", "description": "Вуди, телефон и ночь, которая пролетела незаметно", "publicLink": "https://disk.yandex.ru/d/rWsrOMMdmLKkCg", "publicPath": "/VID_20260928_220858_307.mp4", "poster": "/woodbaser/episode-04-cover.webp"},
+ {"id": "05", "title": "Три часа ночи", "description": "Когда кот уже проснулся, а Вуди ещё нет", "publicLink": "https://disk.yandex.ru/d/rWsrOMMdmLKkCg", "publicPath": "/VID_20261116_151904_157.mp4", "poster": "/woodbaser/episode-05-cover.webp"},
+ {"id": "06", "title": "Только сел…", "description": "Тихий вечер, любимое кресло и очень настойчивый кот", "publicLink": "https://disk.yandex.ru/d/rWsrOMMdmLKkCg", "publicPath": "/VID_20261116_151857_946.mp4", "poster": "/woodbaser/episode-06-cover.webp"},
+ {"id": "07", "title": "Альбом раздора", "description": "Один альбом, два друга и ни одного желающего уступить", "publicLink": "https://disk.yandex.ru/d/rWsrOMMdmLKkCg", "publicPath": "/VID_20261115_015446_545.mp4", "poster": "/woodbaser/episode-07-cover.webp"}
 ];
 const featured=episodes[0];
 const previous=episodes.slice(1);
@@ -34,7 +39,7 @@ export function setupWoodbaser(){
   retry.hidden=true;source.hidden=true;expand.hidden=true;status.textContent='Загружаем серию…';screen.setAttribute('aria-busy','true');
   try{
    if(current!==revision||!dialog.open)return;
-   const url=await resolveVideo(activeEpisode.publicLink,{signal:controller.signal});
+   const url=await resolveVideo(activeEpisode.publicLink,{path:activeEpisode.publicPath,signal:controller.signal});
    if(current!==revision||!dialog.open)return;
    video.src=url;video.load();
    try{await video.play();}catch(error){if(error.name!=='NotAllowedError')throw error;}
@@ -63,3 +68,4 @@ export function setupWoodbaser(){
  dialog.addEventListener('cancel',event=>{if(dialog.classList.contains('is-expanded')){event.preventDefault();dialog.classList.remove('is-expanded');expand.focus();}});
  if(location.hash==='#cartoons')requestAnimationFrame(()=>requestAnimationFrame(()=>section.scrollIntoView({block:'start',behavior:'instant'})));
 }
+
