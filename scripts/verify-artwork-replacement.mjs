@@ -6,7 +6,7 @@ try {
  page.on('response',r=>{if(r.url().endsWith('/woodbase/v1/artwork')&&r.ok())uploads.push(r.json());});
  page.on('request',r=>{if(r.url().endsWith('/cart/add-item'))adds.push(r.postDataJSON());});
  await page.goto('http://localhost:5173/#constructor',{waitUntil:'domcontentloaded'});
- await page.waitForFunction(()=>document.querySelector('.commerce-mode')?.textContent.startsWith('Тестовый WooCommerce'));
+ await page.waitForFunction(()=>document.querySelector('.commerce-mode')?.dataset.state==='ready');
  await page.evaluate(()=>{document.querySelector('#skip-intro')?.click();const m=document.querySelector('#model');m.value='5';m.dispatchEvent(new Event('change',{bubbles:true}));});
  const previews=[];
  for(const size of [600,1200]) {
@@ -18,7 +18,7 @@ try {
   previews.push(await page.locator('#upload-thumb-img').getAttribute('src'));
   await page.evaluate(()=>document.querySelector('#add-cart').click());
   await page.waitForFunction(()=>!document.querySelector('#add-cart').disabled);
-  assert.match(await page.locator('#cart-status').textContent(),/сохранён в тестовой корзине/);
+  assert.match(await page.locator('#cart-status').textContent(),/Альбом добавлен в корзину/);
  }
  assert.equal(previews[0],previews[1],'Fixture must produce identical 600px previews');
  const saved=await Promise.all(uploads);

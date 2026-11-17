@@ -115,3 +115,8 @@
 @media print {
   .benefits-motion [data-benefit-reveal] { opacity: 1; transform: none; transition: none; }
 }
+
+@media(max-width:899px){
+ .benefits-heading {display:block;margin-bottom:28px;}
+ .benefits-heading h2 {font:500 clamp(32px,6vw,44px)/1.1 Manrope,Arial,sans-serif;letter-spacing:-1.2px;}
+}

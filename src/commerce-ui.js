@@ -5,8 +5,8 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
  const status=document.querySelector('#cart-status');
  const badge=document.createElement('p');badge.className='control-hint commerce-mode';badge.setAttribute('role','status');
  document.querySelector('#add-cart').before(badge);
- if(!live){badge.textContent='Демо: сохраняется черновик. Заказ не оформляется, оплата недоступна.';return;}
- badge.textContent='Загружаем тестовый товар WooCommerce…';
+ if(!live){badge.hidden=true;badge.dataset.state='demo';return;}
+ badge.dataset.state='loading';badge.textContent='Загружаем альбомы…';
  const origin=import.meta.env.VITE_WOOCOMMERCE_ORIGIN||location.origin;
  const client=new StoreCart(origin);let product=null,nonce=null,busy=false,uploadedFile=null,fileId=null;
  const add=document.querySelector('#add-cart');add.disabled=true;
@@ -19,8 +19,8 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
  const fail=e=>{status.textContent='Не удалось выполнить действие: '+e.message;};
  const dialog=document.querySelector('#cart');
  for(const selector of ['#request-form','.telegram-request','#export-order'])dialog.querySelector(selector).hidden=true;
- const note=dialog.querySelector('.checkout-note');note.textContent='Тестовая корзина WooCommerce. Ozon не подключён. Не переводите деньги.';
- const checkout=document.createElement('a');checkout.className='button commerce-checkout';checkout.textContent='К тестовому оформлению →';checkout.hidden=true;dialog.querySelector('.cart-actions').append(checkout);
+ const note=dialog.querySelector('.checkout-note');note.textContent='Цену и макет согласуем до изготовления. Онлайн-оплата пока недоступна.';
+ const checkout=document.createElement('a');checkout.className='button commerce-checkout';checkout.textContent='Перейти к оформлению';checkout.hidden=true;dialog.querySelector('.cart-actions').append(checkout);
  const cartStatus=document.createElement('p');cartStatus.setAttribute('role','status');dialog.append(cartStatus);
  function textNode(tag,text){const n=document.createElement(tag);n.textContent=text;return n;}
  const amount=(minor,prices)=>new Intl.NumberFormat('ru-RU',{style:'currency',currency:prices.currency_code}).format(Number(minor)/10**prices.currency_minor_unit);
@@ -70,7 +70,7 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
    }
    const config=configurationFromState(state,selected.id,state.image?fileId:null);
    render(await client.add(config,crypto.randomUUID()));
-   status.textContent='Альбом сохранён в тестовой корзине WooCommerce.';
+   status.textContent='Альбом добавлен в корзину';
   } catch(e){fail(e);}finally{busy=false;add.disabled=false;}
  };
  Promise.all([json('/product'),json('/session')]).then(async([p,s])=>{
@@ -82,7 +82,7 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
   models[5].name=p.name;models[5].subtitle=p.description;models[5].price=Number(p.price);
   if(p.images.length)models[5].photos=p.images;
   onProduct(p);refresh();window.dispatchEvent(new CustomEvent('woodbase-product',{detail:p}));
-  badge.textContent=p.products?.length===models.length?'Тестовый WooCommerce: вся коллекция доступна для тестового заказа.':'Тестовый WooCommerce: доступен только альбом «'+p.name+'». Остальная коллекция — демо.';
+  badge.dataset.state='ready';badge.textContent='';badge.hidden=true;
   render(await client.get());add.disabled=false;
- }).catch(e=>{product=null;add.disabled=true;badge.textContent='WooCommerce недоступен. Оформление заблокировано; попробуйте обновить страницу.';fail(e);});
+ }).catch(e=>{badge.dataset.state='error';badge.hidden=false;product=null;add.disabled=true;badge.textContent='Не удалось загрузить альбомы. Оформление недоступно; попробуйте обновить страницу.';fail(e);});
 }

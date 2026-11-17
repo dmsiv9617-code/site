@@ -11,7 +11,7 @@ try {
  page.on('request',r=>{if(r.url().endsWith('/cart/add-item'))addBody=r.postDataJSON();});
  await page.goto(origin+'/#constructor');
  await page.evaluate(()=>document.querySelector('#skip-intro')?.click());
- await page.waitForFunction(()=>document.querySelector('.commerce-mode')?.textContent.startsWith('Тестовый WooCommerce'),{timeout:30000});
+ await page.waitForFunction(()=>document.querySelector('.commerce-mode')?.dataset.state==='ready',{timeout:30000});
  await page.evaluate(()=>{
   const model=document.querySelector('#model');model.value='5';model.dispatchEvent(new Event('change',{bubbles:true}));
   const text=document.querySelector('#inscription');text.value='ТЕСТ WoodBase';text.dispatchEvent(new Event('input',{bubbles:true}));
@@ -21,7 +21,7 @@ try {
  await page.waitForFunction(()=>document.querySelector('#upload-status').textContent.startsWith('Рисунок загружен'));
  await page.evaluate(()=>document.querySelector('#add-cart').click());
  await page.waitForFunction(()=>!document.querySelector('#add-cart').disabled);
- assert.match(await page.locator('#cart-status').textContent(),/сохранён в тестовой корзине/);
+ assert.match(await page.locator('#cart-status').textContent(),/Альбом добавлен в корзину/);
  const api=page.request;
  assert.equal((await api.get('http://localhost:8088/wp-content/plugins/woocommerce/assets/js/frontend/checkout.min.js')).status(),200,'Woo checkout enhancement script must be publicly readable');
  const product=await (await api.get(origin+'/wp-json/woodbase/v1/product')).json();assert.match(product.description,/ТЕСТОВЫЙ/);
@@ -49,7 +49,7 @@ try {
  const stolen=structuredClone(addBody);stolen.extensions.woodbase.requestId=crypto.randomUUID();
  assert.equal((await thiefApi.post(origin+'/wp-json/wc/store/v1/cart/add-item',{headers:{'Cart-Token':thiefCart.headers()['cart-token']},data:stolen})).status(),403);
  await thief.close();
- await page.reload();await page.waitForFunction(()=>document.querySelector('.commerce-mode')?.textContent.startsWith('Тестовый WooCommerce'));
+ await page.reload();await page.waitForFunction(()=>document.querySelector('.commerce-mode')?.dataset.state==='ready');
  await page.evaluate(()=>document.querySelector('#skip-intro')?.click());
  await page.locator('#open-cart').click({force:true});
  await page.waitForFunction(()=>document.querySelector('#cart-items input')?.value==='1');

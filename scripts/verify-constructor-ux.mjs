@@ -36,7 +36,7 @@ try{
  for(const [mode,origin] of [['demo','http://localhost:5174'],['woocommerce','http://localhost:5173']])await run('draft reload and original safety '+mode,async()=>{
   const page=await open(origin);
   try{
-   if(mode==='woocommerce')await page.waitForFunction(()=>document.querySelector('.commerce-mode')?.textContent.startsWith('Тестовый WooCommerce'));
+   if(mode==='woocommerce')await page.waitForFunction(()=>document.querySelector('.commerce-mode')?.dataset.state==='ready');
    await page.locator('[data-color="3"]').click();await page.locator('[data-studio-leather="brown"]').click();await page.locator('[data-studio-binding="woven"]').click();
    await page.locator('#tab-cover').click();await page.locator('[data-motif="5"]').click();await page.locator('#inscription').fill('Мой незавершённый альбом');
    const png=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=120;c.height=80;const x=c.getContext('2d');x.fillRect(12,12,90,50);return c.toDataURL().split(',')[1];});
@@ -63,8 +63,8 @@ try{
    await page.locator('#tab-extras').click();await page.locator('#add-cart').click();
    await page.waitForFunction(()=>document.querySelector('#cart-count').textContent==='1');await page.locator('#open-cart').click();assert.match(await page.locator('#cart-items').innerText(),/Мой незавершённый альбом/);await page.keyboard.press('Escape');
    assert.ok(!(await page.evaluate(()=>JSON.stringify({...localStorage}))).includes('data:image'),'cart persistence must also exclude customer image content');
-   await page.locator('#reset-draft').click();assert.equal(await page.locator('#inscription').inputValue(),'История нашей семьи');assert.equal(await page.locator('#tab-binding').getAttribute('aria-selected'),'true');assert.equal(await page.locator('#cart-count').innerText(),'1','reset must preserve the cart');
-   await page.reload({waitUntil:'domcontentloaded'});assert.equal(await page.locator('#inscription').inputValue(),'История нашей семьи');
+   assert.equal(await page.locator('#reset-draft').count(),0,'reset control was removed');
+   assert.equal(await page.locator('#cart-count').innerText(),'1');
   }finally{await page.context().close();}
  });
  await run('read-only and corrupt storage recovery',async()=>{
@@ -80,18 +80,6 @@ try{
    await page.evaluate(()=>localStorage.setItem('woodbase-draft-v1','{broken'));
    await page.reload({waitUntil:'domcontentloaded'});await page.waitForSelector('#draft-status');
    assert.equal(await page.locator('#inscription').inputValue(),'История нашей семьи');assert.match(await page.locator('#draft-status').innerText(),/повреждён/);
-  }finally{await page.context().close();}
- });
- await run('reset cancels pending image decode',async()=>{
-  const page=await open('http://localhost:5174');
-  try{
-   await page.locator('#tab-cover').click();
-   await page.evaluate(()=>{const decode=window.createImageBitmap.bind(window);window.createImageBitmap=async(...args)=>{const bitmap=await decode(...args);await new Promise(resolve=>window.finishArtworkDecode=resolve);return bitmap;};});
-   await page.locator('#upload').setInputFiles('public/favicon.png');
-   await page.waitForFunction(()=>typeof window.finishArtworkDecode==='function');
-   await page.locator('#reset-draft').click();await page.evaluate(()=>window.finishArtworkDecode());await page.waitForTimeout(150);
-   assert.equal(await page.locator('#upload-thumb').evaluate(e=>e.hidden),true,'late decode must not resurrect an image after reset');
-   assert.ok(!(await page.locator('#upload-status').innerText()).includes('Рисунок загружен'));
   }finally{await page.context().close();}
  });
  assert.deepEqual(errors,[],'no uncaught browser errors');
