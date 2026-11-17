@@ -5,12 +5,13 @@ const phase=process.env.WB_UX_PHASE||'after';
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
 const results=[];
 const errors=[];
-async function run(name,fn){if(process.env.WB_UX_CASE&&!name.includes(process.env.WB_UX_CASE))return;try{await fn();results.push({name,pass:true});console.log('PASS',name);}catch(e){results.push({name,pass:false,error:e.message});console.log('FAIL',name,e.message);}}
+async function run(name,fn){if(process.env.WB_UX_CASE&&!name.includes(process.env.WB_UX_CASE))return;try{await fn();results.push({name,pass:true});console.log('PASS',name);}catch(e){results.push({name,pass:false,error:e.message});console.log('FAIL',name,e.stack);}}
 async function open(origin,width=1440,motion='reduce'){
  const context=await browser.newContext({viewport:{width,height:width<800?844:1000},reducedMotion:motion});
  const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  await page.goto(origin+'/',{waitUntil:'domcontentloaded'});await page.waitForSelector('#tab-binding');
  await page.evaluate(()=>document.querySelector('#skip-intro')?.click());
+ if(width<=700)await page.getByRole('button',{name:'Открыть меню',exact:true}).click();
  await page.locator('nav a[href="#constructor"]').click();await page.waitForTimeout(500);
  return page;
 }
@@ -19,7 +20,7 @@ try{
  for(const width of [320,375,390,768,1440])await run('tabs and controls '+width,async()=>{
   const page=await open('http://localhost:5174',width);
   try{
-   await page.screenshot({path:`docs/constructor-ux-assets/${phase}-${width}.jpg`,quality:85});
+   await page.screenshot({path:`work/constructor-ux/${phase}-${width}.jpg`,quality:85});
    const hit=await page.locator('[role=tab]').evaluateAll(tabs=>tabs.map(tab=>{const r=tab.getBoundingClientRect();return {id:tab.id,rect:r.toJSON(),covered:!tab.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))};}));
    assert.ok(hit.every(t=>!t.covered),'preview covers constructor tabs: '+JSON.stringify(hit));
    for(const id of ['cover','extras','binding']){
@@ -29,7 +30,7 @@ try{
    await page.locator('#tab-cover').click();await page.locator('#inscription').fill('Ширина '+width);
    await page.locator('#tab-extras').click();await page.locator('#add-cart').click();
    await page.locator('#open-cart').click();assert.match(await page.locator('#cart-items').innerText(),new RegExp('Ширина '+width));await page.keyboard.press('Escape');
-   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'page must not overflow horizontally');
   }finally{await page.context().close();}
  });
  for(const [mode,origin] of [['demo','http://localhost:5174'],['woocommerce','http://localhost:5173']])await run('draft reload and original safety '+mode,async()=>{

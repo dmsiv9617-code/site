@@ -1,0 +1,69 @@
+/* Mobile refinements retain the existing wood, leather and paper palette. */
+:root {--mobile-header-height:76px;--mobile-paper:#f8f3e9;--mobile-ink:#302117;--mobile-muted:#645548;--mobile-line:#d9c9b3;--mobile-gold:#e4c39a;}
+.mobile-menu-toggle,.mobile-hero-cta {display:none;}
+#cart .cart-heading {position:sticky;top:0;z-index:2;background:var(--mobile-paper);padding-block:12px;margin-top:0;align-items:center;}
+#cart #close-cart,#favorites-dialog [data-close-favorites],.studio-dialog-close {min-width:44px;min-height:44px;}
+#cart .cart-item button {min-width:72px;min-height:44px;font-size:14px;line-height:1.4;}
+#cart .cart-actions {position:sticky;bottom:0;z-index:2;background:var(--mobile-paper);padding:14px 0 max(14px,env(safe-area-inset-bottom));border-top:1px solid var(--mobile-line);}
+#cart .cart-actions>.button {width:100%;justify-content:center;min-height:48px;margin:0;}
+#cart .cart-actions:has(>.button[hidden]):not(:has(>.button:not([hidden]))) {display:none;}
+#cart [hidden] {display:none!important;}
+@media(max-width:700px) {
+ body:has(.green-scroll-sequence) #app>header {
+  height:var(--mobile-header-height)!important;min-height:var(--mobile-header-height)!important;padding:10px 5%!important;flex-wrap:nowrap;gap:12px;
+  background:var(--mobile-ink)!important;color:var(--mobile-paper);
+ }
+ body:has(.green-scroll-sequence) #app>header::before,body:has(.green-scroll-sequence) #app>header::after {display:none;}
+ #app>header .header-actions {gap:8px;margin-left:auto;}
+ #app>header .cart-button,#app>header .header-favorites {width:44px;height:44px;min-width:44px;}
+ #app>header .mobile-menu-toggle {display:block;min-width:56px;min-height:44px;padding:8px;border:1px solid var(--mobile-gold);border-radius:8px;background:transparent;color:inherit;font-size:14px;}
+ body:has(.green-scroll-sequence) #app>header nav {
+  display:none;position:absolute;top:100%;left:0;right:0;width:100%;max-height:calc(100dvh - var(--mobile-header-height));overflow:auto;
+  background:var(--mobile-ink);padding:12px 5% 20px;flex-wrap:wrap;gap:4px 12px;box-shadow:0 12px 18px #0003;
+ }
+ body:has(.green-scroll-sequence) #app>header.menu-open nav {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+ body:has(.green-scroll-sequence) #app>header nav a {display:flex;align-items:center;min-height:48px;padding:10px 12px;border-radius:8px;font-size:16px!important;}
+ #app>header nav a:hover,#app>header nav a:focus-visible {background:#ffffff16;}
+ .green-scroll-sequence .hero-copy {top:105px;}
+ .hero.concept-hero .mobile-hero-cta {display:inline-flex;align-items:center;gap:24px;min-height:48px;padding:12px 22px;border-radius:99px;background:var(--mobile-gold);color:var(--mobile-ink);font:600 16px/1.4 Manrope,Arial,sans-serif;}
+ .hero.concept-hero .hero-actions {gap:12px;}
+ .hero.concept-hero .mobile-hero-cta {margin-top:12px;}
+ .hero.concept-hero .hero-invitation {padding:0;}
+ .constructor.studio {scroll-margin-top:var(--mobile-header-height);padding-top:18px;}
+ .constructor.studio .preview {
+  position:relative;top:auto;z-index:auto;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:12px 16px;
+ }
+ .constructor.studio .studio-preset {font-size:15px;line-height:1.4;display:block;}
+ .constructor.studio .studio-preset strong {font-size:16px;}
+ .constructor.studio #live-album {width:100%;height:160px;min-height:0;}
+ .constructor.studio #live-album .configured-album img {width:100%;max-height:160px;}
+ .constructor.studio #studio-device {position:static;align-self:auto;justify-self:start;min-height:44px;padding:10px 16px;font-size:13px;white-space:normal;}
+ .constructor.studio .step-tabs {position:sticky;top:var(--mobile-header-height);z-index:7;padding:8px 12px;margin:0;background:var(--mobile-paper);border-bottom:1px solid var(--mobile-line);}
+ .constructor.studio .step-tabs button {min-height:48px;font-size:12px;line-height:1.2;padding:8px 4px;}
+ .constructor.studio .config-wizard {height:auto;max-height:none;overflow:visible;}
+ .constructor.studio .studio-step-title {scroll-margin-top:160px;}
+ .constructor.studio #color-name,.constructor.studio .control-hint,.constructor.studio #step-hint {color:var(--mobile-muted);font-size:14px;}
+ .constructor.studio .studio-leathers button,.constructor.studio .studio-bindings button,.constructor.studio .motifs button>span {font-size:13px;}
+ .constructor.studio .studio-inscription-chips button {min-height:44px;font-size:13px;}
+ .constructor.studio input:not([type=checkbox]):not([type=range]),.constructor.studio select {font-size:16px;}
+ .constructor.studio .draft-actions {display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:16px;}
+ .constructor.studio .draft-actions p {flex:0 0 100%;margin:0;font-size:14px;line-height:1.5;}
+ .constructor.studio .draft-actions .text-link {min-height:44px;padding:10px 0;font-size:14px;}
+ .constructor.studio .draft-actions small {display:block;font-size:13px;line-height:1.5;color:var(--mobile-muted);}
+ .constructor.studio #step-back {min-height:44px;font-size:14px;}
+ dialog#cart {width:calc(100% - 20px);max-width:480px;max-height:calc(100dvh - 20px);padding:0 18px;overscroll-behavior:contain;scroll-padding-block:84px 100px;}
+ #cart .cart-heading h2 {font-size:28px;}
+ #cart .cart-item {gap:12px;}
+ #cart .cart-item>div {min-width:0;}
+ #cart .cart-item h3 {font-size:24px;overflow-wrap:anywhere;}
+ #cart .cart-item p,#cart .checkout-note,#cart .control-hint,#cart .small-label {font-size:14px;line-height:1.6;color:var(--mobile-muted);}
+ #cart input,#cart textarea {font-size:16px;min-height:48px;max-width:100%;}
+ #cart .cart-item input {width:64px;}
+ #cart .text-link {min-height:44px;display:inline-flex;align-items:center;font-size:14px;}
+ #cart .telegram-request {margin:16px 0;padding-top:0;}
+ #cart #export-order {margin-bottom:16px;font-size:14px;}
+ #cart .cart-actions>.button {font-size:14px;}
+ #cart .cart-actions>.button:focus-visible {outline-offset:-4px;}
+ .album-favorite,.cover-favorite {min-width:44px;min-height:44px;}
+}
+@media(max-width:350px){#app>header .brand-logo{width:80px;height:42px;}#app>header .header-actions{gap:2px;}}

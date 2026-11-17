@@ -12,7 +12,18 @@ export function setupHeaderCollection({models,openProduct,escape,money}) {
  const nav=header.querySelector('nav');
  nav.querySelector('a[href="#catalog"]').insertAdjacentHTML('afterend','<a href="#cartoons">Вудбейзер</a>');
  nav.insertAdjacentHTML('beforeend','<a href="#reviews">Отзывы</a><a href="#delivery">Доставка</a>');
+ nav.id='primary-navigation';
+ const menu=document.createElement('button');menu.type='button';menu.className='mobile-menu-toggle';
+ menu.textContent='Меню';menu.setAttribute('aria-label','Открыть меню');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-controls',nav.id);actions.prepend(menu);
+ function closeMenu(restoreFocus=false){header.classList.remove('menu-open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Открыть меню');if(restoreFocus)menu.focus();}
+ menu.onclick=()=>{const open=menu.getAttribute('aria-expanded')!=='true';header.classList.toggle('menu-open',open);menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');};
+ header.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu(true);} });
+ document.addEventListener('pointerdown',e=>{if(!header.contains(e.target))closeMenu();});
+ document.addEventListener('click',e=>{const link=e.target.closest('a[href^="#"]');if(!link)return;closeMenu();if(link.getAttribute('href')==='#catalog'&&location.hash==='#catalog'){e.preventDefault();document.querySelector('#catalog').dispatchEvent(new Event('woodbase-enter'));}});
+ matchMedia('(max-width:700px)').addEventListener('change',()=>closeMenu());
+
  document.querySelector('.hero-invitation-label')?.remove();document.querySelector('.hero-invitation-arrow')?.remove();
+ document.querySelector('.hero-invitation')?.insertAdjacentHTML('afterend','<a class="mobile-hero-cta" href="#constructor">Собрать альбом <span aria-hidden="true">→</span></a>');
  document.querySelector('.hero-invitation')?.setAttribute('aria-label','Давай сохраним их в альбоме? Перейти в конструктор');
  document.querySelectorAll('.green-scroll-hint,.green-scroll-skip').forEach(el=>el.hidden=true);
  document.querySelector('#home-page .closing').insertAdjacentHTML('beforebegin',`

@@ -20,7 +20,7 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
  const dialog=document.querySelector('#cart');
  for(const selector of ['#request-form','.telegram-request','#export-order'])dialog.querySelector(selector).hidden=true;
  const note=dialog.querySelector('.checkout-note');note.textContent='Тестовая корзина WooCommerce. Ozon не подключён. Не переводите деньги.';
- const checkout=document.createElement('a');checkout.className='button';checkout.textContent='К тестовому оформлению →';checkout.hidden=true;dialog.append(checkout);
+ const checkout=document.createElement('a');checkout.className='button commerce-checkout';checkout.textContent='К тестовому оформлению →';checkout.hidden=true;dialog.querySelector('.cart-actions').append(checkout);
  const cartStatus=document.createElement('p');cartStatus.setAttribute('role','status');dialog.append(cartStatus);
  function textNode(tag,text){const n=document.createElement(tag);n.textContent=text;return n;}
  const amount=(minor,prices)=>new Intl.NumberFormat('ru-RU',{style:'currency',currency:prices.currency_code}).format(Number(minor)/10**prices.currency_minor_unit);

@@ -12,6 +12,7 @@ import './header-collection.css';
 import './benefits.css';
 import './studio.css';
 import './workshop-teaser.css';
+import './mobile-ux.css';
 import {setupHeaderCollection} from './header-collection.js';
 const inlineImages = {"catalog/family-history.png":"/scroll-assets/ebc213ef22f495b9091d.webp","concept/album-open.png":"/scroll-assets/1cb52a5d921355f655d6.webp","concept/album-turn.png":"/scroll-assets/7d390838829d03dbd7aa.webp","concept/hero-scene.png":"/scroll-assets/144c86df5f17442a511d.webp","concept/details-source.png":"/scroll-assets/3f8fee0316aa7fd2cb44.webp","hero.png":"/scroll-assets/653cf8fe0931c6345787.webp","family.png":"/scroll-assets/27c5ffc5b5ecba4c06b9.webp","wood-grain.svg":"/scroll-assets/c5e6c8488a06179ed746.svg","in-hands.png":"/scroll-assets/b7a3500becccb277ee85.webp","brand/logo.png":"/scroll-assets/b02e7f90d14ea4f664b9.webp","brand/mascot-greeting.png":"/scroll-assets/d315c6f4af2807c4bc44.webp","brand/mascot-helper.png":"/scroll-assets/4f9f849127af2e4c3ec0.webp","brand/mascot-joy.png":"/scroll-assets/11c6ebaeca016a6260ca.webp"};
 for (const [name, value] of Object.entries(inlineImages)) document.documentElement.style.setProperty('--asset-' + name.replaceAll('.', '-').replaceAll('/', '-'), 'url("' + value + '")');
@@ -104,7 +105,7 @@ document.querySelector('#app').innerHTML = `
 <section id="about" class="atelier workshop-teaser section" aria-labelledby="workshop-teaser-title"><div class="workshop-teaser-photo"><img src="/scroll-assets/workshop-family.webp" alt="Визуализация: мастер держит чёрный деревянный альбом «Семья» со светлым ручным плетением корешка" width="1983" height="793" loading="lazy" decoding="async"></div><div class="workshop-teaser-copy"><h2 id="workshop-teaser-title">Однажды этот альбом<br>откроют ваши дети</h2><p>Узнают знакомые лица, прочитают ваши подписи, спросят о тех, кого не застали. Мы создаём альбомы, в которых семейные истории остаются рядом.</p><div class="workshop-teaser-actions"><a class="workshop-create" href="#constructor">Создать свой альбом</a><a class="workshop-meet" href="#workshop">Познакомиться с мастерской</a></div><p class="workshop-teaser-materials">Дерево <span aria-hidden="true">·</span> Натуральная кожа <span aria-hidden="true">·</span> Ручная сборка</p></div></section>
 <section class="order-guide section"><div class="eyebrow">ОТ ВАШЕЙ ИДЕИ ДО СЕМЕЙНОГО АЛЬБОМА</div><h2>Как появится <em>ваша история.</em></h2><div class="order-steps"><article><span>01</span><h3>Соберите альбом</h3><p>Выберите обложку, цвет, переплёт и дополнения. Сохраните проект, чтобы обсудить его с близкими.</p></article><article><span>02</span><h3>Согласуйте детали</h3><p>Мастерская подтверждает комплектацию, цену и макет гравировки до изготовления.</p></article><article><span>03</span><h3>Получите свою историю</h3><p>Срок изготовления, оплату и доставку согласуем отдельно. Онлайн-оплата пока не подключена.</p></article></div><details><summary>Что входит в комплект?</summary><p>Размер обложки 33 × 22 см, корешок 3 см, внутри кольцевой механизм. Количество и цвет листов, упаковка и аксессуары уточняются для заказа.</p></details><details><summary>Можно использовать свой рисунок?</summary><p>Да. Загрузите его в конструктор и настройте положение. До изготовления нужен согласованный макет: не все мелкие элементы подходят для лазерной гравировки.</p></details><details><summary>Как оформить индивидуальный заказ?</summary><p>Соберите корзину и скачайте запрос с контактами и пожеланиями. Откройте текст запроса в Telegram, выберите получателя и подтвердите отправку. Проект с загруженным рисунком приложите отдельным файлом. Пока адрес мастерской не указан, Telegram предложит выбрать чат.</p></details></section>${orderGuideSection}<section class="closing"><div class="eyebrow">ДЛЯ СЕБЯ. ДЛЯ БЛИЗКИХ. НА ГОДЫ.</div><h2>Когда-нибудь этот альбом<br>будут листать <em>ваши внуки.</em></h2><p>Начните его историю сегодня.</p><a href="#constructor" class="button">Создать свой семейный альбом →</a></section></main>
 <footer><a class="logo" href="#" aria-label="WoodBase — главная"><img class="brand-logo" src="/hero-assets/woodbase-light.svg" alt="WoodBase — логотип с дятлом" width="180" height="88"></a><p>Сохраняем тепло.<br>Передаём дальше.</p><small>WoodBase · лазерная мастерская</small></footer>
-<dialog id="product-detail"></dialog><dialog id="cart"><div class="cart-heading"><h2>Ваша корзина</h2><button id="close-cart" aria-label="Закрыть корзину">×</button></div><div id="cart-items"></div><p class="checkout-note">Заявка требует согласования цены и макета. Сайт не отправляет данные автоматически и не принимает оплату. Для передачи запроса используйте Telegram; файл с рисунком нужно приложить отдельно. Ozon пока не подключён.</p><form id="request-form"><label class="small-label" for="customer-name">Ваше имя</label><input id="customer-name" name="name" maxlength="80" autocomplete="name"><label class="small-label" for="customer-contact">Телефон или email для связи</label><input id="customer-contact" name="contact" maxlength="120" autocomplete="email"><label class="small-label" for="customer-comment">Пожелания к заказу</label><textarea id="customer-comment" name="comment" maxlength="1500" rows="3"></textarea><p class="control-hint">Контакты включаются только в скачиваемый файл и не сохраняются в корзине.</p></form><div class="telegram-request"><button class="button" id="telegram-request">Поделиться запросом в Telegram →</button><button class="text-link" id="copy-request">Скопировать текст заявки</button><p id="request-status" role="status"></p><p class="control-hint">Telegram откроется с подготовленным текстом. Отправка — только после вашего подтверждения. Изображения не прикрепляются автоматически.</p></div><button class="button" id="export-order">Скачать запрос в мастерскую ↓</button></dialog>`;
+<dialog id="product-detail"></dialog><dialog id="cart"><div class="cart-heading"><h2>Ваша корзина</h2><button id="close-cart" aria-label="Закрыть корзину">×</button></div><div id="cart-items"></div><p class="checkout-note">Сайт не принимает оплату. Цену и макет подтвердит мастерская. Отправьте запрос через Telegram; рисунок приложите отдельно.</p><form id="request-form"><label class="small-label" for="customer-name">Ваше имя</label><input id="customer-name" name="name" maxlength="80" autocomplete="name"><label class="small-label" for="customer-contact">Телефон или email для связи</label><input id="customer-contact" name="contact" maxlength="120" autocomplete="email"><label class="small-label" for="customer-comment">Пожелания к заказу</label><textarea id="customer-comment" name="comment" maxlength="1500" rows="3"></textarea><p class="control-hint">Контакты включаются только в скачиваемый файл и не сохраняются в корзине.</p></form><div class="telegram-request"><button class="button" id="telegram-request">Поделиться запросом в Telegram →</button><button class="text-link" id="copy-request">Скопировать текст заявки</button><p id="request-status" role="status"></p><p class="control-hint">Telegram откроется с подготовленным текстом. Отправка — только после вашего подтверждения. Изображения не прикрепляются автоматически.</p></div><button class="button" id="export-order">Скачать запрос в мастерскую ↓</button></dialog>`;
 
 // A separate hash route also works in the downloadable standalone version.
 const homePage = document.querySelector('main');
@@ -128,7 +129,10 @@ function showRoute() {
  } else {
   if(!location.hash || location.hash === '#') window.scrollTo({top:0,behavior:'instant'});
   const target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
-  if(target) target.scrollIntoView({behavior:'instant',block:'start'});
+  if(target) {
+   if(target.id==='catalog') target.dispatchEvent(new Event('woodbase-enter'));
+   else target.scrollIntoView({behavior:'instant',block:'start'});
+  }
  }
 }
 window.addEventListener('hashchange',showRoute);
@@ -205,11 +209,20 @@ function setStep(id, focus=false) {
  document.querySelector('#step-next').textContent='Далее';
  document.querySelector('#add-cart').hidden=index!==stepDefinitions.length-1;
  document.querySelector('#step-position').textContent=`ШАГ ${index+1} ИЗ ${stepDefinitions.length}`;
- if(focus) document.querySelector('[data-step="'+id+'"]').focus();
+ if(focus) {
+  document.querySelector('[data-step="'+id+'"]').focus({preventScroll:true});
+  wizardNode.scrollTop=0;
+  if(matchMedia('(max-width:700px)').matches) {
+   // Reveal the start of every step below the fixed header and sticky tabs.
+   const heading=document.querySelector('.studio-step-title');
+   const offset=document.querySelector('#app>header').offsetHeight+tabs.offsetHeight+24;
+   window.scrollTo({top:scrollY+heading.getBoundingClientRect().top-offset,behavior:'instant'});
+  }
+ }
  persistUnfinishedProject();
 }
 for(const tab of document.querySelectorAll('[data-step]')){
- tab.onclick=()=>setStep(tab.dataset.step);
+ tab.onclick=()=>setStep(tab.dataset.step,true);
  tab.onkeydown=e=>{let index=stepDefinitions.findIndex(step=>step.id===activeStep);if(e.key==='ArrowRight')index=(index+1)%stepDefinitions.length;else if(e.key==='ArrowLeft')index=(index+stepDefinitions.length-1)%stepDefinitions.length;else if(e.key==='Home')index=0;else if(e.key==='End')index=stepDefinitions.length-1;else return;e.preventDefault();setStep(stepDefinitions[index].id,true);};
 }
 document.querySelector('#step-next').onclick=()=>setStep(stepDefinitions[Math.min(stepDefinitions.length-1,stepDefinitions.findIndex(step=>step.id===activeStep)+1)].id,true);
@@ -674,11 +687,12 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     // скролле (~15fps и «дерганье» в коллекции). Стена статична — как в дизайне.
   }
   function schedule() { if (!pending) {pending=true; requestAnimationFrame(update);} }
-  function go(index) {
+  function go(index, behavior=reduce.matches?'instant':'smooth') {
     const rect=section.getBoundingClientRect();
     const top=scrollY+rect.top, fade=fadeLen(rect);
-    scrollTo({top:top+fade+Math.max(0,Math.min(items.length-1,index))/(items.length-1)*(rect.height-innerHeight-fade),behavior:reduce.matches?'instant':'smooth'});
+    scrollTo({top:top+fade+Math.max(0,Math.min(items.length-1,index))/(items.length-1)*(rect.height-innerHeight-fade),behavior});
   }
+  section.addEventListener('woodbase-enter',()=>go(0,'instant'));
   prev.onclick=()=>go(active-1); next.onclick=()=>go(active+1);
   covers.forEach((cover,i)=>{cover.onclick=()=>{
     if(items[i].custom){location.hash='constructor';document.querySelector('#constructor').scrollIntoView({behavior:reduce.matches?'instant':'smooth'});return;}
@@ -898,4 +912,13 @@ setupHeaderCollection({models,openProduct,escape,money});
   next();
 })();
 
+const cartActions=document.createElement('div');cartActions.className='cart-actions';
+const cartDialog=document.querySelector('#cart');
+cartDialog.append(cartActions);
+cartActions.append(document.querySelector('#telegram-request'));
+if(import.meta.env.VITE_COMMERCE_MODE==='woocommerce')document.querySelector('#telegram-request').hidden=true;
+
 setupCommerce({getState:()=>state, models, refresh:renderPreview, onProduct:p=>{commerceProduct=p;}, getOriginalFile:()=>originalArtwork});
+
+// Hash entry must run after the animated collection has installed its entry handler.
+if(location.hash) requestAnimationFrame(showRoute);
