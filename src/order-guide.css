@@ -1,0 +1,53 @@
+/* The approved album spread: horizontal journey on desktop, vertical on phones. */
+#order-guide {
+ --journey-paper:#f8f3e9;--journey-ink:#302719;--journey-accent:#806739;--journey-line:#c9bda6;
+ position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,.8fr);
+ column-gap:8%;max-width:1480px;margin:0 auto;padding:48px 7% 48px;
+ color:var(--journey-ink);background:var(--journey-paper);scroll-margin-top:110px;
+}
+#order-guide .order-guide-heading {display:contents;}
+#order-guide h2 {grid-column:1;grid-row:1;margin:0;font:700 clamp(38px,5.4vw,78px)/1.05 Manrope,Arial,sans-serif;letter-spacing:-.045em;color:var(--journey-ink);text-transform:none;}
+#order-guide h2 span {display:block;color:var(--journey-accent);white-space:nowrap;}
+#order-guide .order-guide-heading > p {grid-column:2;grid-row:1;align-self:start;margin:0;padding:5px 0 0 30px;border-left:1px solid var(--journey-line);font:400 clamp(19px,1.85vw,27px)/1.35 Manrope,Arial,sans-serif;max-width:440px;color:var(--journey-ink);}
+#order-guide .order-guide-scene {grid-column:1/-1;margin:28px -6% 8px;min-width:0;}
+#order-guide .order-guide-scene img {width:100%;height:auto;aspect-ratio:3.5/1;object-fit:cover;object-position:center;}
+#order-guide .order-guide-steps {grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;list-style:none;margin:0;padding:0;border-top:1px solid var(--journey-accent);}
+#order-guide .order-guide-steps li {position:relative;padding-top:28px;}
+#order-guide .order-guide-steps li::before {content:'';position:absolute;top:-6px;left:4px;height:12px;border-left:3px solid var(--journey-accent);}
+#order-guide .order-guide-number {display:block;margin:0 0 6px;font:italic 400 22px/1 Georgia,serif;color:var(--journey-accent);}
+#order-guide .order-guide-steps h3 {margin:0 0 10px;font:400 clamp(23px,2.1vw,31px)/1.12 Georgia,serif;letter-spacing:-.035em;color:var(--journey-ink);}
+#order-guide .order-guide-steps p {margin:0;max-width:350px;font:400 clamp(16px,1.4vw,20px)/1.55 Manrope,Arial,sans-serif;color:var(--journey-ink);}
+#order-guide .order-guide-action {grid-column:2;grid-row:1;align-self:end;justify-self:start;transform:translateY(24px);display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:12px 30px;min-width:310px;margin-left:30px;background:var(--journey-ink);color:var(--journey-paper);border:1px solid var(--journey-ink);border-radius:8px;font:500 20px/1.4 Manrope,Arial,sans-serif;text-align:center;text-decoration:none;transition:background .18s;}
+#order-guide .order-guide-action:hover {background:#513b25;}
+#order-guide .order-guide-action:focus-visible,#order-guide summary:focus-visible {outline:3px solid var(--journey-accent);outline-offset:5px;}
+#order-guide .order-guide-faq {grid-column:1/-1;display:grid;grid-template-columns:minmax(150px,.65fr) minmax(0,2fr);gap:50px;margin-top:42px;padding-top:26px;border-top:1px solid var(--journey-line);}
+#order-guide .order-guide-faq > h3 {font:400 30px/1.1 Georgia,serif;margin:4px 0 0;max-width:180px;color:var(--journey-ink);}
+#order-guide .order-guide-faq details {padding:0;border:0;border-bottom:1px solid var(--journey-line);}
+#order-guide .order-guide-faq details:last-child {border-bottom:0;}
+#order-guide summary {display:list-item;list-style-position:inside;padding:16px 0;min-height:56px;font:400 22px/1.3 Georgia,serif;cursor:pointer;color:var(--journey-ink);}
+#order-guide .order-guide-faq details p {font:400 15px/1.65 Manrope,Arial,sans-serif;margin:0 0 20px;color:var(--journey-ink);max-width:680px;}
+@media(max-width:900px) and (min-width:701px){#order-guide {column-gap:5%;padding:55px 5%;}#order-guide h2 {font-size:38px;}#order-guide .order-guide-heading > p {font-size:19px;padding-left:20px;}#order-guide .order-guide-action {font-size:15px;margin-left:20px;min-height:46px;min-width:0;padding:10px 18px;}#order-guide .order-guide-steps {gap:24px;}#order-guide .order-guide-steps p {font-size:15px;}}
+@media(max-width:700px){
+ #order-guide {display:flex;flex-direction:column;padding:40px 6% 44px;gap:0;}
+ #order-guide .order-guide-heading {display:block;}
+ #order-guide h2 {font-size:clamp(29px,8.1vw,43px);line-height:1.08;letter-spacing:-.035em;}
+ #order-guide .order-guide-heading > p {padding:0;border:0;margin:15px 0 0;max-width:340px;font-size:16px;line-height:1.5;}
+ #order-guide .order-guide-scene {margin:24px -4% 26px;}
+ #order-guide .order-guide-scene img {aspect-ratio:1.45;object-fit:cover;object-position:center;}
+ #order-guide .order-guide-steps {display:flex;flex-direction:column;gap:26px;border-top:0;border-left:1px solid var(--journey-accent);margin:0 0 0 8px;padding:0 0 0 22px;}
+ #order-guide .order-guide-steps li {padding:0;}
+ #order-guide .order-guide-steps li::before {left:-28px;top:23px;width:11px;height:0;border-left:0;border-top:3px solid var(--journey-accent);}
+ #order-guide .order-guide-number {font-size:20px;margin-bottom:5px;}
+ #order-guide .order-guide-steps h3 {font-size:24px;line-height:1.16;margin-bottom:7px;letter-spacing:-.035em;}
+ #order-guide .order-guide-steps p {font-size:15px;line-height:1.5;max-width:100%;}
+ #order-guide .order-guide-action {order:3;align-self:stretch;transform:none;margin:28px 0 0;min-height:52px;min-width:0;width:100%;font-size:17px;}
+ #order-guide .order-guide-faq {order:4;display:block;margin-top:30px;padding-top:24px;}
+ #order-guide .order-guide-faq > h3 {max-width:none;font-size:28px;margin:0 0 10px;}
+ #order-guide summary {font-size:19px;padding:16px 0;}
+ #order-guide .order-guide-faq details p {font-size:15px;}
+}
+@media(prefers-reduced-motion:reduce){#order-guide .order-guide-action {transition:none;}}
+#order-guide summary {display:flex;align-items:center;justify-content:space-between;gap:18px;list-style:none;}
+#order-guide summary::-webkit-details-marker {display:none;}
+#order-guide summary::after {content:'';flex:0 0 16px;width:16px;height:16px;background:url('/icons/chevron-down.svg') center/contain no-repeat;}
+#order-guide details[open] > summary::after {transform:rotate(180deg);}

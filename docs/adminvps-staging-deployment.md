@@ -193,3 +193,24 @@ sudo python3 integrations/woocommerce/ops/backup.py --compose integrations/wooco
 - Существующий backup tool изменён только для исключения readonly staging guard из WP tar; его синтаксис проверен, новый encrypted backup/restore цикл в этом этапе не запускался.
 
 Ни одна команда SSH/SCP к VPS не выполнялась. Старые настройки Vercel, frontend/GSAP/конструктор и базовая feature-ветка не менялись. Полный новый stack/clean install и независимый restore здесь не запущены: около1GiB free на executor против≥8GiB preflight/≥15GiB практического резерва. Целевой AdminVPS60GiB нужно проверить фактически; «свободно60GiB» не предполагается автоматически.
+
+## Подключение зарегистрированного домена
+
+Для явно разрешённого публичного staging подготовлен override
+`integrations/woocommerce/ops/adminvps-domain.yaml`. Его применяют после основного
+standalone файла, с тем же project `woodbase-adminvps-staging` и существующими volumes.
+По умолчанию standalone по-прежнему публикует только loopback8443.
+
+В защищённом staging env для домена задают `WOODBASE_DOMAIN=woodbase-lazer.ru`,
+`WOODBASE_PUBLIC_ORIGIN=https://woodbase-lazer.ru` и
+`TLS_DIR=/srv/woodbase/secrets/domain-tls`. Публичный override публикует80/443.
+DB/FPM остаются без опубликованных портов, Basic Auth и MU guard сохраняются.
+DNS A домена должен указывать на82.147.89.155, а старые AAAA не должны вести на другой сервер.
+
+До переключения выпускают проверенный публичный сертификат, делают backup и согласованно
+меняют URL в WordPress. Для выпуска подготовлен официальный Certbot5.10.0 в Docker.
+Скрипт `ops/adminvps/renew-domain-tls.sh` использует HTTP-01 webroot в volume
+`woodbase-adminvps-staging_acme`, проверяет новую цепочку и применяет Nginx reload.
+Перед включением регулярного продления выполнить успешный выпуск и dry-run.
+Для браузера и WP/API используется один канонический HTTPS-origin домена.
+После подключения старый URL localhost8443 больше не является адресом магазина.

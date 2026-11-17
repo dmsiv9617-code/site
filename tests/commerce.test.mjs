@@ -7,8 +7,18 @@ test('configuration has stable IDs and never sends browser prices or image data'
  assert.equal(c.productId,42); assert.equal(c.options.wood,'natural'); assert.equal(c.version,1);
  assert.equal(c.price,undefined);assert.equal(c.image,undefined);
 });
+test('all six albums use stable model and motif identifiers',()=>{
+ const ids=['family','wish','beginning','history','happiness','moments'];
+ for(let index=0;index<ids.length;index++){
+  const configuration=configurationFromState({...state,model:index,motif:index},42+index);
+  assert.equal(configuration.options.model,ids[index]);
+  assert.equal(configuration.options.motif,ids[index]);
+  assert.equal(configuration.productId,42+index);
+ }
+});
+
 test('unmapped albums and unsaved customer images are rejected',()=>{
- assert.throws(()=>configurationFromState({...state,model:0},42));
+ assert.throws(()=>configurationFromState({...state,model:6},42));
  assert.throws(()=>configurationFromState({...state,image:'data:image/png;base64,xx'},42));
  assert.throws(()=>configurationFromState({...state,imageRotation:NaN},42));
 });

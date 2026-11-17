@@ -12,8 +12,18 @@ add_action('before_woocommerce_init', function () {
   \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
  }
 });
+function wb_album_models() {
+ return ['family'=>'Семья','wish'=>'Однажды мы загадали тебя','beginning'=>'Начало твоей истории','history'=>'История нашей семьи','happiness'=>'Счастье внутри','moments'=>'Счастливые моменты'];
+}
+function wb_product_ids() {
+ $ids=get_option('wb_product_ids',[]);
+ if(!is_array($ids))$ids=[];
+ $legacy=(int)get_option('wb_product_id');
+ if($legacy>0)$ids['moments']=$legacy;
+ return array_filter(array_map('absint',array_intersect_key($ids,wb_album_models())));
+}
 function wb_options() {
- return ['model'=>['moments'=>'Счастливые моменты'], 'wood'=>['natural'=>'Натуральный','walnut'=>'Ореховый','black'=>'Чёрный','copper'=>'Медный'], 'binding'=>['bolts'=>'Дизайнерские болты','woven'=>'Ручное плетение'], 'leather'=>['black'=>'Чёрная','brown'=>'Коричневая'], 'motif'=>['moments'=>'Счастливые моменты'], 'extras'=>['corners'=>'Уголки','markers'=>'Маркеры','stickers'=>'Наклейки']];
+ return ['model'=>wb_album_models(), 'wood'=>['natural'=>'Натуральный','walnut'=>'Ореховый','black'=>'Чёрный','copper'=>'Медный'], 'binding'=>['bolts'=>'Дизайнерские болты','woven'=>'Ручное плетение'], 'leather'=>['black'=>'Чёрная','brown'=>'Коричневая'], 'motif'=>wb_album_models(), 'extras'=>['corners'=>'Уголки','markers'=>'Маркеры','stickers'=>'Наклейки']];
 }
 function wb_session() {
  if (!function_exists('WC')) throw new Exception('Сервис временно недоступен.');
@@ -41,9 +51,10 @@ function wb_permission($request) {
  return $nonce && hash_equals($session->get('wb_nonce'),$nonce) ? true : new WP_Error('wb_nonce','Сессия истекла. Обновите страницу.',['status'=>403]);
 }
 function wb_configuration($c, $product_id) {
- if (!is_array($c) || ($c['version']??null)!==1 || ($c['productId']??null)!==$product_id || $product_id!==(int)get_option('wb_product_id')) throw new WB_Problem('Некорректные параметры альбома.',400);
+ if (!is_array($c) || ($c['version']??null)!==1 || ($c['productId']??null)!==$product_id || !in_array($product_id,wb_product_ids(),true)) throw new WB_Problem('Некорректные параметры альбома.',400);
  $o=$c['options']??[]; $labels=[];
  if(!is_array($o))throw new WB_Problem('Некорректные параметры альбома.',400);
+ if(!is_string($o['model']??null)|| (wb_product_ids()[$o['model']]??null)!==$product_id)throw new WB_Problem('Некорректные параметры альбома.',400);
  foreach(wb_options() as $key=>$allowed) {
   if ($key==='extras') {
    if (!isset($o[$key]) || !is_array($o[$key]) || !array_is_list($o[$key]) || count($o[$key])>3) throw new WB_Problem('Некорректные параметры альбома.',400);
@@ -83,7 +94,12 @@ add_action('rest_api_init', function() {
   if(!function_exists('wc_get_product'))return new WP_Error('wb_unavailable','Сервис временно недоступен.',['status'=>503]);
   $p=wc_get_product((int)get_option('wb_product_id'));
   if(!$p) return new WP_Error('wb_missing','Тестовый альбом не настроен.',['status'=>404]);
-  return ['id'=>$p->get_id(),'name'=>$p->get_name(),'description'=>wp_strip_all_tags($p->get_description()),'price'=>$p->get_price(),'currency'=>get_woocommerce_currency(),'purchasable'=>$p->is_purchasable() && $p->is_in_stock(),'images'=>array_values(array_filter(array_map('wp_get_attachment_url',array_merge([$p->get_image_id()],$p->get_gallery_image_ids())))),'options'=>wb_options(),'checkoutUrl'=>wc_get_checkout_url()];
+  $products=[];
+  foreach(wb_product_ids() as $model=>$id) {
+   $item=wc_get_product($id);
+   if($item)$products[]=['model'=>$model,'id'=>$id,'name'=>$item->get_name(),'price'=>$item->get_price(),'purchasable'=>$item->is_purchasable()&&$item->is_in_stock()];
+  }
+  return ['id'=>$p->get_id(),'name'=>$p->get_name(),'description'=>wp_strip_all_tags($p->get_description()),'price'=>$p->get_price(),'currency'=>get_woocommerce_currency(),'purchasable'=>$p->is_purchasable() && $p->is_in_stock(),'images'=>array_values(array_filter(array_map('wp_get_attachment_url',array_merge([$p->get_image_id()],$p->get_gallery_image_ids())))),'options'=>wb_options(),'checkoutUrl'=>wc_get_checkout_url(),'products'=>$products];
  }]);
  register_rest_route('woodbase/v1','/artwork',['methods'=>'POST','permission_callback'=>'wb_permission','callback'=>function($r){
   try {
@@ -108,7 +124,7 @@ add_filter('woocommerce_store_api_add_to_cart_data', function($data,$request) {
  try {
   wb_state()->rate('owner:add:'.wb_owner(),wb_rate_limit('add','owner'),60);
   $extension=$request->get_param('extensions')['woodbase']??null;
-  if((int)$data['id']!==(int)get_option('wb_product_id') || !is_array($extension)) throw new WB_Problem('Выберите тестовый альбом в конструкторе.',400);
+  if(!in_array((int)$data['id'],wb_product_ids(),true) || !is_array($extension)) throw new WB_Problem('Выберите тестовый альбом в конструкторе.',400);
   $snapshot=wb_configuration($extension['configuration']??null,(int)$data['id']);
   $rid=$extension['requestId']??'';
   if(!is_string($rid)||!preg_match('/^[a-zA-Z0-9-]{8,80}$/D',$rid))throw new WB_Problem('Некорректный идентификатор запроса.',400);
@@ -166,7 +182,7 @@ add_action('wp_head',function(){if(function_exists('is_checkout')&&is_checkout()
 
 // Prevent the classic product form from bypassing required personalization.
 add_filter('woocommerce_add_to_cart_validation',function($valid,$id,$quantity,$variation_id=0,$variation=[],$data=[]) {
- if((int)$id===(int)get_option('wb_product_id') && empty($data['woodbase'])) {
+ if(in_array((int)$id,wb_product_ids(),true) && empty($data['woodbase'])) {
   wc_add_notice('Настройте альбом в конструкторе WoodBase.','error');return false;
  }
  return $valid;

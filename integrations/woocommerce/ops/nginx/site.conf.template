@@ -5,6 +5,12 @@ map $args $woodbase_wp_query {
  ~*(^|&)(wc-ajax|wc-api|rest_route|preview|preview_id)= 1;
 }
 log_format woodbase '$time_iso8601 $request_method $uri $status $body_bytes_sent';
+map $request_uri $woodbase_admin_auth {
+ default off;
+ ~^/wp-admin/admin-ajax\.php(?:\?|$) off;
+ ~^/wp-login\.php(?:\?|$) "WoodBase administration";
+ ~^/wp-admin(?:/|\?|$) "WoodBase administration";
+}
 limit_req_zone $binary_remote_addr zone=woodbase_upload:10m rate=2r/s;
 server {
  listen 80;

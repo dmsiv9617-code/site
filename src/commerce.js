@@ -1,17 +1,18 @@
 import {commerceError} from './commerce-errors.js';
+export const albumIds=['family','wish','beginning','history','happiness','moments'];
 // Browser contract: server validates again and computes all prices.
 export function configurationFromState(s, productId, fileId = null) {
- if(s.model!==5 || !Number.isSafeInteger(productId) || productId<1) throw new Error('Для тестового заказа выберите «Счастливые моменты»');
+ if(!Number.isInteger(s.model)||!albumIds[s.model]||!Number.isSafeInteger(productId)||productId<1) throw new Error('Выбранный альбом недоступен для заказа');
  if(s.artworkRequired&&!s.image)throw new Error('Загрузите исходный рисунок снова перед добавлением в заказ.');
  if(s.image && !fileId) throw new Error('Сначала загрузите оригинал рисунка.');
- if(!['bolts','woven'].includes(s.binding)||!['black','brown'].includes(s.leather)||!Number.isInteger(s.color)||s.color<0||s.color>3||s.motif!==5) throw new Error('Выбранная опция недоступна.');
+ if(!['bolts','woven'].includes(s.binding)||!['black','brown'].includes(s.leather)||!Number.isInteger(s.color)||s.color<0||s.color>3||!Number.isInteger(s.motif)||!albumIds[s.motif]) throw new Error('Выбранная опция недоступна.');
  if(typeof s.inscription!=='string'||[...s.inscription].length>45) throw new Error('Проверьте надпись: не более 45 символов.');
  if(!Array.isArray(s.extras)||s.extras.some(x=>!['corners','markers','stickers'].includes(x))) throw new Error('Стоимость дополнений пока не задана; снимите дополнительные опции');
  for(const [key,min,max] of [['imageScale',.5,1.5],['imageX',-20,20],['imageY',-20,20],['imageRotation',-45,45],['threshold',40,220]]) {
   if(!Number.isFinite(s[key])||s[key]<min||s[key]>max) throw new Error('Проверьте положение и масштаб рисунка.');
  }
  if(!['original','engrave'].includes(s.imageMode)) throw new Error('Некорректный режим обработки рисунка.');
- return {version:1,productId,options:{model:'moments',wood:['natural','walnut','black','copper'][s.color],binding:s.binding,leather:s.leather,motif:'moments',extras:[...new Set(s.extras)]},inscription:s.inscription,artwork:{fileId,x:s.imageX,y:s.imageY,scale:s.imageScale,rotation:s.imageRotation,mode:s.imageMode,threshold:s.threshold}};
+ return {version:1,productId,options:{model:albumIds[s.model],wood:['natural','walnut','black','copper'][s.color],binding:s.binding,leather:s.leather,motif:albumIds[s.motif],extras:[...new Set(s.extras)]},inscription:s.inscription,artwork:{fileId,x:s.imageX,y:s.imageY,scale:s.imageScale,rotation:s.imageRotation,mode:s.imageMode,threshold:s.threshold}};
 }
 // Cart-Token is an ephemeral bearer credential, never logged or included in exports.
 // WooCommerce session cookies own checkout continuity. Use a same-origin reverse

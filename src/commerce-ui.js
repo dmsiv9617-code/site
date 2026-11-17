@@ -1,5 +1,5 @@
 import {commerceError} from './commerce-errors.js';
-import {configurationFromState, StoreCart} from './commerce.js';
+import {albumIds, configurationFromState, StoreCart} from './commerce.js';
 export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile}) {
  const live=import.meta.env.VITE_COMMERCE_MODE==='woocommerce';
  const status=document.querySelector('#cart-status');
@@ -50,7 +50,9 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
   status.textContent='Сохраняем альбом…';
   try {
    const state=structuredClone(getState());
-   const draft=configurationFromState(state,product.id,state.image?'pending':null);
+   const selected=product.products?.find(item=>item.model===albumIds[state.model])||(state.model===5?product:null);
+   if(!selected?.purchasable)throw new Error('Выбранный альбом сейчас недоступен для заказа');
+   const draft=configurationFromState(state,selected.id,state.image?'pending':null);
    for(const [key,value] of Object.entries(draft.options)) {
     const ids=Array.isArray(value)?value:[value];
     if(ids.some(id=>!Object.hasOwn(product.options[key]||{},id)))throw new Error('Выбранная опция недоступна для заказа');
@@ -66,7 +68,7 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
      uploadedFile=file;fileId=saved.fileId;
     }
    }
-   const config=configurationFromState(state,product.id,state.image?fileId:null);
+   const config=configurationFromState(state,selected.id,state.image?fileId:null);
    render(await client.add(config,crypto.randomUUID()));
    status.textContent='Альбом сохранён в тестовой корзине WooCommerce.';
   } catch(e){fail(e);}finally{busy=false;add.disabled=false;}
@@ -80,7 +82,7 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
   models[5].name=p.name;models[5].subtitle=p.description;models[5].price=Number(p.price);
   if(p.images.length)models[5].photos=p.images;
   onProduct(p);refresh();window.dispatchEvent(new CustomEvent('woodbase-product',{detail:p}));
-  badge.textContent='Тестовый WooCommerce: доступен только альбом «'+p.name+'». Остальная коллекция — демо.';
+  badge.textContent=p.products?.length===models.length?'Тестовый WooCommerce: вся коллекция доступна для тестового заказа.':'Тестовый WooCommerce: доступен только альбом «'+p.name+'». Остальная коллекция — демо.';
   render(await client.get());add.disabled=false;
  }).catch(e=>{product=null;add.disabled=true;badge.textContent='WooCommerce недоступен. Оформление заблокировано; попробуйте обновить страницу.';fail(e);});
 }

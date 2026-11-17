@@ -1,0 +1,80 @@
+/* Editorial story spread, with portrait covers and a growing episode collection. */
+#cartoons.woodbaser-section{--wb-paper:var(--brand-paper,#f8f3e9);--wb-ink:var(--brand-ink,#29251f);--wb-muted:var(--brand-muted,#625646);--wb-line:var(--brand-border,#c6b49c);--wb-dark:var(--brand-dark,#302117);--wb-light:var(--brand-light,#faf2e3);--wb-accent:var(--brand-brass,#795536);display:block;box-sizing:border-box;max-width:1280px;margin:auto;scroll-margin-top:115px;padding:60px 6% 80px;color:var(--wb-ink);background:var(--wb-paper)}
+.woodbaser-intro{display:grid;grid-template-columns:auto 1fr;gap:24px 36px;align-items:center;margin-bottom:44px}
+.woodbaser-intro h2{font:650 clamp(48px,6vw,82px)/1.05 var(--concept-font,Manrope,Arial,sans-serif);letter-spacing:-3px;margin:0}
+.woodbaser-intro .woodbaser-lead{font:500 clamp(23px,2.6vw,34px)/1.23 var(--concept-font,Manrope,Arial,sans-serif);letter-spacing:-.6px;color:var(--wb-accent);border-left:1px solid var(--wb-accent);padding-left:32px;margin:0}
+.woodbaser-intro .woodbaser-description{grid-column:1/-1;font:16px/1.7 var(--concept-font,Manrope,Arial,sans-serif);color:var(--wb-ink);margin:0}
+.woodbaser-premiere{display:grid;grid-template-columns:minmax(0,.84fr) minmax(0,1fr);gap:40px;align-items:center}
+.woodbaser-feature-cover{width:100%;max-width:400px;justify-self:start;min-width:0}
+.woodbaser-feature-copy{min-width:0;padding:20px 0}
+.woodbaser-folio{display:flex;align-items:center;gap:18px;color:var(--wb-accent);margin-bottom:30px}
+.woodbaser-folio>small{font:27px/1.2 Georgia,serif;color:var(--wb-ink)}
+.woodbaser-folio>span{font:italic 76px/1 Georgia,serif;letter-spacing:-4px}
+.woodbaser-folio>i{height:1px;flex:1;background:var(--wb-accent)}
+.woodbaser-feature-copy h3{font:650 clamp(34px,4.5vw,58px)/1.08 var(--concept-font,Manrope,Arial,sans-serif);letter-spacing:-1.8px;margin:0 0 28px;color:var(--wb-ink)}
+.woodbaser-feature-copy>p{font:18px/1.55 var(--concept-font,Manrope,Arial,sans-serif);color:var(--wb-ink);margin:0 0 38px;max-width:450px}
+.woodbaser-watch{display:inline-flex;align-items:center;justify-content:center;gap:18px;font:600 18px/1.4 var(--concept-font,Manrope,Arial,sans-serif);padding:17px 30px;min-height:58px;border:1px solid var(--wb-dark);border-radius:8px;background:var(--wb-dark);color:var(--wb-light);transition:background .2s;cursor:pointer}
+.woodbaser-watch:hover{background:var(--wb-accent)}
+.woodbaser-watch svg{display:block;width:23px;height:23px}
+.woodbaser-cover{position:relative;display:block;width:100%;aspect-ratio:9/16;padding:0;border:0;border-radius:20px;overflow:hidden;background:var(--wb-dark);color:var(--wb-dark);isolation:isolate;cursor:pointer}
+.woodbaser-cover img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.woodbaser-cover:hover img{transform:scale(1.025)}
+.woodbaser-play{position:absolute;right:18px;bottom:18px;display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:var(--wb-light)}
+.woodbaser-play svg{display:block;width:31px;height:31px}
+.woodbaser-archive{margin-top:48px;padding-top:30px;border-top:1px solid var(--wb-accent)}
+.woodbaser-archive-heading{margin-bottom:28px}
+.woodbaser-archive-heading h3{font:600 34px/1.2 var(--concept-font,Manrope,Arial,sans-serif);letter-spacing:-.8px;margin:0}
+.woodbaser-archive-heading>span{display:none}
+.woodbaser-episodes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+.woodbaser-small-cover .woodbaser-play{width:48px;height:48px;right:14px;bottom:14px}
+.woodbaser-small-cover .woodbaser-play svg{width:25px;height:25px}
+.woodbaser-small-caption{display:flex;align-items:baseline;gap:13px;padding-top:17px}
+.woodbaser-small-number{font:italic 32px/1 Georgia,serif;color:var(--wb-accent)}
+.woodbaser-small-caption h4{font:600 18px/1.35 var(--concept-font,Manrope,Arial,sans-serif);margin:0;color:var(--wb-ink)}
+#woodbaser-player{--wb-player-dark:#17130f;--wb-player-light:var(--brand-light,#faf2e3);position:fixed;inset:0;margin:auto;width:min(800px,94vw);max-width:94vw;max-height:94svh;padding:0;border:1px solid var(--brand-border,#c6b49c);border-radius:20px;background:var(--wb-player-dark);color:var(--wb-player-light);overflow:auto}#woodbaser-player::backdrop{background:#100b08d9;backdrop-filter:blur(6px)}.woodbaser-player-heading{font:14px/1.5 Manrope,Arial,sans-serif;padding:18px 24px;color:var(--wb-player-light)}.woodbaser-screen{position:relative;background:#000;isolation:isolate}.woodbaser-screen .woodbaser-video{display:block;width:100%;height:70svh;max-height:720px;min-height:180px;margin:0;object-fit:contain;background:#000;border:0;border-radius:0}.woodbaser-close{position:absolute;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));z-index:2;display:grid;place-items:center;width:44px;height:44px;min-width:44px;padding:11px;border:1px solid #faf2e355;border-radius:50%;background:#17130fb3;color:var(--wb-player-light)}.woodbaser-close svg{display:block;width:20px;height:20px}.woodbaser-player-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:12px;padding:10px 20px}.woodbaser-player-actions:has(>button[hidden]):not(:has(>button:not([hidden]))){display:none}.woodbaser-player-actions button{border:1px solid #faf2e355;border-radius:999px;background:transparent;color:var(--wb-player-light);font:12px/1.4 Manrope,Arial,sans-serif;padding:9px 15px;min-height:40px}.woodbaser-status{font:13px/1.7 Manrope,Arial,sans-serif;margin:0;padding:0 22px 18px;color:var(--wb-player-light)}.woodbaser-status:empty{display:none}.woodbaser-source{display:inline-block;font:13px/1.6 Manrope,Arial,sans-serif;margin:0 22px 20px;color:var(--wb-player-light);text-decoration:underline}#woodbaser-player [hidden]{display:none!important}.woodbaser-screen:fullscreen{width:100%;height:100%;display:grid;place-items:center}.woodbaser-screen:fullscreen .woodbaser-video{height:100%;max-height:none}#woodbaser-player.is-expanded{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border:0;border-radius:0;display:flex;flex-direction:column}#woodbaser-player.is-expanded .woodbaser-player-heading,#woodbaser-player.is-expanded .woodbaser-player-actions{display:none}#woodbaser-player.is-expanded .woodbaser-screen{flex:1;min-height:0}#woodbaser-player.is-expanded .woodbaser-video{height:100%;max-height:none}#woodbaser-player button:focus-visible,#cartoons button:focus-visible{outline:3px solid var(--brand-brass,#a5793c);outline-offset:4px}
+@media(max-width:900px){.woodbaser-intro{gap:24px}.woodbaser-intro h2{font-size:58px}.woodbaser-intro .woodbaser-lead{font-size:26px;padding-left:24px}.woodbaser-premiere{gap:30px}.woodbaser-folio>span{font-size:60px}.woodbaser-folio>small{font-size:23px}.woodbaser-feature-copy h3{font-size:40px}.woodbaser-feature-copy>p{font-size:16px}.woodbaser-watch{font-size:16px;padding:15px 24px}}
+@media(max-width:700px){#cartoons.woodbaser-section{padding:40px 6% 60px;scroll-margin-top:155px}.woodbaser-intro{display:block;margin-bottom:30px}.woodbaser-intro h2{font-size:clamp(42px,10.5vw,65px);letter-spacing:-2px;margin-bottom:18px}.woodbaser-intro .woodbaser-lead{font-size:25px;border:0;padding:0;margin-bottom:18px}.woodbaser-lead br{display:none}.woodbaser-intro .woodbaser-description{font-size:14px;line-height:1.6}.woodbaser-premiere{grid-template-columns:1fr;gap:26px}.woodbaser-feature-cover{max-width:310px;justify-self:center}.woodbaser-feature-copy{padding:0}.woodbaser-folio{margin-bottom:20px;gap:15px}.woodbaser-folio>small{font-size:23px}.woodbaser-folio>span{font-size:57px}.woodbaser-feature-copy h3{font-size:38px;margin-bottom:20px}.woodbaser-feature-copy>p{font-size:16px;margin-bottom:24px}.woodbaser-watch{width:100%}.woodbaser-cover{border-radius:16px}.woodbaser-episodes{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 18px}.woodbaser-archive{margin-top:35px;padding-top:25px}.woodbaser-archive-heading h3{font-size:27px}.woodbaser-small-caption{display:block;padding-top:12px}.woodbaser-small-number{font-size:25px}.woodbaser-small-caption h4{font-size:15px;margin-top:6px}.woodbaser-small-cover .woodbaser-play{width:40px;height:40px;bottom:10px;right:10px}.woodbaser-small-cover .woodbaser-play svg{width:22px;height:22px}.woodbaser-screen .woodbaser-video{height:67svh}.woodbaser-player-heading{padding:15px 18px}#woodbaser-player{border-radius:16px}}
+@media(prefers-reduced-motion:reduce){.woodbaser-cover img,.woodbaser-watch{transition:none}.woodbaser-cover:hover img{transform:none}}
+/* Desktop: one introduction, with a quiet episode caption and margin folio. */
+@media(min-width:701px){
+ #cartoons.woodbaser-section{display:block;padding-top:30px;scroll-margin-top:100px}
+ .woodbaser-premiere{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:56px;align-items:center}
+ .woodbaser-story{display:block;min-width:0}
+ .woodbaser-intro{display:block;margin:0}
+ .woodbaser-intro h2{font-size:clamp(48px,5.7vw,76px);letter-spacing:-2.5px;margin-bottom:28px}
+ .woodbaser-intro .woodbaser-lead{font-size:clamp(26px,2.65vw,36px);line-height:1.23;border:0;padding:0;margin:0 0 24px}
+ .woodbaser-intro .woodbaser-description{font-size:16px;line-height:1.6;max-width:510px}
+ .woodbaser-feature-copy{display:grid;grid-template-columns:48px minmax(0,1fr);column-gap:18px;row-gap:8px;width:100%;padding:0;margin-top:48px;border:0}
+ .woodbaser-folio{grid-column:1;grid-row:1/span 2;align-items:start;align-self:start;margin:0}
+ .woodbaser-folio>small,.woodbaser-folio>i{display:none}
+ .woodbaser-folio>span{font-size:42px;line-height:1;letter-spacing:-1.5px}
+ .woodbaser-feature-copy h3{grid-column:2;grid-row:1;max-width:none;font-size:clamp(24px,2.2vw,30px);line-height:1.2;letter-spacing:-.7px;margin:0}
+ .woodbaser-feature-copy>p{grid-column:2;grid-row:2;font-size:15px;line-height:1.6;margin:0;max-width:450px}
+ .woodbaser-watch{grid-column:1/-1;grid-row:3;justify-self:start;margin-top:22px;font-size:16px;min-height:54px;padding:14px 27px}
+ .woodbaser-feature-cover{justify-self:center;align-self:center;width:min(100%,360px,calc((100svh - 180px)*.5625));max-width:none}
+ .woodbaser-archive{margin-top:35px;padding-top:25px}
+ .woodbaser-episodes{grid-template-columns:repeat(3,minmax(0,280px))}
+}
+@media(min-width:701px) and (max-width:950px){
+ .woodbaser-premiere{column-gap:28px}
+ .woodbaser-intro h2{font-size:45px;letter-spacing:-2px;margin-bottom:20px}
+ .woodbaser-intro .woodbaser-lead{font-size:26px;margin-bottom:18px}
+ .woodbaser-intro .woodbaser-description{font-size:14px}
+ .woodbaser-feature-copy{grid-template-columns:36px minmax(0,1fr);column-gap:12px;margin-top:30px}
+ .woodbaser-folio>span{font-size:34px}
+ .woodbaser-feature-copy h3{font-size:23px}
+ .woodbaser-feature-copy>p{font-size:14px}
+}
+@media(min-width:951px) and (max-height:780px){
+ #cartoons.woodbaser-section{padding-top:22px}
+ .woodbaser-premiere{column-gap:40px}
+ .woodbaser-intro h2{font-size:58px;margin-bottom:18px}
+ .woodbaser-intro .woodbaser-lead{font-size:29px;margin-bottom:18px}
+ .woodbaser-intro .woodbaser-description{font-size:15px}
+ .woodbaser-feature-copy{margin-top:30px}
+ .woodbaser-folio>span{font-size:36px}
+ .woodbaser-feature-copy h3{font-size:26px}
+ .woodbaser-feature-copy>p{font-size:14px}
+ .woodbaser-watch{margin-top:16px}
+}
+@media(max-width:700px){.woodbaser-story{display:contents}.woodbaser-premiere>.woodbaser-story>.woodbaser-intro{grid-row:1;margin-bottom:4px}.woodbaser-feature-cover{grid-row:2}.woodbaser-feature-copy{grid-row:3}}

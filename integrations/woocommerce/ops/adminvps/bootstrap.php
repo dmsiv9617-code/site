@@ -26,12 +26,21 @@ update_option('woocommerce_coming_soon','no');
 update_option('woocommerce_enable_guest_checkout','yes');update_option('woocommerce_enable_signup_and_login_from_checkout','no');
 update_option('woocommerce_calc_taxes','no');update_option('woocommerce_store_address','Изолированная staging-среда');
 update_option('woocommerce_custom_orders_table_enabled','yes');
-$p=wc_get_product((int)get_option('wb_product_id'));
-if(!$p) {
- $p=new WC_Product_Simple();$p->set_name('Счастливые моменты');$p->set_sku('woodbase-moments-test');
- $p->set_description('ТЕСТОВЫЙ товар WoodBase. Цена и комплектация требуют подтверждения перед коммерческим запуском.');
- $p->set_regular_price('3540');$p->set_status('publish');$p->set_virtual(true);$p->save();update_option('wb_product_id',$p->get_id());
+// Keep existing products and prices. Publish the mapping after each item so retries are safe.
+$product_ids=wb_product_ids();
+foreach(wb_album_models() as $model=>$name) {
+ $sku='woodbase-'.$model.'-test';
+ $id=$product_ids[$model]??wc_get_product_id_by_sku($sku);
+ $item=$id?wc_get_product($id):null;
+ if(!$item) {
+  $item=new WC_Product_Simple();$item->set_name($name);$item->set_sku($sku);
+  $item->set_description('ТЕСТОВЫЙ товар WoodBase. Цена и комплектация требуют подтверждения перед коммерческим запуском.');
+  $item->set_regular_price('3540');$item->set_status('publish');$item->set_virtual(true);$item->save();
+ }
+ $product_ids[$model]=$item->get_id();update_option('wb_product_ids',$product_ids);
+ if($model==='moments')update_option('wb_product_id',$item->get_id());
 }
+$p=wc_get_product($product_ids['moments']);
 if(!$p->get_image_id()) {
  require_once ABSPATH.'wp-admin/includes/image.php';
  $upload=wp_upload_bits('woodbase-moments.webp',null,file_get_contents('/opt/woodbase-moments.webp'));

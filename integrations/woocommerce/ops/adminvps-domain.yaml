@@ -1,0 +1,6 @@
+# Apply after adminvps-staging.yaml, using the same project and volumes.
+# Set WOODBASE_DOMAIN, WOODBASE_PUBLIC_ORIGIN and TLS_DIR in the staging env.
+# Requires a valid public certificate. Basic Auth and staging guard stay enabled.
+services:
+  web:
+    ports: !override ["80:80", "443:443"]
