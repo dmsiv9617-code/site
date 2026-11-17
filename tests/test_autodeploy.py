@@ -52,7 +52,7 @@ class DeployTests(unittest.TestCase):
             dist = Path(source) / 'dist'
             (dist / 'assets').mkdir(parents=True)
             (dist / 'index.html').write_text('new')
-            (dist / 'assets/app.js').write_text('/wp-json/wc/store/v1 /cart/add-item')
+            (dist / 'assets/app.js').write_text('/wp-json/wc/store/v1/cart /add-item')
 
     def http(self, url, expected):
         return b'{"products":[1,2,3,4,5,6]}' if '/product' in url else b'ok'
@@ -81,6 +81,18 @@ class DeployTests(unittest.TestCase):
                 deploy.main()
         self.assertEqual((deploy.PUBLIC / 'index.html').read_text(), 'old')
         self.assertFalse((deploy.ROOT / 'deployed.json').exists())
+
+    def test_demo_only_bundle_cannot_replace_storefront(self):
+        def demo(*args, **kwargs):
+            result = self.simulate_run(*args, **kwargs)
+            if args[0] == 'docker':
+                source = next(value[:-7] for value in args if value.endswith(':/build'))
+                (Path(source) / 'dist/assets/app.js').write_text('demo cart only')
+            return result
+        with patch.object(deploy, 'run', demo), patch.object(deploy, 'output', self.output):
+            with self.assertRaisesRegex(RuntimeError, 'WooCommerce frontend contract missing'):
+                deploy.main()
+        self.assertEqual((deploy.PUBLIC / 'index.html').read_text(), 'old')
 
     def test_success_and_repeat_only_build_once(self):
         with patch.object(deploy, 'run', self.simulate_run), patch.object(deploy, 'output', self.output), patch.object(deploy, 'check_http', self.http):

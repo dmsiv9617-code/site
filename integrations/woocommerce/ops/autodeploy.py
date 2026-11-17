@@ -115,7 +115,7 @@ def deploy(config):
                 raise RuntimeError('Non-static or secret file in build output')
         # Built-in Vite mode must still be the WooCommerce integration.
         bundle = '\n'.join(p.read_text() for p in (dist / 'assets').glob('*.js'))
-        if '/wp-json/wc/store/v1' not in bundle or '/cart/add-item' not in bundle:
+        if '/wp-json/wc/store/v1/cart' not in bundle or '/add-item' not in bundle:
             raise RuntimeError('WooCommerce frontend contract missing')
         backups = ROOT / 'previous'
         backups.mkdir(exist_ok=True)
