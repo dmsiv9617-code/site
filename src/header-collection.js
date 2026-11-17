@@ -23,7 +23,7 @@ export function setupHeaderCollection({models,openProduct,escape,money}) {
  matchMedia('(max-width:700px)').addEventListener('change',()=>closeMenu());
 
  document.querySelector('.hero-invitation-label')?.remove();document.querySelector('.hero-invitation-arrow')?.remove();
- document.querySelector('.hero-invitation')?.insertAdjacentHTML('beforeend','<span class="hero-invitation-line" aria-hidden="true"><svg viewBox="0 0 200 28" fill="none"><path d="M2 14H194M180 2L194 14L180 26" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>');
+ document.querySelector('.hero-invitation')?.insertAdjacentHTML('beforeend','<span class="hero-invitation-trail" aria-hidden="true"></span>');
  document.querySelector('.hero-invitation')?.setAttribute('aria-label','Давай сохраним их в альбоме? Перейти в конструктор');
  document.querySelectorAll('.green-scroll-hint,.green-scroll-skip').forEach(el=>el.hidden=true);
  document.querySelector('#home-page .closing').insertAdjacentHTML('beforebegin',`

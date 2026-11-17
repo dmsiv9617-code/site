@@ -21,4 +21,6 @@ The existing constructor checks can be run with `WB_UX_CASE='tabs and controls' 
 
 Public-site verification requires network access to woodbase-lazer.ru; the development environment's proxy returned HTTP 403 during this task. Real iOS/Safari and software-keyboard verification remain separate device checks.
 
-`npm run test:mobile:hero` checks full-height backdrop coverage, character placement, the invitation link and viewport resizing at 320×568, 390×844 and 430×932. It saves screenshots under `work/mobile-hero/`.
+`npm run test:mobile:hero` checks full-height backdrop coverage, character placement, the invitation link and viewport resizing at 320×568, 360×640, 375×700, 390×844 and 430×932. It saves screenshots under `work/mobile-hero/`.
+
+The hero regression also holds the first frame response to compare loading artwork with the canvas, then checks that the first scroll does not change its scale. Mobile type and character scale remain stable when browser chrome changes height.

@@ -6,7 +6,7 @@ assert.equal(new URL(origin).hostname,'localhost');
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox']});
 await mkdir('work/mobile-hero',{recursive:true});
 try{
- for(const [width,height] of [[320,568],[390,844],[430,932]]){
+ for(const [width,height] of [[360,640],[375,700],[320,568],[390,844],[430,932]]){
   const context=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true});
   const page=await context.newPage();await page.goto(origin);await page.evaluate(()=>document.querySelector('#skip-intro')?.click());
   await page.waitForFunction(()=>!document.querySelector('.green-scroll-sequence').classList.contains('loading'));
@@ -23,12 +23,15 @@ try{
    assert.ok(geometry.photo.top<=1&&geometry.photo.bottom>=geometry.viewport-1,'background must cover the whole hero: '+JSON.stringify(geometry));
    assert.ok(geometry.avatarBottom>=geometry.viewport-5,'Woody must meet the bottom edge: '+JSON.stringify(geometry));
    assert.ok(geometry.avatarTop>=geometry.copyBottom+12,'Woody must not overlap the invitation: '+JSON.stringify(geometry));
+   return geometry;
   };
   await check();await page.screenshot({path:`work/mobile-hero/${width}-${height}.png`});
   assert.equal(await page.locator('.mobile-hero-cta').count(),0,'no separate pill CTA');
   await page.locator('.hero-invitation').tap();await page.waitForURL('**/#constructor');assert.ok(await page.locator('#tab-binding').isVisible());
   await page.goto(origin);await page.waitForFunction(()=>!document.querySelector('.green-scroll-sequence').classList.contains('loading'));
-  await page.setViewportSize({width,height:height+70});await page.waitForTimeout(200);await check();
+  const beforeResize=await check();
+  await page.setViewportSize({width,height:height+70});await page.waitForTimeout(200);const afterResize=await check();
+  assert.ok(Math.abs((afterResize.avatarBottom-afterResize.avatarTop)-(beforeResize.avatarBottom-beforeResize.avatarTop))<4,'browser toolbar height changes must not suddenly resize Woody');
   console.log('PASS hero background, bottom placement, invitation and viewport resize',width,height);await context.close();
  }
 }finally{await browser.close();}

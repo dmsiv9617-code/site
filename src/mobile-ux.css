@@ -90,9 +90,6 @@ footer small {font-size:13px;line-height:1.6;overflow-wrap:anywhere;}
 /* The invitation is the action; Woody and the backdrop reach the screen edge. */
 .hero.concept-hero .hero-invitation {display:inline-flex;flex-direction:column;align-items:flex-start;gap:12px;padding:8px 0;color:#f3d7ad;}
 .hero.concept-hero .hero-invitation::before {display:none;}
-.hero-invitation-line {display:block;width:180px;max-width:75%;height:28px;color:#e4c39a;transition:width .2s ease;}
-.hero-invitation-line svg {display:block;width:100%;height:100%;}
-.hero-invitation:hover .hero-invitation-line,.hero-invitation:focus-visible .hero-invitation-line {width:200px;}
 @media(max-width:700px){
  .green-scroll-sequence>.hero.concept-hero {height:100dvh;min-height:0;}
  .green-scroll-sequence .hero.concept-hero>.hero-photo {inset:0;width:100%;height:100%;object-fit:cover;object-position:68% center;mask-image:none;}
@@ -101,12 +98,27 @@ footer small {font-size:13px;line-height:1.6;overflow-wrap:anywhere;}
  .green-scroll-sequence .hero-woody img {height:100%;object-fit:contain;object-position:center bottom;}
  .hero.concept-hero .hero-invitation-title {color:#f3d7ad;}
 }
-@media(max-width:700px) and (max-height:650px){
- .green-scroll-sequence .hero-copy {top:96px;}
- .green-scroll-sequence .hero.concept-hero h1 {font-size:clamp(28px,7.5vw,36px);}
- .green-scroll-sequence .hero.concept-hero .hero-actions {margin-top:16px;}
- .hero.concept-hero .hero-invitation-title {font-size:22px;}
-}
-@media(prefers-reduced-motion:reduce){.hero-invitation-line {transition:none;}}
+
 
 @media(max-width:700px) and (prefers-reduced-motion:reduce){.green-scroll-sequence{height:100dvh;}}
+
+/* A softly lit underline and arrow share the invitation's whole hit area. */
+.hero.concept-hero .hero-invitation {gap:8px;}
+.hero-invitation-trail {position:relative;display:block;width:100%;min-width:180px;height:22px;color:#f0d2a1;}
+.hero-invitation-trail::before {content:'';position:absolute;left:0;right:3px;top:10px;height:2px;border-radius:2px;background:linear-gradient(90deg,#c5944844,#f2d3a4 35%,#fff0cf);box-shadow:0 0 9px #e2b66a88,0 0 20px #df9f3a33;}
+.hero-invitation-trail::after {content:'';position:absolute;right:2px;top:4px;width:12px;height:12px;border-top:2px solid currentColor;border-right:2px solid currentColor;transform:rotate(45deg);filter:drop-shadow(0 0 5px #edc58399);}
+.hero-invitation:hover .hero-invitation-title,.hero-invitation:focus-visible .hero-invitation-title {color:#fff0cf;}
+.green-scroll-sequence .hero-woody>img {width:100%;height:100%;object-fit:fill;}
+@media(max-width:700px){
+ .green-scroll-sequence .hero.concept-hero .hero-copy {top:112px;}
+ .green-scroll-sequence .hero.concept-hero>.hero-photo {height:100lvh;min-height:100%;object-position:68% top;transform:none!important;will-change:auto;}
+}
+
+
+@media(max-width:700px){
+ .green-scroll-sequence .hero.concept-hero h1 {font-size:clamp(34px,9.3vw,46px);}
+ .green-scroll-sequence[data-compact=true] .hero.concept-hero .hero-copy {top:96px;}
+ .green-scroll-sequence[data-compact=true] .hero.concept-hero h1 {font-size:clamp(28px,7.5vw,36px);}
+ .green-scroll-sequence[data-compact=true] .hero.concept-hero .hero-actions {margin-top:16px;}
+ .green-scroll-sequence[data-compact=true] .hero-invitation-title {font-size:22px;}
+}
