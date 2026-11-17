@@ -1,6 +1,6 @@
 /* Mobile refinements retain the existing wood, leather and paper palette. */
 :root {--mobile-header-height:76px;--mobile-paper:#f8f3e9;--mobile-ink:#302117;--mobile-muted:#645548;--mobile-line:#d9c9b3;--mobile-gold:#e4c39a;}
-.mobile-menu-toggle,.mobile-hero-cta {display:none;}
+.mobile-menu-toggle {display:none;}
 #cart .cart-heading {position:sticky;top:0;z-index:2;background:var(--mobile-paper);padding-block:12px;margin-top:0;align-items:center;}
 #cart #close-cart,#favorites-dialog [data-close-favorites],.studio-dialog-close {min-width:44px;min-height:44px;}
 #cart .cart-item button {min-width:72px;min-height:44px;font-size:14px;line-height:1.4;}
@@ -25,9 +25,7 @@
  body:has(.green-scroll-sequence) #app>header nav a {display:flex;align-items:center;min-height:48px;padding:10px 12px;border-radius:8px;font-size:16px!important;}
  #app>header nav a:hover,#app>header nav a:focus-visible {background:#ffffff16;}
  .green-scroll-sequence .hero-copy {top:105px;}
- .hero.concept-hero .mobile-hero-cta {display:inline-flex;align-items:center;gap:24px;min-height:48px;padding:12px 22px;border-radius:99px;background:var(--mobile-gold);color:var(--mobile-ink);font:600 16px/1.4 Manrope,Arial,sans-serif;}
  .hero.concept-hero .hero-actions {gap:12px;}
- .hero.concept-hero .mobile-hero-cta {margin-top:12px;}
  .hero.concept-hero .hero-invitation {padding:0;}
  .constructor.studio {scroll-margin-top:var(--mobile-header-height);padding-top:18px;}
  .constructor.studio .preview {
@@ -88,3 +86,27 @@ footer small {font-size:13px;line-height:1.6;overflow-wrap:anywhere;}
  .closing .button {width:100%;max-width:380px;justify-content:center;text-align:center;padding:16px 20px;}
  footer small {display:block;max-width:100%;font-size:12px;}
 }
+
+/* The invitation is the action; Woody and the backdrop reach the screen edge. */
+.hero.concept-hero .hero-invitation {display:inline-flex;flex-direction:column;align-items:flex-start;gap:12px;padding:8px 0;color:#f3d7ad;}
+.hero.concept-hero .hero-invitation::before {display:none;}
+.hero-invitation-line {display:block;width:180px;max-width:75%;height:28px;color:#e4c39a;transition:width .2s ease;}
+.hero-invitation-line svg {display:block;width:100%;height:100%;}
+.hero-invitation:hover .hero-invitation-line,.hero-invitation:focus-visible .hero-invitation-line {width:200px;}
+@media(max-width:700px){
+ .green-scroll-sequence>.hero.concept-hero {height:100dvh;min-height:0;}
+ .green-scroll-sequence .hero.concept-hero>.hero-photo {inset:0;width:100%;height:100%;object-fit:cover;object-position:68% center;mask-image:none;}
+ .green-scroll-sequence .hero.concept-hero::after {background:linear-gradient(#100a05c9,transparent 65%);}
+ .green-scroll-sequence .hero-woody {bottom:0;top:auto;left:12%;right:12%;width:76%;height:52%;}
+ .green-scroll-sequence .hero-woody img {height:100%;object-fit:contain;object-position:center bottom;}
+ .hero.concept-hero .hero-invitation-title {color:#f3d7ad;}
+}
+@media(max-width:700px) and (max-height:650px){
+ .green-scroll-sequence .hero-copy {top:96px;}
+ .green-scroll-sequence .hero.concept-hero h1 {font-size:clamp(28px,7.5vw,36px);}
+ .green-scroll-sequence .hero.concept-hero .hero-actions {margin-top:16px;}
+ .hero.concept-hero .hero-invitation-title {font-size:22px;}
+}
+@media(prefers-reduced-motion:reduce){.hero-invitation-line {transition:none;}}
+
+@media(max-width:700px) and (prefers-reduced-motion:reduce){.green-scroll-sequence{height:100dvh;}}

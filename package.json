@@ -16,7 +16,8 @@
     "test:hardening:http": "node scripts/verify-hardening-http.mjs",
     "test:backup:local": "python3 scripts/verify-backup-rehearsal.py",
     "test:mobile:ux": "node scripts/verify-mobile-ux.mjs",
-    "test:mobile:commerce": "node scripts/verify-mobile-commerce.mjs"
+    "test:mobile:commerce": "node scripts/verify-mobile-commerce.mjs",
+    "test:mobile:hero": "node scripts/verify-mobile-hero.mjs"
   },
   "devDependencies": {
     "playwright-core": "^1.64.1",

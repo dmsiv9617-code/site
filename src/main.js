@@ -727,9 +727,11 @@ document.querySelector('#add-cart').addEventListener('click', () => {
     header.style.setProperty('--hero-header-opacity',String(1-ease((p-.52)/.22)));
     let index=Math.round(clamp((p-.02)/.46)*(sources.length-1));while(index>0&&!frames[index])index--;
     const mobile=w<=700;
-    const safeTop=mobile?Math.min(copy.offsetTop+copy.offsetHeight+20,h*.53):header.offsetHeight+18;
-    const base=Math.min(w*(mobile?.98:.66)/714,(h-safeTop)/480);
-    const dx0=(mobile?w*.5:w*.66)-357*base,dy0=mobile?safeTop:h-480*base;
+    const safeTop=mobile?copy.offsetTop+copy.offsetHeight+24:header.offsetHeight+18;
+    const base=Math.min(w*(mobile?1.55:.66)/714,Math.max(1,h-safeTop)/480);
+    // The source frame ends at Woody's trousers: align that edge with the
+    // viewport instead of leaving a floating crop in the middle of the scene.
+    const dx0=mobile?w*.5-386*base:w*.66-357*base,dy0=h-480*base;
     const zoom=ease((p-.51)/.28);
     const target=Math.max(w/(170*.90),h/(116*.90));
     const scale=base+(target-base)*zoom;
@@ -763,7 +765,8 @@ document.querySelector('#add-cart').addEventListener('click', () => {
   function schedule(){if(!queued){queued=true;requestAnimationFrame(draw);}}
   async function load(){while(cursor<sources.length){const i=cursor++;const im=new Image();im.src=sources[i];try{await im.decode();frames[i]=im;if(i===0)sequence.classList.remove('loading');schedule();}catch{if(i===0)hint.textContent='Перейдите к коллекции по ссылке';}}}
   Promise.all(Array.from({length:4},load)).then(schedule);
-  addEventListener('scroll',schedule,{passive:true});addEventListener('resize',schedule,{passive:true});reduced.addEventListener('change',schedule);schedule();
+  document.fonts.ready.then(schedule);
+  addEventListener('scroll',schedule,{passive:true});addEventListener('resize',schedule,{passive:true});reduced.addEventListener('change',schedule);window.visualViewport?.addEventListener('resize',schedule);schedule();
 })();
 
 setupHeaderCollection({models,openProduct,escape,money});
