@@ -59,7 +59,7 @@ const hasOptionalExtras = items => items.some(item => item.extras.some(name => !
 cart = cart.filter(item => item && typeof item === 'object' && Array.isArray(item.extras)).map(item => cartMetadata({ ...item, price: albumBasePrice+extrasTotal(extras.filter(e=>item.extras.includes(e.name)).map(e=>e.id)) }));
 // Remove image payloads left by older demo carts without changing the cart contents.
 try {if(localStorage.getItem('sloy-cart')!==null)localStorage.setItem('sloy-cart',JSON.stringify(cart));} catch {}
-const workshopTelegram = ''; // Set the public workshop username when supplied; never a bot token.
+const workshopTelegram = 'WoodBase_Lazer'; // Public workshop username supplied by the owner; never a bot token.
 const cartTotal = () => cart.every(i => Number.isFinite(i.price)) ? cart.reduce((sum, i) => sum + i.price, 0) : null;
 const leaf = `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M8 25C3 6 21 5 26 4c-1 15-6 23-18 21ZM8 25 22 9M13 19l-1-7m5 2 7-1"/></svg>`;
 function engraving(i) {

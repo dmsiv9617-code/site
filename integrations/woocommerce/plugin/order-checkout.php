@@ -1,12 +1,13 @@
 <?php
 if(!defined('ABSPATH'))exit;
+function wb_default_messenger_contacts(){return ['telegram'=>'https://t.me/WoodBase_Lazer','max'=>'https://max.ru/id525981106353_bot'];}
 // Enable explicitly only after installation, legal documents and contact checks.
 function wb_order_checkout_config(){
  if(!get_option('wb_order_checkout_enabled',false))return null;
  $privacy=get_option('wb_order_privacy_url','');$consent=get_option('wb_order_consent_url','');
  foreach([$privacy,$consent] as $url)if(!is_string($url)||!filter_var($url,FILTER_VALIDATE_URL)||!in_array(parse_url($url,PHP_URL_SCHEME),['https','http'],true))return null;
  $channels=[];
- foreach((array)get_option('wb_messenger_contacts',[]) as $id=>$url){
+ foreach((array)get_option('wb_messenger_contacts',wb_default_messenger_contacts()) as $id=>$url){
   $hosts=['telegram'=>'t.me','vk'=>'vk.me','max'=>'max.ru'];
   if(!isset($hosts[$id])||!is_string($url)||parse_url($url,PHP_URL_SCHEME)!=='https'||parse_url($url,PHP_URL_HOST)!==$hosts[$id]||parse_url($url,PHP_URL_USER)||parse_url($url,PHP_URL_PASS)||strlen(parse_url($url,PHP_URL_PATH)??'')<2)continue;
   $channels[]=['id'=>$id,'url'=>$url];
@@ -125,7 +126,7 @@ add_action('rest_api_init',function(){
 add_action('admin_init',function(){
  register_setting('woodbase_checkout','wb_order_checkout_enabled',['type'=>'boolean','sanitize_callback'=>fn($v)=>(bool)$v,'default'=>false]);
  foreach(['wb_order_privacy_url','wb_order_consent_url'] as $name)register_setting('woodbase_checkout',$name,['type'=>'string','sanitize_callback'=>fn($v)=>is_string($v)?esc_url_raw(trim($v)):'','default'=>'']);
- register_setting('woodbase_checkout','wb_messenger_contacts',['type'=>'array','sanitize_callback'=>function($v){$out=[];foreach(['telegram','vk','max'] as $id)if(is_string($v[$id]??null)&&trim($v[$id])!=='')$out[$id]=esc_url_raw(trim($v[$id]));return $out;},'default'=>[]]);
+ register_setting('woodbase_checkout','wb_messenger_contacts',['type'=>'array','sanitize_callback'=>function($v){$out=[];foreach(['telegram','vk','max'] as $id)if(is_string($v[$id]??null)&&trim($v[$id])!=='')$out[$id]=esc_url_raw(trim($v[$id]));return $out;},'default'=>wb_default_messenger_contacts()]);
 });
 add_filter('option_page_capability_woodbase_checkout',fn()=>'manage_woocommerce');
 add_action('admin_menu',function(){
@@ -134,7 +135,7 @@ add_action('admin_menu',function(){
   echo '<div class="wrap"><h1>Оформление WoodBase</h1><p>Два способа оформления без регистрации и онлайн-оплаты. Перед включением опубликуйте документы и проверьте прямые чаты.</p><form method="post" action="options.php">';settings_fields('woodbase_checkout');
   echo '<table class="form-table"><tr><th>Новое оформление</th><td><input type="hidden" name="wb_order_checkout_enabled" value="0"><label><input type="checkbox" name="wb_order_checkout_enabled" value="1" '.checked(get_option('wb_order_checkout_enabled'),true,false).'> Включить после проверки</label></td></tr>';
   foreach(['wb_order_privacy_url'=>'Политика обработки персональных данных','wb_order_consent_url'=>'Согласие на обработку данных'] as $name=>$label)echo '<tr><th><label for="'.esc_attr($name).'">'.esc_html($label).'</label></th><td><input class="regular-text" type="url" id="'.esc_attr($name).'" name="'.esc_attr($name).'" value="'.esc_attr(get_option($name,'')).'"></td></tr>';
-  $channels=(array)get_option('wb_messenger_contacts',[]);
+  $channels=(array)get_option('wb_messenger_contacts',wb_default_messenger_contacts());
   foreach(['telegram'=>'Telegram — https://t.me/...','vk'=>'Сообщения VK — https://vk.me/...','max'=>'MAX — https://max.ru/...'] as $id=>$label)echo '<tr><th><label for="wb-chat-'.esc_attr($id).'">'.esc_html($label).'</label></th><td><input class="regular-text" type="url" id="wb-chat-'.esc_attr($id).'" name="wb_messenger_contacts['.esc_attr($id).']" value="'.esc_attr($channels[$id]??'').'"><p class="description">Только проверенный прямой чат мастерской. Пустое поле скрывает этот канал.</p></td></tr>';
   echo '</table><p>Уведомление мастерской использует письмо WooCommerce «Новый заказ». Проверьте его получателя и доставку отдельно.</p>';
   if(get_option('wb_order_checkout_enabled')&&!wb_order_checkout_config())echo '<div class="notice notice-error inline"><p>Оформление не включилось: укажите корректные ссылки на оба документа.</p></div>';
