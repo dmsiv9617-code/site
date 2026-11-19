@@ -11,3 +11,10 @@ test('only verified direct Telegram chats get a prepared text; other channels us
  assert.equal(messengerLink({id:'telegram',url:'javascript:alert(1)'},'Заказ'),null);
  assert.equal(messengerLink({id:'telegram',url:'https://evil.example'},'Заказ'),null);
 });
+test('Telegram bot uses an opaque server start link and never text or a guessed order number',()=>{
+ const bot={id:'telegram',kind:'bot',url:'https://t.me/WoodBaseLazerBot'};
+ const url='https://t.me/WoodBaseLazerBot?start=wb_'+ 'a'.repeat(48);
+ assert.equal(messengerLink(bot,'private inscription',{telegramStartUrl:url}),url);
+ assert.equal(messengerLink(bot,'private inscription',{}),null);
+ assert.equal(messengerLink(bot,'private inscription',{telegramStartUrl:'https://t.me/another_bot?start=wb_'+ 'a'.repeat(48)}),null);
+});

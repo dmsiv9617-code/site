@@ -46,7 +46,8 @@ function wb_rate_limit($kind,$scope){
 // Global gate bounds new IP/session bucket cardinality; identifiers are HMACs, not raw IPs.
 add_filter('rest_pre_dispatch',function($result,$server,$request){
  $route=$request->get_route();$kind=null;
- if(str_starts_with($route,'/woodbase/v1/'))$kind=str_contains($route,'/orders')?'checkout':(str_contains($route,'/artwork')?'upload':(str_contains($route,'/session')?'session':'catalog'));
+ if(str_starts_with($route,'/woodbase/v1/telegram/'))$kind='telegram';
+ elseif(str_starts_with($route,'/woodbase/v1/'))$kind=str_contains($route,'/orders')?'checkout':(str_contains($route,'/artwork')?'upload':(str_contains($route,'/session')?'session':'catalog'));
  elseif($route==='/wc/store/v1/cart/add-item')$kind='add';
  elseif($route==='/wc/store/v1/checkout')$kind='checkout';
  elseif(str_starts_with($route,'/wc/store/v1/cart'))$kind='cart';

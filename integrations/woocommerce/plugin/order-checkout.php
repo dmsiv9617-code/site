@@ -10,7 +10,7 @@ function wb_order_checkout_config(){
  foreach((array)get_option('wb_messenger_contacts',wb_default_messenger_contacts()) as $id=>$url){
   $hosts=['telegram'=>'t.me','vk'=>'vk.me','max'=>'max.ru'];
   if(!isset($hosts[$id])||!is_string($url)||parse_url($url,PHP_URL_SCHEME)!=='https'||parse_url($url,PHP_URL_HOST)!==$hosts[$id]||parse_url($url,PHP_URL_USER)||parse_url($url,PHP_URL_PASS)||strlen(parse_url($url,PHP_URL_PATH)??'')<2)continue;
-  $channels[]=['id'=>$id,'url'=>$url];
+  $channels[]=$id==='telegram'&&wb_tg_config()?['id'=>'telegram','kind'=>'bot','url'=>'https://t.me/WoodBaseLazerBot']:['id'=>$id,'url'=>$url];
  }
  return ['version'=>1,'privacyUrl'=>$privacy,'consentUrl'=>$consent,'messengers'=>$channels];
 }
@@ -42,7 +42,8 @@ function wb_order_response($order){
   $details[]='Надпись: '.($c['inscription']??'');if(!empty($c['artwork']['fileId']))$details[]='Свой рисунок сохранён в заказе';
   $items[]=['name'=>$item->get_name(),'quantity'=>$item->get_quantity(),'details'=>$details];
  }
- return ['number'=>(string)$order->get_order_number(),'currency'=>$order->get_currency(),'total'=>(string)$order->get_total(),'method'=>$order->get_meta('_wb_contact_method'),'channel'=>$order->get_meta('_wb_contact_channel'),'items'=>$items];
+ $data=['number'=>(string)$order->get_order_number(),'currency'=>$order->get_currency(),'total'=>(string)$order->get_total(),'method'=>$order->get_meta('_wb_contact_method'),'channel'=>$order->get_meta('_wb_contact_channel'),'items'=>$items];
+ if(wb_tg_config())$data['telegramStartUrl']=wb_tg_link($order);return $data;
 }
 function wb_create_checkout_order($body){
  $config=wb_order_checkout_config();if(!$config)throw new WB_Problem('Новое оформление пока недоступно. Обновите страницу.',503);

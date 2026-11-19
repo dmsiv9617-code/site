@@ -2,13 +2,14 @@
 /**
  * Plugin Name: WoodBase Album Integration
  * Description: Local prototype: private artwork and validated album snapshots.
- * Version: 0.3.0
+ * Version: 0.3.1
  * Requires Plugins: woocommerce
  */
 if (!defined('ABSPATH')) exit;
 require_once __DIR__.'/hardening.php';
 require_once __DIR__.'/extras-pricing.php';
 require_once __DIR__.'/order-checkout.php';
+require_once __DIR__.'/telegram-order-bot.php';
 add_action('before_woocommerce_init', function () {
  if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
   \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
