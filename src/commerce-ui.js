@@ -1,3 +1,5 @@
+import {cartCover} from './album-presentation.js';
+import {supportsPaidExtras} from './extras.js';
 import {commerceError} from './commerce-errors.js';
 import {albumIds, configurationFromState, StoreCart} from './commerce.js';
 export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile}) {
@@ -10,6 +12,14 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
  const origin=import.meta.env.VITE_WOOCOMMERCE_ORIGIN||location.origin;
  const client=new StoreCart(origin);let product=null,nonce=null,busy=false,uploadedFile=null,fileId=null;
  const add=document.querySelector('#add-cart');add.disabled=true;
+ function syncExtras(){
+  if(!product)return;
+  const pending=!supportsPaidExtras(product,getState().extras);
+  add.disabled=busy||pending;
+  badge.hidden=!pending;
+  badge.textContent=pending?'Дополнения пока оформляются через мастерскую. Снимите их для онлайн-заказа или напишите нам в группе ВКонтакте.':'';
+ }
+ window.addEventListener('woodbase-configuration',syncExtras);
  document.querySelector('#mascot-success').hidden=true;
  async function json(path,options={}) {
   let r;
@@ -29,6 +39,7 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
   document.querySelector('#cart-count').textContent=data.items.reduce((n,x)=>n+x.quantity,0);
   for(const item of data.items) {
    const row=document.createElement('div');row.className='cart-item';
+   const cover=cartCover(item,models);if(cover){const image=document.createElement('img');image.src=cover;image.alt='Обложка альбома — персонализация указана рядом';image.className='cart-cover';image.width=140;image.height=100;row.append(image);}
    const details=document.createElement('div');details.append(textNode('h3',item.name));
    for(const field of item.item_data||[]) details.append(textNode('p',field.key+': '+field.value));
    const controls=document.createElement('div');controls.append(textNode('strong',amount(item.totals.line_total,item.prices)));
@@ -50,6 +61,7 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
   status.textContent='Сохраняем альбом…';
   try {
    const state=structuredClone(getState());
+   if(!supportsPaidExtras(product,state.extras))throw new Error('Дополнения пока доступны по согласованию с мастерской. Для онлайн-заказа снимите их или свяжитесь с нами.');
    const selected=product.products?.find(item=>item.model===albumIds[state.model])||(state.model===5?product:null);
    if(!selected?.purchasable)throw new Error('Выбранный альбом сейчас недоступен для заказа');
    const draft=configurationFromState(state,selected.id,state.image?'pending':null);
@@ -71,7 +83,7 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
    const config=configurationFromState(state,selected.id,state.image?fileId:null);
    render(await client.add(config,crypto.randomUUID()));
    status.textContent='Альбом добавлен в корзину';
-  } catch(e){fail(e);}finally{busy=false;add.disabled=false;}
+  } catch(e){fail(e);}finally{busy=false;syncExtras();}
  };
  Promise.all([json('/product'),json('/session')]).then(async([p,s])=>{
   if(!p.purchasable||p.currency!=='RUB'||!Number.isFinite(Number(p.price)))throw new Error('Товар недоступен или валюта не поддерживается');
@@ -83,6 +95,6 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
   if(p.images.length)models[5].photos=p.images;
   onProduct(p);refresh();window.dispatchEvent(new CustomEvent('woodbase-product',{detail:p}));
   badge.dataset.state='ready';badge.textContent='';badge.hidden=true;
-  render(await client.get());add.disabled=false;
+  render(await client.get());syncExtras();
  }).catch(e=>{badge.dataset.state='error';badge.hidden=false;product=null;add.disabled=true;badge.textContent='Не удалось загрузить альбомы. Оформление недоступно; попробуйте обновить страницу.';fail(e);});
 }

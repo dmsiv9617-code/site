@@ -1,3 +1,4 @@
+import {allExtraIds} from './extras.js';
 import {commerceError} from './commerce-errors.js';
 export const albumIds=['family','wish','beginning','history','happiness','moments'];
 // Browser contract: server validates again and computes all prices.
@@ -7,7 +8,7 @@ export function configurationFromState(s, productId, fileId = null) {
  if(s.image && !fileId) throw new Error('Сначала загрузите оригинал рисунка.');
  if(!['bolts','woven'].includes(s.binding)||!['black','brown'].includes(s.leather)||!Number.isInteger(s.color)||s.color<0||s.color>3||!Number.isInteger(s.motif)||!albumIds[s.motif]) throw new Error('Выбранная опция недоступна.');
  if(typeof s.inscription!=='string'||[...s.inscription].length>45) throw new Error('Проверьте надпись: не более 45 символов.');
- if(!Array.isArray(s.extras)||s.extras.some(x=>!['corners','markers','stickers'].includes(x))) throw new Error('Стоимость дополнений пока не задана; снимите дополнительные опции');
+ if(!Array.isArray(s.extras)||s.extras.some(x=>!allExtraIds.includes(x))) throw new Error('Выбрано неизвестное дополнение');
  for(const [key,min,max] of [['imageScale',.5,1.5],['imageX',-20,20],['imageY',-20,20],['imageRotation',-45,45],['threshold',40,220]]) {
   if(!Number.isFinite(s[key])||s[key]<min||s[key]>max) throw new Error('Проверьте положение и масштаб рисунка.');
  }

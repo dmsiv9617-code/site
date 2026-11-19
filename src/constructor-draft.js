@@ -1,7 +1,7 @@
 // Only whitelisted personalisation metadata is persisted. Files and previews stay in memory.
 const key='woodbase-draft-v1';
 const steps=['binding','cover','extras'];
-const extras=['box','metric','corners','markers','stickers'];
+const extras=['box','metric','pages','extra-corners','corners','markers','stickers'];
 function configuration(c) {
  if(!c||!Number.isInteger(c.model)||c.model<0||c.model>5||!Number.isInteger(c.motif)||c.motif<0||c.motif>5||!Number.isInteger(c.color)||c.color<0||c.color>3||!['black','brown'].includes(c.leather)||!['bolts','woven'].includes(c.binding)||typeof c.inscription!=='string'||c.inscription.length>45||!Array.isArray(c.extras)||c.extras.length>extras.length||c.extras.some(id=>!extras.includes(id))||!['original','engrave'].includes(c.imageMode))return null;
  for(const [name,min,max]of [['imageScale',.5,1.5],['imageX',-20,20],['imageY',-20,20],['imageRotation',-45,45],['threshold',40,220]])if(!Number.isFinite(c[name])||c[name]<min||c[name]>max)return null;
