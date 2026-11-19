@@ -1,3 +1,5 @@
+import {setupOrderCheckout} from './order-checkout.js';
+import './order-checkout.css';
 import {cartCover} from './album-presentation.js';
 import {supportsPaidExtras} from './extras.js';
 import {commerceError} from './commerce-errors.js';
@@ -10,6 +12,7 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
  if(!live){badge.hidden=true;badge.dataset.state='demo';return;}
  badge.dataset.state='loading';badge.textContent='Загружаем альбомы…';
  const origin=import.meta.env.VITE_WOOCOMMERCE_ORIGIN||location.origin;
+ let orderCheckout=null;
  const client=new StoreCart(origin);let product=null,nonce=null,busy=false,uploadedFile=null,fileId=null;
  const add=document.querySelector('#add-cart');add.disabled=true;
  function syncExtras(){
@@ -48,7 +51,7 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
    const remove=textNode('button','Удалить');remove.onclick=()=>mutate(()=>client.remove(item.key));controls.append(quantity,remove);row.append(details,controls);container.append(row);
   }
   container.append(textNode('p',data.items.length?'Итого: '+amount(data.totals.total_price,data.totals):'В корзине пока нет альбомов.'));
-  checkout.hidden=!product||!data.items.length;cartStatus.textContent='';
+  checkout.hidden=!product||(!data.items.length&&!orderCheckout?.hasSavedOrder());cartStatus.textContent='';
  }
  async function mutate(fn) {
   if(busy)return;busy=true;checkout.hidden=true;cartStatus.textContent='Обновляем корзину…';
@@ -91,6 +94,7 @@ export function setupCommerce({getState,models,refresh,onProduct,getOriginalFile
   // Checkout on backend host uses the same browser cookie session as /wp-json.
   const target=new URL(p.checkoutUrl);if(target.protocol!=='http:'&&target.protocol!=='https:')throw new Error('Некорректный checkout URL');
   checkout.href=target.href;
+  orderCheckout=setupOrderCheckout({button:checkout,config:p.orderCheckout,request:(path,body)=>json(path,{method:'POST',headers:{'Content-Type':'application/json','X-Woodbase-Nonce':nonce},body:JSON.stringify(body)}),onSaved:()=>{document.querySelector('#cart-count').textContent='0';mutate(()=>client.get());},onReset:()=>mutate(()=>client.get())});
   models[5].name=p.name;models[5].subtitle=p.description;models[5].price=Number(p.price);
   if(p.images.length)models[5].photos=p.images;
   onProduct(p);refresh();window.dispatchEvent(new CustomEvent('woodbase-product',{detail:p}));

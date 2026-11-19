@@ -10,6 +10,8 @@
     "export:html": "node scripts/export-html.mjs",
     "test": "node --test tests/*.test.mjs",
     "test:storefront": "node scripts/verify-storefront-upgrades.mjs",
+    "test:checkout:server": "python3 scripts/verify-order-checkout-server.py",
+    "test:checkout:browser": "node scripts/verify-order-checkout.mjs",
     "test:commerce": "node scripts/verify-commerce.mjs",
     "test:constructor:ux": "node scripts/verify-constructor-ux.mjs",
     "test:constructor:motion": "node scripts/verify-constructor-motion.mjs",

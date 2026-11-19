@@ -2,11 +2,13 @@
 /**
  * Plugin Name: WoodBase Album Integration
  * Description: Local prototype: private artwork and validated album snapshots.
- * Version: 0.2.0
+ * Version: 0.3.0
  * Requires Plugins: woocommerce
  */
 if (!defined('ABSPATH')) exit;
 require_once __DIR__.'/hardening.php';
+require_once __DIR__.'/extras-pricing.php';
+require_once __DIR__.'/order-checkout.php';
 add_action('before_woocommerce_init', function () {
  if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
   \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
@@ -23,7 +25,7 @@ function wb_product_ids() {
  return array_filter(array_map('absint',array_intersect_key($ids,wb_album_models())));
 }
 function wb_options() {
- return ['model'=>wb_album_models(), 'wood'=>['natural'=>'Натуральный','walnut'=>'Ореховый','black'=>'Чёрный','copper'=>'Медный'], 'binding'=>['bolts'=>'Дизайнерские болты','woven'=>'Ручное плетение'], 'leather'=>['black'=>'Чёрная','brown'=>'Коричневая'], 'motif'=>wb_album_models(), 'extras'=>['corners'=>'Уголки','markers'=>'Маркеры','stickers'=>'Наклейки']];
+ return ['model'=>wb_album_models(), 'wood'=>['natural'=>'Натуральный','walnut'=>'Ореховый','black'=>'Чёрный','copper'=>'Медный'], 'binding'=>['bolts'=>'Дизайнерские болты','woven'=>'Ручное плетение'], 'leather'=>['black'=>'Чёрная','brown'=>'Коричневая'], 'motif'=>wb_album_models(), 'extras'=>['corners'=>'Уголки','markers'=>'Маркеры','stickers'=>'Наклейки','box'=>'Подарочная упаковка','metric'=>'Держатель для метрики','pages'=>'Дополнительный блок листов','extra-corners'=>'Дополнительные уголки — 5 листов']];
 }
 function wb_session() {
  if (!function_exists('WC')) throw new Exception('Сервис временно недоступен.');
@@ -57,7 +59,7 @@ function wb_configuration($c, $product_id) {
  if(!is_string($o['model']??null)|| (wb_product_ids()[$o['model']]??null)!==$product_id)throw new WB_Problem('Некорректные параметры альбома.',400);
  foreach(wb_options() as $key=>$allowed) {
   if ($key==='extras') {
-   if (!isset($o[$key]) || !is_array($o[$key]) || !array_is_list($o[$key]) || count($o[$key])>3) throw new WB_Problem('Некорректные параметры альбома.',400);
+   if (!isset($o[$key]) || !is_array($o[$key]) || !array_is_list($o[$key]) || count($o[$key])>7) throw new WB_Problem('Некорректные параметры альбома.',400);
    foreach($o[$key] as $id) if(!is_string($id)||!isset($allowed[$id])) throw new WB_Problem('Некорректные параметры альбома.',400);
    if(count(array_unique($o[$key]))!==count($o[$key]))throw new WB_Problem('Некорректные параметры альбома.',400);
    $labels[$key]=array_map(fn($id)=>$allowed[$id],$o[$key]);
@@ -99,7 +101,7 @@ add_action('rest_api_init', function() {
    $item=wc_get_product($id);
    if($item)$products[]=['model'=>$model,'id'=>$id,'name'=>$item->get_name(),'price'=>$item->get_price(),'purchasable'=>$item->is_purchasable()&&$item->is_in_stock()];
   }
-  return ['id'=>$p->get_id(),'name'=>$p->get_name(),'description'=>wp_strip_all_tags($p->get_description()),'price'=>$p->get_price(),'currency'=>get_woocommerce_currency(),'purchasable'=>$p->is_purchasable() && $p->is_in_stock(),'images'=>array_values(array_filter(array_map('wp_get_attachment_url',array_merge([$p->get_image_id()],$p->get_gallery_image_ids())))),'options'=>wb_options(),'checkoutUrl'=>wc_get_checkout_url(),'products'=>$products];
+  return ['id'=>$p->get_id(),'name'=>$p->get_name(),'description'=>wp_strip_all_tags($p->get_description()),'price'=>$p->get_price(),'currency'=>get_woocommerce_currency(),'purchasable'=>$p->is_purchasable() && $p->is_in_stock(),'images'=>array_values(array_filter(array_map('wp_get_attachment_url',array_merge([$p->get_image_id()],$p->get_gallery_image_ids())))),'options'=>wb_options(),'extraPrices'=>wb_extra_prices(),'orderCheckout'=>wb_order_checkout_config(),'checkoutUrl'=>wc_get_checkout_url(),'products'=>$products];
  }]);
  register_rest_route('woodbase/v1','/artwork',['methods'=>'POST','permission_callback'=>'wb_permission','callback'=>function($r){
   try {
@@ -141,7 +143,7 @@ add_filter('woocommerce_store_api_add_to_cart_data', function($data,$request) {
 add_action('woocommerce_before_calculate_totals',function($cart){
  foreach($cart->get_cart() as $item) if(isset($item['woodbase'])) {
   $product=wc_get_product($item['product_id']);
-  if($product) $item['data']->set_price($product->get_price('edit'));
+  if($product) $item['data']->set_price((float)$product->get_price('edit')+wb_extras_total($item['woodbase']['options']['extras']??[]));
  }
 });
 add_filter('woocommerce_get_item_data',function($rows,$item){
