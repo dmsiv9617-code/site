@@ -45,8 +45,8 @@ export function setupOrderCheckout({button,config,request,onSaved,onReset}){
  form.addEventListener('change',()=>{if(!busy)update();});update();
  function showOrder(order){
   saved=order;button.textContent='Ваш сохранённый заказ';button.hidden=false;form.hidden=true;receipt.hidden=false;receipt.replaceChildren();
-  const title=document.createElement('h3');title.textContent=`Заказ №${order.number} сохранён`;receipt.append(title);
-  const note=document.createElement('p');note.textContent=order.method==='callback'?`Мастерская свяжется с вами через ${channelNames[order.channel]}.`:'Отправьте сообщение мастерской. Открытие чата ещё не означает отправку заказа.';receipt.append(note);
+  const title=document.createElement('h3');title.textContent=`Заказ №${order.number} создан`;receipt.append(title);
+  const note=document.createElement('p');if(order.method==='callback')note.className='order-followup';note.textContent=order.method==='callback'?`Мастерская свяжется с вами через ${channelNames[order.channel]}.`:'Отправьте сообщение мастерской. Открытие чата ещё не означает отправку заказа.';receipt.append(note);
   if(order.method==='messenger'){
    const text=document.createElement('textarea');text.readOnly=true;text.rows=8;text.value=orderMessage(order);text.setAttribute('aria-label','Описание заказа');receipt.append(text);
    const copy=document.createElement('button');copy.type='button';copy.className='button';copy.textContent='Скопировать заказ';copy.onclick=async()=>{try{await navigator.clipboard.writeText(text.value);result.textContent='Описание и номер заказа скопированы';}catch{text.focus();text.select();result.textContent='Выделили текст — скопируйте его вручную';}};receipt.append(copy);
@@ -62,7 +62,7 @@ export function setupOrderCheckout({button,config,request,onSaved,onReset}){
     hint.textContent=selected.kind==='bot'?'Скопируйте описание перед переходом. В Telegram-боте нажмите «Начать» и подтвердите заказ.':selected.id==='telegram'?'Скопируйте описание перед переходом. В прямом чате Telegram короткий заказ будет подготовлен в сообщении. Если текст не появился, вставьте скопированное описание. Нажмите «Отправить» в чате.':`Скопируйте описание заказа, откройте ${channelNames[selected.id]}, вставьте текст в сообщение и нажмите «Отправить».`;
     receipt.append(hint,links);
    }else{
-    const hint=document.createElement('p');hint.textContent='Выбранный чат сейчас недоступен. Заказ сохранён — скопируйте описание и номер для обращения в мастерскую.';receipt.append(hint);
+    const hint=document.createElement('p');hint.textContent='Выбранный чат сейчас недоступен. Заказ создан — скопируйте описание и номер для обращения в мастерскую.';receipt.append(hint);
    }
   }
   const next=document.createElement('button');next.type='button';next.className='order-new';next.textContent='Оформить другой заказ';next.onclick=()=>{saved=null;requestId=null;button.textContent='Оформить заказ';onReset?.();try{sessionStorage.removeItem(key);}catch{}receipt.hidden=true;form.hidden=false;form.reset();result.textContent='Добавьте альбомы в корзину для нового заказа';update();dialog.close();};receipt.append(next);

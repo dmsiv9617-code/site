@@ -1,12 +1,13 @@
 // Real receipt DOM, with order API stubbed. No remote chats or real orders.
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright-core';
+import {mkdir} from 'node:fs/promises';
 const origin=process.env.WB_RECEIPT_ORIGIN||'http://localhost:5173';
 assert.equal(new URL(origin).hostname,'localhost');
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
 try{
  const context=await browser.newContext();const page=await context.newPage();
- await page.route('**/receipt-test',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><button id="checkout">Оформить заказ</button>'}));
+ await page.route('**/receipt-test',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/src/order-checkout.css"><button id="checkout">Оформить заказ</button>'}));
  const all=[{id:'telegram',url:'https://t.me/woodbase_test'},{id:'vk',url:'https://vk.me/club214537480'},{id:'max',url:'https://max.ru/u/test'}];
  for(const scenario of [
   ...all.map(channel=>({channel,method:'messenger'})),
@@ -16,6 +17,7 @@ try{
   {channel:all[1],method:'messenger',recover:true,removed:true},
   {channel:{id:'telegram',kind:'bot',url:'https://t.me/WoodBaseLazerBot'},method:'messenger'},
  ]){
+  await page.setViewportSize({width:scenario.method==='callback'&&!scenario.recover?390:1280,height:900});
   await page.goto(origin+'/receipt-test');
   await page.evaluate(async({scenario,all})=>{
    sessionStorage.clear();
@@ -35,7 +37,14 @@ try{
   await page.locator('.order-receipt').waitFor({state:'visible'});
   assert.equal(await page.locator('.order-receipt textarea').count(),scenario.method==='callback'?0:1,'site orders need no text for manual forwarding');
   assert.equal(await page.getByRole('button',{name:'Скопировать заказ',exact:true}).count(),scenario.method==='callback'?0:1,'site orders need no copy button');
-  if(scenario.method==='callback')assert.match(await page.locator('.order-receipt').innerText(),/Мастерская свяжется с вами/);
+  if(scenario.method==='callback'){
+   assert.match(await page.locator('.order-receipt').innerText(),/Мастерская свяжется с вами/);
+   assert.match(await page.locator('.order-receipt h3').innerText(),/Заказ №38 создан/);
+   assert.ok(await page.locator('.order-followup').evaluate(el=>parseFloat(getComputedStyle(el).fontSize)>=22),'follow-up notice is prominent');
+   assert.ok(await page.locator('.order-checkout').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'no horizontal overflow');
+   await mkdir('work/order-checkout',{recursive:true});
+   await page.screenshot({path:`work/order-checkout/callback-confirmation-${page.viewportSize().width}.png`});
+  }
   const links=page.locator('.order-messenger-links a');
   assert.equal(await links.count(),scenario.method==='callback'||scenario.removed?0:1,'only the saved order channel appears');
   if(await links.count()){
