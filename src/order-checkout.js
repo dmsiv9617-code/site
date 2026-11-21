@@ -54,7 +54,7 @@ export function setupOrderCheckout({button,config,request,onSaved,onReset}){
    const href=messengerLink(channel,text.value,order);if(!href)continue;
    const link=document.createElement('a');link.className='button';link.href=href;link.target='_blank';link.rel='noopener noreferrer';link.textContent=`Открыть ${channelNames[channel.id]}`;links.append(link);
   }
-  if(channels.length){const hint=document.createElement('p');hint.textContent='Скопируйте описание перед переходом. В Telegram-боте нажмите «Начать» и подтвердите заказ. В прямом чате Telegram короткий заказ будет подготовлен в сообщении. Если текст не появился, вставьте скопированное описание.';receipt.append(hint,links);}
+  if(channels.length){const hint=document.createElement('p');hint.textContent=channels.some(x=>x.kind==='bot')?'Скопируйте описание перед переходом. В Telegram-боте нажмите «Начать» и подтвердите заказ.':'Скопируйте описание перед переходом. В прямом чате Telegram короткий заказ будет подготовлен в сообщении. Если текст не появился, вставьте скопированное описание. Нажмите «Отправить» в чате.';receipt.append(hint,links);}
   const next=document.createElement('button');next.type='button';next.className='order-new';next.textContent='Оформить другой заказ';next.onclick=()=>{saved=null;requestId=null;button.textContent='Оформить заказ';onReset?.();try{sessionStorage.removeItem(key);}catch{}receipt.hidden=true;form.hidden=false;form.reset();result.textContent='Добавьте альбомы в корзину для нового заказа';update();dialog.close();};receipt.append(next);
  }
  button.textContent='Оформить заказ';button.removeAttribute('href');button.setAttribute('role','button');button.setAttribute('tabindex','0');

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WoodBase Album Integration
  * Description: Local prototype: private artwork and validated album snapshots.
- * Version: 0.3.1
+ * Version: 0.3.2
  * Requires Plugins: woocommerce
  */
 if (!defined('ABSPATH')) exit;
@@ -28,6 +28,15 @@ function wb_product_ids() {
 function wb_options() {
  return ['model'=>wb_album_models(), 'wood'=>['natural'=>'Натуральный','walnut'=>'Ореховый','black'=>'Чёрный','copper'=>'Медный'], 'binding'=>['bolts'=>'Дизайнерские болты','woven'=>'Ручное плетение'], 'leather'=>['black'=>'Чёрная','brown'=>'Коричневая'], 'motif'=>wb_album_models(), 'extras'=>['corners'=>'Уголки','markers'=>'Маркеры','stickers'=>'Наклейки','box'=>'Подарочная упаковка','metric'=>'Держатель для метрики','pages'=>'Дополнительный блок листов','extra-corners'=>'Дополнительные уголки — 5 листов']];
 }
+// Store API retains the authenticated cookie user, while default REST cookie
+// auth clears that user without X-WP-Nonce. Keep both cart APIs on the same
+// WooCommerce owner. Only these public storefront routes use our own CSRF
+// nonce (wb_permission); unrelated WP REST routes retain default protection.
+add_filter('rest_authentication_errors', function($result) {
+ if($result!==null)return $result;
+ $route=$GLOBALS['wp']->query_vars['rest_route']??'';
+ return preg_match('#^/woodbase/v1/(session|product|artwork|orders(?:/recover)?)/?$#',$route)?true:$result;
+},20);
 function wb_session() {
  if (!function_exists('WC')) throw new Exception('Сервис временно недоступен.');
  if (!WC()->cart) wc_load_cart();
