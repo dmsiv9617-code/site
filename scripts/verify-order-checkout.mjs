@@ -41,9 +41,15 @@ try{
   await page.locator('.order-submit').click();await page.locator('.order-receipt').waitFor({state:'visible'});
   assert.match(await page.locator('.order-receipt h3').innerText(),new RegExp(firstOrder.number));
   assert.doesNotMatch(await page.locator('.order-receipt').innerText(),/бот/,'direct chat receipt must not mention a bot');
-  assert.match(await page.locator('.order-receipt textarea').inputValue(),/Семья Проверкиных/);
-  assert.match(await page.locator('.order-receipt textarea').inputValue(),/3\s?890/);
-  assert.equal(await page.locator('.order-messenger-links a').count(),1);assert.match(await page.locator('.order-messenger-links a').getAttribute('href'),/^https:\/\/t.me\/woodbase_test\?text=/);
+  if(method==='messenger'){
+   assert.match(await page.locator('.order-receipt textarea').inputValue(),/Семья Проверкиных/);
+   assert.match(await page.locator('.order-receipt textarea').inputValue(),/3\s?890/);
+   assert.equal(await page.locator('.order-messenger-links a').count(),1);assert.match(await page.locator('.order-messenger-links a').getAttribute('href'),/^https:\/\/t.me\/woodbase_test\?text=/);
+  }else{
+   assert.equal(await page.locator('.order-receipt textarea,.order-messenger-links a').count(),0);
+   assert.equal(await page.getByRole('button',{name:'Скопировать заказ',exact:true}).count(),0);
+   assert.match(await page.locator('.order-receipt').innerText(),/Мастерская свяжется с вами/);
+  }
   await page.screenshot({path:`work/order-checkout/saved-${width}.png`});
   await page.reload();await page.waitForFunction(()=>document.querySelector('.commerce-checkout')?.textContent==='Ваш сохранённый заказ');await page.locator('#open-cart').click();await page.locator('.commerce-checkout').click();await page.locator('.order-receipt').waitFor({state:'visible'});assert.match(await page.locator('.order-receipt h3').innerText(),new RegExp(firstOrder.number));
   // A second browser session cannot read the order from its number/request ID.

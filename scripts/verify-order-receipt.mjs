@@ -11,6 +11,7 @@ try{
  for(const scenario of [
   ...all.map(channel=>({channel,method:'messenger'})),
   {channel:all[1],method:'callback'},
+  {channel:all[0],method:'callback',recover:true},
   {channel:all[1],method:'messenger',recover:true},
   {channel:all[1],method:'messenger',recover:true,removed:true},
   {channel:{id:'telegram',kind:'bot',url:'https://t.me/WoodBaseLazerBot'},method:'messenger'},
@@ -32,6 +33,9 @@ try{
    await page.locator('input[name=consent]').check();await page.locator('.order-submit').click();
   }
   await page.locator('.order-receipt').waitFor({state:'visible'});
+  assert.equal(await page.locator('.order-receipt textarea').count(),scenario.method==='callback'?0:1,'site orders need no text for manual forwarding');
+  assert.equal(await page.getByRole('button',{name:'Скопировать заказ',exact:true}).count(),scenario.method==='callback'?0:1,'site orders need no copy button');
+  if(scenario.method==='callback')assert.match(await page.locator('.order-receipt').innerText(),/Мастерская свяжется с вами/);
   const links=page.locator('.order-messenger-links a');
   assert.equal(await links.count(),scenario.method==='callback'||scenario.removed?0:1,'only the saved order channel appears');
   if(await links.count()){

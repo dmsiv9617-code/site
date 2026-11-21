@@ -47,21 +47,23 @@ export function setupOrderCheckout({button,config,request,onSaved,onReset}){
   saved=order;button.textContent='Ваш сохранённый заказ';button.hidden=false;form.hidden=true;receipt.hidden=false;receipt.replaceChildren();
   const title=document.createElement('h3');title.textContent=`Заказ №${order.number} сохранён`;receipt.append(title);
   const note=document.createElement('p');note.textContent=order.method==='callback'?`Мастерская свяжется с вами через ${channelNames[order.channel]}.`:'Отправьте сообщение мастерской. Открытие чата ещё не означает отправку заказа.';receipt.append(note);
-  const text=document.createElement('textarea');text.readOnly=true;text.rows=8;text.value=orderMessage(order);text.setAttribute('aria-label','Описание заказа');receipt.append(text);
-  const copy=document.createElement('button');copy.type='button';copy.className='button';copy.textContent='Скопировать заказ';copy.onclick=async()=>{try{await navigator.clipboard.writeText(text.value);result.textContent='Описание и номер заказа скопированы';}catch{text.focus();text.select();result.textContent='Выделили текст — скопируйте его вручную';}};receipt.append(copy);
-  const links=document.createElement('div');links.className='order-messenger-links';
-  const selected=order.method==='messenger'?channels.find(x=>x.id===order.channel):null;
-  if(selected){
-   const channel=selected;
-   const href=messengerLink(channel,text.value,order);
-   if(href){const link=document.createElement('a');link.className='button';link.href=href;link.target='_blank';link.rel='noopener noreferrer';link.textContent=`Открыть ${channelNames[channel.id]}`;links.append(link);}
-  }
-  if(links.childElementCount){
-   const hint=document.createElement('p');
-   hint.textContent=selected.kind==='bot'?'Скопируйте описание перед переходом. В Telegram-боте нажмите «Начать» и подтвердите заказ.':selected.id==='telegram'?'Скопируйте описание перед переходом. В прямом чате Telegram короткий заказ будет подготовлен в сообщении. Если текст не появился, вставьте скопированное описание. Нажмите «Отправить» в чате.':`Скопируйте описание заказа, откройте ${channelNames[selected.id]}, вставьте текст в сообщение и нажмите «Отправить».`;
-   receipt.append(hint,links);
-  }else if(order.method==='messenger'){
-   const hint=document.createElement('p');hint.textContent='Выбранный чат сейчас недоступен. Заказ сохранён — скопируйте описание и номер для обращения в мастерскую.';receipt.append(hint);
+  if(order.method==='messenger'){
+   const text=document.createElement('textarea');text.readOnly=true;text.rows=8;text.value=orderMessage(order);text.setAttribute('aria-label','Описание заказа');receipt.append(text);
+   const copy=document.createElement('button');copy.type='button';copy.className='button';copy.textContent='Скопировать заказ';copy.onclick=async()=>{try{await navigator.clipboard.writeText(text.value);result.textContent='Описание и номер заказа скопированы';}catch{text.focus();text.select();result.textContent='Выделили текст — скопируйте его вручную';}};receipt.append(copy);
+   const links=document.createElement('div');links.className='order-messenger-links';
+   const selected=channels.find(x=>x.id===order.channel);
+   if(selected){
+    const channel=selected;
+    const href=messengerLink(channel,text.value,order);
+    if(href){const link=document.createElement('a');link.className='button';link.href=href;link.target='_blank';link.rel='noopener noreferrer';link.textContent=`Открыть ${channelNames[channel.id]}`;links.append(link);}
+   }
+   if(links.childElementCount){
+    const hint=document.createElement('p');
+    hint.textContent=selected.kind==='bot'?'Скопируйте описание перед переходом. В Telegram-боте нажмите «Начать» и подтвердите заказ.':selected.id==='telegram'?'Скопируйте описание перед переходом. В прямом чате Telegram короткий заказ будет подготовлен в сообщении. Если текст не появился, вставьте скопированное описание. Нажмите «Отправить» в чате.':`Скопируйте описание заказа, откройте ${channelNames[selected.id]}, вставьте текст в сообщение и нажмите «Отправить».`;
+    receipt.append(hint,links);
+   }else{
+    const hint=document.createElement('p');hint.textContent='Выбранный чат сейчас недоступен. Заказ сохранён — скопируйте описание и номер для обращения в мастерскую.';receipt.append(hint);
+   }
   }
   const next=document.createElement('button');next.type='button';next.className='order-new';next.textContent='Оформить другой заказ';next.onclick=()=>{saved=null;requestId=null;button.textContent='Оформить заказ';onReset?.();try{sessionStorage.removeItem(key);}catch{}receipt.hidden=true;form.hidden=false;form.reset();result.textContent='Добавьте альбомы в корзину для нового заказа';update();dialog.close();};receipt.append(next);
  }
