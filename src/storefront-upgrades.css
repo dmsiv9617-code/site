@@ -49,7 +49,7 @@
  .benefit-pill,.benefit-pages-text>span {display:inline-block;padding:7px 12px;border:1px solid #8a7258;border-radius:99px;font-size:13px;}
  .benefit-copy h3,.benefit-pages-text h3 {font:500 28px/1.15 Manrope,Arial,sans-serif;letter-spacing:-.7px;margin:14px 0 10px;}
  .benefit-copy p,.benefit-pages-text p {font-size:16px;line-height:1.6;margin:0;}
- .benefit-personal {grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;}
+ .benefit-personal {grid-column:auto;display:block;}
 }
 #preview-personalization {padding:12px 14px;border:1px solid #c4a47b;border-radius:12px;background:#fffcf7;color:#302117;margin-top:12px;}
 #preview-personalization strong {font-size:15px;line-height:1.5;display:block;overflow-wrap:anywhere;}
